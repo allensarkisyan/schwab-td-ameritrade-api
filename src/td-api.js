@@ -299,13 +299,6 @@ export class TDAmeritradeAPI {
     }
   });
 
-  getOptionChainParsed = async (symbol) => {
-    const optionChain = await this.getOptionChain(symbol);
-    // const parsedOptionChain = TDUtils.parseOptionChain(optionChain);
-    const parsedOptionChain = await TDUtils.parseOptionChainWorker(optionChain);
-    return { underlying: optionChain.underlying, ...parsedOptionChain };
-  };
-
   getWatchlists = async (accountId) => await this.#handleRequest({
     url: `/v1/accounts/${accountId}/watchlists`
   });
@@ -322,7 +315,11 @@ export class TDAmeritradeAPI {
   ) => await this.#handleRequest({
     method: 'POST',
     url: `/v1/accounts/${accountId}/orders`,
-    data: { ...LIMIT_ORDER_TEMPLATE, price, orderLegCollection }
+    data: {
+      ...LIMIT_ORDER_TEMPLATE,
+      price,
+      orderLegCollection
+    }
   });
 
   cancelOrder = async (accountId, orderId) => await this.#handleRequest({
@@ -374,56 +371,112 @@ export class TDAmeritradeAPI {
     symbol,
     quantity = 1,
     price
-  ) => await this.openOrder(accountId, symbol, quantity, price, false, false);
+  ) => await this.openOrder(
+    accountId,
+    symbol,
+    quantity,
+    price,
+    false,
+    false
+  );
 
   sellStock = async (
     accountId,
     symbol,
     quantity = 1,
     price
-  ) => await this.closeOrder(accountId, symbol, quantity, price, false, false);
+  ) => await this.closeOrder(
+    accountId,
+    symbol,
+    quantity,
+    price,
+    false,
+    false
+  );
 
   shortStock = async (
     accountId,
     symbol,
     quantity = 1,
     price
-  ) => await this.openOrder(accountId, symbol, quantity, price, false, true);
+  ) => await this.openOrder(
+    accountId,
+    symbol,
+    quantity,
+    price,
+    false,
+    true
+  );
 
   coverStock = async (
     accountId,
     symbol,
     quantity = 1,
     price
-  ) => await this.closeOrder(accountId, symbol, quantity, price, false, true);
+  ) => await this.closeOrder(
+    accountId,
+    symbol,
+    quantity,
+    price,
+    false,
+    true
+  );
 
   buyOption = async (
     accountId,
     symbol,
     quantity = 1,
     price
-  ) => await this.openOrder(accountId, symbol, quantity, price, true, false);
+  ) => await this.openOrder(
+    accountId,
+    symbol,
+    quantity,
+    price,
+    true,
+    false
+  );
 
   sellOption = async (
     accountId,
     symbol,
     quantity = 1,
     price
-  ) => await this.closeOrder(accountId, symbol, quantity, price, true, false);
+  ) => await this.closeOrder(
+    accountId,
+    symbol,
+    quantity,
+    price,
+    true,
+    false
+  );
 
   writeOption = async (
     accountId,
     symbol,
     quantity = 1,
     price
-  ) => await this.openOrder(accountId, symbol, quantity, price, true, true);
+  ) => await this.openOrder(
+    accountId,
+    symbol,
+    quantity,
+    price,
+    true,
+    true
+  );
 
   closeOption = async (
     accountId,
     symbol,
     quantity = 1,
     price
-  ) => await this.closeOrder(accountId, symbol, quantity, price, true, true);
+  ) => await this.closeOrder(
+    accountId,
+    symbol,
+    quantity,
+    price,
+    true,
+    true
+  );
 }
 
 export default new TDAmeritradeAPI();
