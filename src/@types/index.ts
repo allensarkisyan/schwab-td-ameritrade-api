@@ -349,3 +349,215 @@ export type PriceHistory = {
   symbol: TickerSymbol;
   empty: boolean;
 };
+
+/**
+ * ITM: In-the-money
+ * NTM: Near-the-money
+ * OTM: Out-of-the-money
+ * SAK: Strikes Above Market
+ * SBK: Strikes Below Market
+ * SNK: Strikes Near Market
+ * ALL: All Strikes
+ */
+export type OptionContractRange = 'ALL' | 'ITM' | 'OTM' | 'NTM' | 'SAK' | 'SBK' | 'SNK';
+
+/**
+ * S: Standard contracts
+ * NS: Non-standard contracts
+ * ALL: All contracts
+ */
+export type OptionContractType = 'S' | 'NS' | 'ALL';
+
+/**
+ * Represents option contract data.
+ * @typedef {Object} OptionContractData
+ * @property {string} putCall - The option type (e.g., "CALL" or "PUT").
+ * @property {TickerSymbol} symbol - The option symbol.
+ * @property {string} description - A description of the option contract.
+ * @property {string} exchangeName - The exchange where the option is traded.
+ * @property {number} bid - The bid price for the option.
+ * @property {number} ask - The ask price for the option.
+ * @property {number} last - The last traded price for the option.
+ * @property {number} mark - The mark price for the option.
+ * @property {number} bidSize - The size of the bid for the option.
+ * @property {number} askSize - The size of the ask for the option.
+ * @property {string} bidAskSize - The bid and ask sizes (e.g., "45X25").
+ * @property {number} lastSize - The size of the last trade for the option.
+ * @property {number} highPrice - The highest price of the option.
+ * @property {number} lowPrice - The lowest price of the option.
+ * @property {number} openPrice - The opening price of the option.
+ * @property {number} closePrice - The closing price of the option.
+ * @property {number} totalVolume - The total trading volume for the option.
+ * @property {Date | null} tradeDate - The date of the last trade (nullable).
+ * @property {number} tradeTimeInLong - The timestamp of the last trade.
+ * @property {number} quoteTimeInLong - The timestamp of the quote.
+ * @property {number} netChange - The net change in the option price.
+ * @property {number} volatility - The volatility of the option.
+ * @property {number} delta - The delta value of the option.
+ * @property {number} gamma - The gamma value of the option.
+ * @property {number} theta - The theta value of the option.
+ * @property {number} vega - The vega value of the option.
+ * @property {number} rho - The rho value of the option.
+ * @property {number} openInterest - The open interest in the option.
+ * @property {number} timeValue - The time value of the option.
+ * @property {number} theoreticalOptionValue - The theoretical option value.
+ * @property {number} theoreticalVolatility - The theoretical volatility of the option.
+ * @property {string | null} optionDeliverablesList - The list of option deliverables (nullable).
+ * @property {number} strikePrice - The strike price of the option.
+ * @property {number} expirationDate - The expiration date of the option (timestamp).
+ * @property {number} daysToExpiration - The number of days to option expiration.
+ * @property {string} expirationType - The type of expiration (e.g., "S" for standard).
+ * @property {number} lastTradingDay - The last trading day (timestamp).
+ * @property {number} multiplier - The multiplier for the option (e.g., 100 for standard options).
+ * @property {string} settlementType - The settlement type (e.g., " " for space).
+ * @property {string} deliverableNote - A note about deliverables.
+ * @property {boolean| null} isIndexOption - Indicates if the option is an index option (nullable).
+ * @property {number} percentChange - The percentage change in the option price.
+ * @property {number} markChange - The change in the mark price.
+ * @property {number} markPercentChange - The percentage change in the mark price.
+ * @property {number} intrinsicValue - The intrinsic value of the option.
+ * @property {boolean} pennyPilot - Indicates if the option is part of the penny pilot program.
+ * @property {boolean} nonStandard - Indicates if the option is non-standard.
+ * @property {boolean} inTheMoney - Indicates if the option is in the money.
+ * @property {boolean} mini - Indicates if the option is a mini option.
+ */
+export type OptionContractData = {
+  putCall: 'PUT' | 'CALL';
+  symbol: TickerSymbol;
+  description: string;
+  exchangeName: string;
+  bid: number;
+  ask: number;
+  last: number;
+  mark: number;
+  bidSize: number;
+  askSize: number;
+  bidAskSize: string;
+  lastSize: number;
+  highPrice: number;
+  lowPrice: number;
+  openPrice: number;
+  closePrice: number;
+  totalVolume: number;
+  tradeDate: Date | number | null;
+  tradeTimeInLong: number;
+  quoteTimeInLong: number;
+  netChange: number;
+  volatility: number;
+  delta: number;
+  gamma: number;
+  theta: number;
+  vega: number;
+  rho: number;
+  openInterest: number;
+  timeValue: number;
+  theoreticalOptionValue: number;
+  theoreticalVolatility: number;
+  optionDeliverablesList: string | null;
+  strikePrice: number;
+  expirationDate: number;
+  daysToExpiration: number;
+  expirationType: string;
+  lastTradingDay: number;
+  multiplier: number;
+  settlementType: string;
+  deliverableNote: string;
+  isIndexOption: boolean | null;
+  percentChange: number;
+  markChange: number;
+  markPercentChange: number;
+  intrinsicValue: number;
+  pennyPilot: boolean;
+  nonStandard: boolean;
+  inTheMoney: boolean;
+  mini: boolean;
+};
+
+
+/**
+ * Represents information about the underlying asset.
+ * @typedef {Object} UnderlyingAsset
+ * @property {TickerSymbol} symbol - The symbol of the underlying asset.
+ * @property {string} description - The description of the underlying asset.
+ * @property {number} change - The change in the underlying asset's price.
+ * @property {number} percentChange - The percentage change in the underlying asset's price.
+ * @property {number} close - The closing price of the underlying asset.
+ * @property {number} quoteTime - The timestamp of the underlying asset's quote time.
+ * @property {number} tradeTime - The timestamp of the underlying asset's trade time.
+ * @property {number} bid - The bid price for the underlying asset.
+ * @property {number} ask - The ask price for the underlying asset.
+ * @property {number} last - The last traded price for the underlying asset.
+ * @property {number} mark - The mark price for the underlying asset.
+ * @property {number} markChange - The change in the mark price for the underlying asset.
+ * @property {number} markPercentChange - The percentage change in the mark price for the underlying asset.
+ * @property {number} bidSize - The size of the bid for the underlying asset.
+ * @property {number} askSize - The size of the ask for the underlying asset.
+ * @property {number} highPrice - The highest price of the underlying asset.
+ * @property {number} lowPrice - The lowest price of the underlying asset.
+ * @property {number} openPrice - The opening price of the underlying asset.
+ * @property {number} totalVolume - The total trading volume for the underlying asset.
+ * @property {string} exchangeName - The name of the exchange where the underlying asset is traded.
+ * @property {number} fiftyTwoWeekHigh - The fifty-two week high price of the underlying asset.
+ * @property {number} fiftyTwoWeekLow - The fifty-two week low price of the underlying asset.
+ * @property {boolean} delayed - Indicates if the data is delayed for the underlying asset.
+ */
+export type UnderlyingAsset = {
+  symbol: TickerSymbol;
+  description: string;
+  change: number;
+  percentChange: number;
+  close: number;
+  quoteTime: number;
+  tradeTime: number;
+  bid: number;
+  ask: number;
+  last: number;
+  mark: number;
+  markChange: number;
+  markPercentChange: number;
+  bidSize: number;
+  askSize: number;
+  highPrice: number;
+  lowPrice: number;
+  openPrice: number;
+  totalVolume: number;
+  exchangeName: string;
+  fiftyTwoWeekHigh: number;
+  fiftyTwoWeekLow: number;
+  delayed: boolean;
+};
+
+/**
+ * Represents option chain data.
+ * @typedef {Object} OptionChainData
+ * @property {TickerSymbol} symbol - The symbol.
+ * @property {string} status - The status of the option chain (e.g., "SUCCESS").
+ * @property {UnderlyingAsset} underlying - Information about the underlying asset.
+ * @property {string} strategy - The trading strategy (e.g., "SINGLE").
+ * @property {number} interval - The interval.
+ * @property {boolean} isDelayed - Indicates if the data is delayed.
+ * @property {boolean} isIndex - Indicates if the data is related to an index.
+ * @property {number} interestRate - The interest rate.
+ * @property {number} underlyingPrice - The price of the underlying asset.
+ * @property {number} volatility - The volatility.
+ * @property {number} daysToExpiration - The number of days to expiration.
+ * @property {number} numberOfContracts - The number of contracts.
+ * @property {Record<string, Record<string, OptionContractData[]>>} putExpDateMap - Map of put expiration dates and their data.
+ * @property {Record<string, Record<string, OptionContractData[]>>} callExpDateMap - Map of call expiration dates and their data.
+ */
+export type OptionChainData = {
+  symbol: TickerSymbol;
+  status: string;
+  underlying: UnderlyingAsset;
+  strategy: string;
+  interval: number;
+  isDelayed: boolean;
+  isIndex: boolean;
+  interestRate: number;
+  underlyingPrice: number;
+  volatility: number;
+  daysToExpiration: number;
+  numberOfContracts: number;
+  putExpDateMap: Record<string, Record<string, OptionContractData[]>>;
+  callExpDateMap: Record<string, Record<string, OptionContractData[]>>;
+};

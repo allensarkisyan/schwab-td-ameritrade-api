@@ -17,6 +17,9 @@ import type {
   FundamentalData,
   PriceHistory,
   InstrumentData,
+  OptionChainData,
+  OptionContractRange,
+  OptionContractType,
 } from './@types/index.js';
 
 const jsonToQueryString = (json: object): string => Object.keys(json).map((key: string) => `${encodeURIComponent(key)}=${encodeURIComponent(json[key])}`).join('&');
@@ -350,31 +353,26 @@ export class TDAmeritradeAPI {
     }
   };
 
+  /**
+   * 
+   * @param {TickerSymbol} symbol - Ticker Symbol
+   * @param {OptionContractRange} range - Option Contract Range - (ITM, OTM, NTM, etc..)
+   * @param {OptionContractType} optionType - Option Contract Type - (Standard, Non Standard, All)
+   * @returns {Promise<OptionChainData>}
+   */
   getOptionChain = async (
-    symbol: TickerSymbol
-  ) => await this.#handleRequest({
+    symbol: TickerSymbol,
+    range: OptionContractRange = 'ALL',
+    optionType: OptionContractType = 'S',
+  ): Promise<OptionChainData> => await this.#handleRequest({
     url: '/v1/marketdata/chains',
     params: {
       symbol,
       includeQuotes: 'TRUE',
       strategy: 'SINGLE',
       contractType: 'ALL',
-      /*
-      ITM: In-the-money
-      NTM: Near-the-money
-      OTM: Out-of-the-money
-      SAK: Strikes Above Market
-      SBK: Strikes Below Market
-      SNK: Strikes Near Market
-      ALL: All Strikes
-      */
-      range: 'ALL',
-      /*
-      S: Standard contracts
-      NS: Non-standard contracts
-      ALL: All contracts
-      */
-      optionType: 'S'
+      range,
+      optionType
     }
   });
 
