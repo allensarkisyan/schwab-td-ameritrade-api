@@ -4,20 +4,39 @@
   "private": true,
   "type": "module",
   "author": "Allen Sarkisyan",
-  "main": "./dist/commonjs/td-api.js",
+  "main": "./dist/cjs/td-api.js",
   "module": "./dist/esm/td-api.js",
+  "types": "./dist/types/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/esm/td-api.js",
-      "require": "./dist/commonjs/td-api.js"
+      "require": {
+        "types": "./dist/types/index.d.ts",
+        "default": "./dist/cjs/td-api.js"
+      },
+      "import": {
+        "types": "./dist/types/index.d.ts",
+        "default": "./dist/esm/td-api.js"
+      },
+      "default": "./dist/esm/td-api.js"
     },
     "./td-utils": {
-      "import": "./dist/esm/td-utils.js",
-      "require": "./dist/commonjs/td-utils.js"
+      "require": {
+        "types": "./dist/types/index.d.ts",
+        "default": "./dist/cjs/td-utils.js"
+      },
+      "import": {
+        "types": "./dist/types/index.d.ts",
+        "default": "./dist/esm/td-utils.js"
+      },
+      "default": "./dist/esm/td-utils.js"
     }
   },
   "scripts": {
-    "build": "rollup --config"
+    "build:rollup": "rollup --config",
+    "build:types": "tsc --declaration --project tsconfig.types.json",
+    "build:esm": "tsc --project tsconfig.esm.json",
+    "build:cjs": "tsc --project tsconfig.cjs.json",
+    "build": "npm run build:types && npm run build:esm && npm run build:cjs && cd dist && prettier . --write"
   },
   "dependencies": {
     "axios": "1.5.0",
@@ -26,6 +45,17 @@
   "devDependencies": {
     "@rollup/plugin-commonjs": "25.0.4",
     "@rollup/plugin-node-resolve": "15.2.1",
-    "rollup": "3.29.0"
-  }  
+    "@types/node": "20.6.0",
+    "prettier": "3.0.3",
+    "rollup": "3.29.0",
+    "typescript": "5.2.2"
+  },
+  "prettier": {
+    "semi": true,
+    "trailingComma": "all",
+    "singleQuote": true,
+    "printWidth": 80,
+    "tabWidth": 2,
+    "arrowParens": "always"
+  }
 }

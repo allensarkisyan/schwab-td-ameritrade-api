@@ -7,12 +7,17 @@
 import axios from 'axios';
 import moment from 'moment';
 
-const jsonToQueryString = (json) => Object.keys(json).map(key => `${encodeURIComponent(key)}=${encodeURIComponent(json[key])}`).join('&');
-const getDistinctArray = (arr, key) => arr.filter((i, idx) => arr.findIndex(x => x[key] === i[key]) === idx);
+const jsonToQueryString = (json: object): string => Object.keys(json).map((key: string) => `${encodeURIComponent(key)}=${encodeURIComponent(json[key])}`).join('&');
+const getDistinctArray = (arr: any[], key: string): any[] => arr.filter((i, idx) => arr.findIndex(x => x[key] === i[key]) === idx);
 
 const apiService = axios.create({ baseURL: 'https://api.tdameritrade.com' });
 
-const dataStore = typeof window !== 'undefined' && window.localStorage ? window.localStorage : {};
+const dataStore: LocalMemoryAuthDataStore = {
+  userAccessToken: '',
+  accessTokenExpires: null,
+  refreshToken: '',
+  refreshTokenExpires: null,
+};
 
 const LIMIT_ORDER_TEMPLATE = {
   orderType: 'LIMIT',
@@ -21,15 +26,44 @@ const LIMIT_ORDER_TEMPLATE = {
   orderStrategyType: 'SINGLE'
 };
 
+export type TickerSymbol = string;
+export type CUSIP = string;
+export type TDAmeritradeAccountID = string;
+
+export type BuyOrder = 'BUY'|'BUY_TO_OPEN'|'BUY_TO_CLOSE'|'BUY_TO_COVER';
+export type SellOrder = 'SELL'|'SELL_TO_OPEN'|'SELL_TO_CLOSE'|'SELL_SHORT';
+
+export type TDAmeritradeOrderLeg = {
+  instruction: BuyOrder|SellOrder;
+  quantity: number;
+  instrument: {
+    symbol: TickerSymbol;
+    assetType: 'EQUITY'|'OPTION';
+  }
+}
+
+export type LocalMemoryAuthDataStore = {
+  userAccessToken?: string,
+  accessTokenExpires?: Date|number|string|null,
+  refreshToken?: string,
+  refreshTokenExpires?: Date|number|string|null,
+};
+
 export class TDAmeritradeAPI {
-  constructor(handleRequest = null) {
+  #externalRequestHandler?: Function | null;
+
+  constructor(handleRequest: Function | null = null) {
     if (handleRequest) {
-      this.#handleRequest = handleRequest;
+      this.#externalRequestHandler = handleRequest;
     }
   }
 
-  #handleRequest = async (config) => {
+  #handleRequest = async (config: object): Promise<any> => {
     try {
+      if (this.#externalRequestHandler) {
+        return await this.#externalRequestHandler(config);
+      }
+
       return (await apiService.request(Object.assign({}, { method: 'GET' }, config))).data;
     } catch (e) {
       return Promise.reject(e);
@@ -37,10 +71,10 @@ export class TDAmeritradeAPI {
   }
 
   setUserAccessToken = (
-    accessToken,
-    isNewToken = false,
-    refreshToken = null,
-    refreshTokenExpiresIn = null,
+    accessToken: string,
+    isNewToken: boolean = false,
+    refreshToken: string|null = null,
+    refreshTokenExpiresIn: Date|number|any = null,
   ) => {
     try {
       if (accessToken) {
@@ -71,7 +105,7 @@ export class TDAmeritradeAPI {
     }
   }
 
-  authenticate = async (code) => {
+  authenticate = async (code: string) => {
     try {
       const authResponse = await this.#handleRequest({
         method: 'POST',
@@ -94,7 +128,7 @@ export class TDAmeritradeAPI {
     }
   };
 
-  refreshAccessToken = async (refresh_token) => {
+  refreshAccessToken = async (refresh_token: string) => {
     try {
       delete apiService.defaults.headers.common.Authorization;
 
@@ -122,7 +156,9 @@ export class TDAmeritradeAPI {
     params: { fields: 'positions,orders' }
   });
 
-  getAccount = async (accountId) => await this.#handleRequest({
+  getAccount = async (
+    accountId: TDAmeritradeAccountID
+  ) => await this.#handleRequest({
     url: `/v1/accounts/${accountId}`,
     params: { fields: 'positions,orders' }
   });
@@ -133,9 +169,9 @@ export class TDAmeritradeAPI {
   });
 
   getTransactions = async (
-    accountId,
-    startDate = null,
-    endDate = null
+    accountId: TDAmeritradeAccountID,
+    startDate: Date|number|null = null,
+    endDate: Date|number|null = null
   ) => await this.#handleRequest({
     url: `/v1/accounts/${accountId}/transactions`,
     params: {
@@ -157,40 +193,40 @@ export class TDAmeritradeAPI {
     }
   });
 
-  getOrders = async (accountId) => await this.#handleRequest({
+  getOrders = async (accountId: TDAmeritradeAccountID) => await this.#handleRequest({
     url: '/v1/orders',
     params: { accountId }
   });
 
-  getQuotes = async (symbol) => await this.#handleRequest({
+  getQuotes = async (symbol: TickerSymbol) => await this.#handleRequest({
     url: '/v1/marketdata/quotes',
     params: { symbol }
   });
 
-  getInstrument = async (cusip) => await this.#handleRequest({
+  getInstrument = async (cusip: CUSIP) => await this.#handleRequest({
     url: `/v1/instruments/${cusip}`
   });
 
-  getFundamentals = async (symbol) => await this.#handleRequest({
+  getFundamentals = async (symbol: TickerSymbol) => await this.#handleRequest({
     url: '/v1/instruments',
     params: { symbol, projection: 'fundamental' }
   });
 
   getMarketDirectionalMover = async (
-    market,
-    direction,
-    change = 'percent'
+    market: string,
+    direction: string,
+    change: string = 'percent'
   ) => await this.#handleRequest({
     url: `/v1/marketdata/${market}/movers`,
     params: { direction, change }
   });
 
   getPriceHistory = async (
-    symbol,
-    days = 5,
-    minutes = 5,
-    extHours = true,
-    endDate = (new Date()).getTime()
+    symbol: TickerSymbol,
+    days: number = 5,
+    minutes: number = 5,
+    extHours: boolean = true,
+    endDate: Date|number = (new Date()).getTime()
   ) => await this.#handleRequest({
     url: `/v1/marketdata/${symbol}/pricehistory`,
     params: {
@@ -203,7 +239,11 @@ export class TDAmeritradeAPI {
     }
   });
 
-  getDailyPriceHistory = async (symbol, years = 10, days = 1) => await this.#handleRequest({
+  getDailyPriceHistory = async (
+    symbol: TickerSymbol,
+    years: number = 10,
+    days: number = 1,
+  ) => await this.#handleRequest({
     url: `/v1/marketdata/${symbol}/pricehistory`,
     params: {
       periodType: 'year',
@@ -214,7 +254,10 @@ export class TDAmeritradeAPI {
     }
   });
 
-  getWeeklyPriceHistory = async (symbol, years = 20) => await this.#handleRequest({
+  getWeeklyPriceHistory = async (
+    symbol: TickerSymbol,
+    years: number = 20
+  ) => await this.#handleRequest({
     url: `/v1/marketdata/${symbol}/pricehistory`,
     params: {
       periodType: 'year',
@@ -226,10 +269,10 @@ export class TDAmeritradeAPI {
   });
 
   getPeriodicPriceHistory = async (
-    symbol,
-    startDate,
-    endDate = (new Date()).getTime(),
-    extHours = true
+    symbol: TickerSymbol,
+    startDate: Date|number,
+    endDate: Date|number = (new Date()).getTime(),
+    extHours: boolean = true,
   ) => await this.#handleRequest({
     url: `/v1/marketdata/${symbol}/pricehistory`,
     params: {
@@ -251,8 +294,8 @@ export class TDAmeritradeAPI {
       ];
 
       const marketMovers = await Promise.all(MARKETS.map(async i => {
-        const up = await getMarketDirectionalMover(i, 'up');
-        const down = await getMarketDirectionalMover(i, 'down');
+        const up = await this.getMarketDirectionalMover(i, 'up');
+        const down = await this.getMarketDirectionalMover(i, 'down');
         return { [i]: { up, down } };
       }));
 
@@ -273,7 +316,9 @@ export class TDAmeritradeAPI {
     }
   };
 
-  getOptionChain = async (symbol) => await this.#handleRequest({
+  getOptionChain = async (
+    symbol: TickerSymbol
+  ) => await this.#handleRequest({
     url: '/v1/marketdata/chains',
     params: {
       symbol,
@@ -299,20 +344,25 @@ export class TDAmeritradeAPI {
     }
   });
 
-  getWatchlists = async (accountId) => await this.#handleRequest({
+  getWatchlists = async (
+    accountId: TDAmeritradeAccountID
+  ) => await this.#handleRequest({
     url: `/v1/accounts/${accountId}/watchlists`
   });
 
-  getWatchlist = async (accountId, watchlistId) => await this.#handleRequest({
+  getWatchlist = async (
+    accountId: TDAmeritradeAccountID,
+    watchlistId: string,
+  ) => await this.#handleRequest({
     url: `/v1/accounts/${accountId}/watchlists/${watchlistId}`
   });
 
   // TRADING
   placeOrder = async (
-    accountId,
-    price,
-    orderLegCollection
-  ) => await this.#handleRequest({
+    accountId: TDAmeritradeAccountID,
+    price: number,
+    orderLegCollection: TDAmeritradeOrderLeg[]
+  ): Promise<{ success: boolean, orderId: string }> => await this.#handleRequest({
     method: 'POST',
     url: `/v1/accounts/${accountId}/orders`,
     data: {
@@ -322,22 +372,28 @@ export class TDAmeritradeAPI {
     }
   });
 
-  cancelOrder = async (accountId, orderId) => await this.#handleRequest({
+  cancelOrder = async (
+    accountId: TDAmeritradeAccountID,
+    orderId: string
+  ): Promise<{ success: boolean }> => await this.#handleRequest({
     method: 'DELETE',
     url: `/v1/accounts/${accountId}/orders/${orderId}`
   });
 
   openOrder = async (
-    accountId,
-    symbol,
-    quantity = 1,
-    price,
-    isOption = false,
-    isShort = false
+    accountId: TDAmeritradeAccountID,
+    symbol: TickerSymbol,
+    quantity: number = 1,
+    price: number,
+    isOption: boolean = false,
+    isShort: boolean = false
   ) => await this.placeOrder(accountId, price, [
     {
       quantity,
-      instrument: { symbol, assetType: (isOption ? 'OPTION' : 'EQUITY') },
+      instrument: {
+        symbol,
+        assetType: (isOption ? 'OPTION' : 'EQUITY')
+      },
       instruction: (
         !isShort
           ? (isOption ? 'BUY_TO_OPEN' : 'BUY')
@@ -347,16 +403,19 @@ export class TDAmeritradeAPI {
   ]);
 
   closeOrder = async (
-    accountId,
-    symbol,
-    quantity = 1,
-    price,
-    isOption = false,
-    isShort = false
+    accountId: TDAmeritradeAccountID,
+    symbol: TickerSymbol,
+    quantity: number = 1,
+    price: number,
+    isOption: boolean = false,
+    isShort: boolean = false
   ) => await this.placeOrder(accountId, price, [
     {
       quantity,
-      instrument: { symbol, assetType: (isOption ? 'OPTION' : 'EQUITY') },
+      instrument: {
+        symbol,
+        assetType: (isOption ? 'OPTION' : 'EQUITY')
+      },
       instruction: (
         !isShort
           ? (isOption ? 'SELL_TO_CLOSE' : 'SELL')
@@ -367,10 +426,10 @@ export class TDAmeritradeAPI {
 
   // complexOrderStrategyType: 'NONE'
   buyStock = async (
-    accountId,
-    symbol,
-    quantity = 1,
-    price
+    accountId: TDAmeritradeAccountID,
+    symbol: TickerSymbol,
+    quantity: number = 1,
+    price: number
   ) => await this.openOrder(
     accountId,
     symbol,
@@ -381,10 +440,10 @@ export class TDAmeritradeAPI {
   );
 
   sellStock = async (
-    accountId,
-    symbol,
-    quantity = 1,
-    price
+    accountId: TDAmeritradeAccountID,
+    symbol: TickerSymbol,
+    quantity: number = 1,
+    price: number
   ) => await this.closeOrder(
     accountId,
     symbol,
@@ -395,10 +454,10 @@ export class TDAmeritradeAPI {
   );
 
   shortStock = async (
-    accountId,
-    symbol,
-    quantity = 1,
-    price
+    accountId: TDAmeritradeAccountID,
+    symbol: TickerSymbol,
+    quantity: number = 1,
+    price: number
   ) => await this.openOrder(
     accountId,
     symbol,
@@ -409,10 +468,10 @@ export class TDAmeritradeAPI {
   );
 
   coverStock = async (
-    accountId,
-    symbol,
-    quantity = 1,
-    price
+    accountId: TDAmeritradeAccountID,
+    symbol: TickerSymbol,
+    quantity: number = 1,
+    price: number
   ) => await this.closeOrder(
     accountId,
     symbol,
@@ -423,10 +482,10 @@ export class TDAmeritradeAPI {
   );
 
   buyOption = async (
-    accountId,
-    symbol,
-    quantity = 1,
-    price
+    accountId: TDAmeritradeAccountID,
+    symbol: TickerSymbol,
+    quantity: number = 1,
+    price: number
   ) => await this.openOrder(
     accountId,
     symbol,
@@ -437,10 +496,10 @@ export class TDAmeritradeAPI {
   );
 
   sellOption = async (
-    accountId,
-    symbol,
-    quantity = 1,
-    price
+    accountId: TDAmeritradeAccountID,
+    symbol: TickerSymbol,
+    quantity: number = 1,
+    price: number
   ) => await this.closeOrder(
     accountId,
     symbol,
@@ -451,10 +510,10 @@ export class TDAmeritradeAPI {
   );
 
   writeOption = async (
-    accountId,
-    symbol,
-    quantity = 1,
-    price
+    accountId: TDAmeritradeAccountID,
+    symbol: TickerSymbol,
+    quantity: number = 1,
+    price: number
   ) => await this.openOrder(
     accountId,
     symbol,
@@ -465,10 +524,10 @@ export class TDAmeritradeAPI {
   );
 
   closeOption = async (
-    accountId,
-    symbol,
-    quantity = 1,
-    price
+    accountId: TDAmeritradeAccountID,
+    symbol: TickerSymbol,
+    quantity: number = 1,
+    price: number
   ) => await this.closeOrder(
     accountId,
     symbol,
