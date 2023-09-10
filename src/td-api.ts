@@ -13,6 +13,10 @@ import type {
   TDAmeritradeAccountID,
   TDAmeritradeOrderLeg,
   LocalMemoryAuthDataStore,
+  QuoteData,
+  FundamentalData,
+  PriceHistory,
+  InstrumentData,
 } from './@types/index.js';
 
 const jsonToQueryString = (json: object): string => Object.keys(json).map((key: string) => `${encodeURIComponent(key)}=${encodeURIComponent(json[key])}`).join('&');
@@ -60,7 +64,7 @@ export class TDAmeritradeAPI {
     isNewToken: boolean = false,
     refreshToken: string|null = null,
     refreshTokenExpiresIn: Date|number|any = null,
-  ) => {
+  ): void => {
     try {
       if (accessToken) {
         const now = moment((new Date()).toJSON());
@@ -183,16 +187,16 @@ export class TDAmeritradeAPI {
     params: { accountId }
   });
 
-  getQuotes = async (symbol: TickerSymbol) => await this.#handleRequest({
+  getQuotes = async (symbol: TickerSymbol): Promise<Record<string, QuoteData>> => await this.#handleRequest({
     url: '/v1/marketdata/quotes',
     params: { symbol }
   });
 
-  getInstrument = async (cusip: CUSIP) => await this.#handleRequest({
+  getInstrument = async (cusip: CUSIP): Promise<InstrumentData[]> => await this.#handleRequest({
     url: `/v1/instruments/${cusip}`
   });
 
-  getFundamentals = async (symbol: TickerSymbol) => await this.#handleRequest({
+  getFundamentals = async (symbol: TickerSymbol): Promise<Record<string, FundamentalData>> => await this.#handleRequest({
     url: '/v1/instruments',
     params: { symbol, projection: 'fundamental' }
   });
@@ -212,7 +216,7 @@ export class TDAmeritradeAPI {
     minutes: number = 5,
     extHours: boolean = true,
     endDate: Date|number = (new Date()).getTime()
-  ) => await this.#handleRequest({
+  ): Promise<PriceHistory> => await this.#handleRequest({
     url: `/v1/marketdata/${symbol}/pricehistory`,
     params: {
       periodType: 'day',
@@ -228,7 +232,7 @@ export class TDAmeritradeAPI {
     symbol: TickerSymbol,
     years: number = 10,
     days: number = 1,
-  ) => await this.#handleRequest({
+  ): Promise<PriceHistory> => await this.#handleRequest({
     url: `/v1/marketdata/${symbol}/pricehistory`,
     params: {
       periodType: 'year',
@@ -242,7 +246,7 @@ export class TDAmeritradeAPI {
   getWeeklyPriceHistory = async (
     symbol: TickerSymbol,
     years: number = 20
-  ) => await this.#handleRequest({
+  ): Promise<PriceHistory> => await this.#handleRequest({
     url: `/v1/marketdata/${symbol}/pricehistory`,
     params: {
       periodType: 'year',
@@ -258,7 +262,7 @@ export class TDAmeritradeAPI {
     startDate: Date|number,
     endDate: Date|number = (new Date()).getTime(),
     extHours: boolean = true,
-  ) => await this.#handleRequest({
+  ): Promise<PriceHistory> => await this.#handleRequest({
     url: `/v1/marketdata/${symbol}/pricehistory`,
     params: {
       periodType: 'day',
