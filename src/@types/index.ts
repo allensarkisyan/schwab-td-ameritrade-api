@@ -28,6 +28,20 @@ export type OrderDesciption =
 
 export type AssetType = 'EQUITY' | 'OPTION';
 
+export type AcceptedOrRejected = 'ACCEPTED' | 'REJECTED';
+
+export type GetTransactionsType = 
+  | 'ALL'
+  | 'TRADE'
+  | 'BUY_ONLY'
+  | 'SELL_ONLY'
+  | 'CASH_IN_OR_CASH_OUT'
+  | 'CHECKING'
+  | 'DIVIDEND'
+  | 'INTEREST'
+  | 'ADVISOR_FEES'
+  | 'OTHER'
+
 export type TDAmeritradeOrderLeg = {
   instruction: BuyOrder | SellOrder;
   quantity: number;
@@ -68,11 +82,11 @@ export type TradeTransaction = {
  * @property {AssetType} assetType - The asset type, such as "EQUITY".
  */
 export type InstrumentData = {
-  cusip: CUSIP;
   symbol: TickerSymbol;
-  description: string;
-  exchange: string;
+  cusip: CUSIP;
   assetType: AssetType;
+  description?: string;
+  exchange?: string;
 };
 
 /**
@@ -674,7 +688,6 @@ export type CurrentBalances = {
   bondValue: number;
 };
 
-
 /**
  * Represents an account's financial summary.
  * @typedef {Object} InitialBalances
@@ -746,7 +759,6 @@ export type InitialBalances = {
   accountValue: number;
 };
 
-
 /**
  * Represents account-related data.
  * @typedef {Object} ProjectedBalances
@@ -773,19 +785,6 @@ export type ProjectedBalances = {
 };
 
 /**
- * Represents data related to a financial instrument.
- * @typedef {Object} PositionInstrumentData
- * @property {string} assetType - The type of asset (e.g., "EQUITY").
- * @property {string} cusip - The CUSIP of the instrument.
- * @property {string} symbol - The symbol of the instrument.
- */
-export type PositionInstrumentData = {
-  assetType: string;
-  cusip: string;
-  symbol: string;
-};
-
-/**
  * Represents data related to a trading position.
  * @typedef {Object} PositionData
  * @property {number} shortQuantity - The quantity of short positions.
@@ -796,7 +795,7 @@ export type PositionInstrumentData = {
  * @property {number} longQuantity - The quantity of long positions.
  * @property {number} settledLongQuantity - The settled quantity of long positions.
  * @property {number} settledShortQuantity - The settled quantity of short positions.
- * @property {PositionInstrumentData} instrument - Information about the financial instrument.
+ * @property {InstrumentData} instrument - Information about the financial instrument.
  * @property {number} marketValue - The market value of the positions.
  * @property {number} maintenanceRequirement - The maintenance requirement.
  * @property {number} previousSessionLongQuantity - The quantity of long positions from the previous session.
@@ -810,7 +809,7 @@ export type PositionData = {
   longQuantity: number;
   settledLongQuantity: number;
   settledShortQuantity: number;
-  instrument: PositionInstrumentData;
+  instrument: InstrumentData;
   marketValue: number;
   maintenanceRequirement: number;
   previousSessionLongQuantity: number;
@@ -884,7 +883,7 @@ export type StreamerSubscriptionKeys = {
  * @property {string} streamerBinaryUrl - The binary URL of the streamer.
  * @property {string} streamerSocketUrl - The socket URL of the streamer.
  * @property {string} token - The token for authentication.
- * @property {Date} tokenTimestamp - The timestamp of the token.
+ * @property {DateLikeNullable} tokenTimestamp - The timestamp of the token.
  * @property {string} userGroup - The user group of the streamer.
  */
 export type StreamerInfo = {
@@ -894,7 +893,7 @@ export type StreamerInfo = {
   streamerBinaryUrl: string;
   streamerSocketUrl: string;
   token: string;
-  tokenTimestamp: Date;
+  tokenTimestamp: DateLikeNullable;
   userGroup: string;
 }
 
@@ -903,15 +902,15 @@ export type StreamerInfo = {
  * @typedef {Object} UserPrincipalsData
  * @property {string} accessLevel - The access level of the principal.
  * @property {Object} exchangeAgreements - Exchange agreements status.
- * @property {'ACCEPTED' | 'REJECTED'} exchangeAgreements.NASDAQ_EXCHANGE_AGREEMENT - NASDAQ exchange agreement status.
- * @property {'ACCEPTED' | 'REJECTED'} exchangeAgreements.NYSE_EXCHANGE_AGREEMENT - NYSE exchange agreement status.
- * @property {'ACCEPTED' | 'REJECTED'} exchangeAgreements.OPRA_EXCHANGE_AGREEMENT - OPRA exchange agreement status.
- * @property {Date | string | number | null} lastLoginTime - The timestamp of the last login time.
- * @property {Date | string | number | null} loginTime - The timestamp of the login time.
+ * @property {AcceptedOrRejected} exchangeAgreements.NASDAQ_EXCHANGE_AGREEMENT - NASDAQ exchange agreement status.
+ * @property {AcceptedOrRejected} exchangeAgreements.NYSE_EXCHANGE_AGREEMENT - NYSE exchange agreement status.
+ * @property {AcceptedOrRejected} exchangeAgreements.OPRA_EXCHANGE_AGREEMENT - OPRA exchange agreement status.
+ * @property {DateLikeNullable} lastLoginTime - The timestamp of the last login time.
+ * @property {DateLikeNullable} loginTime - The timestamp of the login time.
  * @property {TDAmeritradeAccountID} primaryAccountId - The primary account ID.
  * @property {'PROFESSIONAL' | 'NON_PROFESSIONAL'} professionaStatus - The professional status.
  * @property {boolean} stalePassword - Indicates if the password is stale.
- * @property {Date | string | number | null} tokenExpirationTime - The timestamp of the token expiration time.
+ * @property {DateLikeNullable} tokenExpirationTime - The timestamp of the token expiration time.
  * @property {string} userCdDomainId - The user's CD domain ID.
  * @property {string} userId - The user ID.
  * @property {StreamerSubscriptionKeys[]} streamerSubscriptionKeys - An array of streamer subscription keys.
@@ -921,19 +920,94 @@ export type StreamerInfo = {
 export type UserPrincipalsData = {
   accessLevel: string;
   exchangeAgreements: {
-    NASDAQ_EXCHANGE_AGREEMENT: 'ACCEPTED' | 'REJECTED';
-    NYSE_EXCHANGE_AGREEMENT: 'ACCEPTED' | 'REJECTED';
-    OPRA_EXCHANGE_AGREEMENT: 'ACCEPTED' | 'REJECTED';
+    NASDAQ_EXCHANGE_AGREEMENT: AcceptedOrRejected;
+    NYSE_EXCHANGE_AGREEMENT: AcceptedOrRejected;
+    OPRA_EXCHANGE_AGREEMENT: AcceptedOrRejected;
   };
-  lastLoginTime: Date | string | number | null;
-  loginTime: Date | string | number | null;
+  lastLoginTime: DateLikeNullable;
+  loginTime: DateLikeNullable;
   primaryAccountId: TDAmeritradeAccountID;
   professionaStatus: 'PROFESSIONAL' | 'NON_PROFESSIONAL';
   stalePassword: boolean;
-  tokenExpirationTime: Date | string | number | null;
+  tokenExpirationTime: DateLikeNullable;
   userCdDomainId: string;
   userId: string;
   streamerSubscriptionKeys: StreamerSubscriptionKeys[];
   quotes: ExchangeDelayStatus;
   streamerInfo: StreamerInfo;
 }
+
+/**
+ * Represents fees associated with a trade transaction.
+ * @typedef {Object} TradeTransactionFees
+ * @property {number} rFee - The R fee.
+ * @property {number} additionalFee - Additional fees.
+ * @property {number} cdscFee - CDSC (Contingent Deferred Sales Charge) fee.
+ * @property {number} regFee - Registration fee.
+ * @property {number} otherCharges - Other charges.
+ * @property {number} commission - Commission fee.
+ * @property {number} optRegFee - Options registration fee.
+ * @property {number} secFee - SEC (U.S. Securities and Exchange Commission) fee.
+ */
+export type TradeTransactionFees = {
+  rFee: number;
+  additionalFee: number;
+  cdscFee: number;
+  regFee: number;
+  otherCharges: number;
+  commission: number;
+  optRegFee: number;
+  secFee: number;
+};
+
+/**
+ * Represents a trade transaction item.
+ * @typedef {Object} TradeTransactionItem
+ * @property {TDAmeritradeAccountID} accountId - The ID of the account associated with the transaction item.
+ * @property {number} amount - The amount of the transaction item.
+ * @property {number} price - The price of the transaction item.
+ * @property {number} cost - The cost associated with the transaction item.
+ * @property {BuyOrder | SellOrder} instruction - The instruction for the transaction item (e.g., "BUY").
+ * @property {InstrumentData} instrument - Information about the instrument involved in the transaction item.
+ */
+export type TradeTransactionItem = {
+  accountId: TDAmeritradeAccountID;
+  amount: number;
+  price: number;
+  cost: number;
+  instruction: BuyOrder | SellOrder;
+  instrument: InstrumentData;
+};
+
+/**
+ * Represents a trade transaction.
+ * @typedef {Object} TransactionsData
+ * @property {string} type - The type of transaction (e.g., "TRADE").
+ * @property {string} subAccount - The sub-account associated with the transaction.
+ * @property {DateLikeNullable} settlementDate - The settlement date of the transaction (e.g., "2022-09-14").
+ * @property {string} orderId - The ID of the order associated with the transaction.
+ * @property {number} netAmount - The net amount of the transaction.
+ * @property {DateLikeNullable} transactionDate - The date and time of the transaction in ISO 8601 format.
+ * @property {DateLikeNullable} orderDate - The date and time when the order was placed in ISO 8601 format.
+ * @property {string} transactionSubType - The sub-type of the transaction (e.g., "BY").
+ * @property {number} transactionId - The unique ID of the transaction.
+ * @property {boolean} cashBalanceEffectFlag - Indicates whether the transaction affects the cash balance.
+ * @property {string} description - A description of the transaction.
+ * @property {TradeTransactionFees} fees - Object containing various fee information related to the transaction.
+ * @property {TradeTransactionItem} transactionItem - Detailed information about the transaction item.
+ */
+export type TransactionsData = {
+  type: string;
+  subAccount: string;
+  settlementDate: DateLikeNullable;
+  orderId: string;
+  netAmount: number;
+  transactionDate: DateLikeNullable;
+  orderDate: DateLikeNullable;
+  transactionSubType: string;
+  transactionId: number;
+  cashBalanceEffectFlag: boolean;
+  description: string;
+  fees: TradeTransactionFees;
+  transactionItem: TradeTransactionItem;
+};
