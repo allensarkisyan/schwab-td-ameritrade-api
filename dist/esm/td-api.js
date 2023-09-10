@@ -114,16 +114,29 @@ export class TDAmeritradeAPI {
       return null;
     }
   };
+  /**
+   * Get Accounts
+   * @returns {Promise<TDAmeritradeAccounts>}
+   */
   getAccounts = async () =>
     await this.#handleRequest({
       url: '/v1/accounts',
       params: { fields: 'positions,orders' },
     });
+  /**
+   * Get Account
+   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
+   * @returns {Promise<TDAmeritradeAccount>}
+   */
   getAccount = async (accountId) =>
     await this.#handleRequest({
       url: `/v1/accounts/${accountId}`,
       params: { fields: 'positions,orders' },
     });
+  /**
+   * Get User Principals Data - for use with `schwab-td-ameritrade-streamer`
+   * @returns {Promise<UserPrincipalsData>}
+   */
   getUserPrincipals = async () =>
     await this.#handleRequest({
       url: '/v1/userprincipals',
@@ -132,23 +145,24 @@ export class TDAmeritradeAPI {
           'streamerSubscriptionKeys,streamerConnectionInfo,preferences,surrogateIds',
       },
     });
-  getTransactions = async (accountId, startDate = null, endDate = null) =>
+  /**
+   * Get Transactions
+   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
+   * @param {GetTransactionsType} transactionsType - Transactions Type - Default 'TRADE'
+   * @param {DateLikeNullable} startDate - Start Date
+   * @param {DateLikeNullable} endDate - End Date
+   * @returns {Promise<TransactionsData>}
+   */
+  getTransactions = async (
+    accountId,
+    transactionsType = 'TRADE',
+    startDate = null,
+    endDate = null,
+  ) =>
     await this.#handleRequest({
       url: `/v1/accounts/${accountId}/transactions`,
       params: {
-        /*
-            ALL: All
-            TRADE: Trades
-            BUY_ONLY: Buy Only
-            SELL_ONLY: Sell Only
-            CASH_IN_OR_CASH_OUT: Cash in or Cash out
-            CHECKING: Checking
-            DIVIDEND: Dividend
-            INTEREST: Interest
-            ADVISOR_FEES: Advisor Fees
-            OTHER: Other
-            */
-        type: 'TRADE',
+        type: transactionsType,
         startDate,
         endDate,
       },
@@ -158,15 +172,30 @@ export class TDAmeritradeAPI {
       url: '/v1/orders',
       params: { accountId },
     });
+  /**
+   * Get Quote Data for Ticker Symbol(s)
+   * @param {TickerSymbol} symbol - Ticker Symbol
+   * @returns {Promise<Record<string, QuoteData>>}
+   */
   getQuotes = async (symbol) =>
     await this.#handleRequest({
       url: '/v1/marketdata/quotes',
       params: { symbol },
     });
+  /**
+   * Get Instrument Data for CUSIP
+   * @param {CUSIP} cusip - CUSIP
+   * @returns {Promise<InstrumentData[]>}
+   */
   getInstrument = async (cusip) =>
     await this.#handleRequest({
       url: `/v1/instruments/${cusip}`,
     });
+  /**
+   * Get Fundamental Data for Ticker Symbol
+   * @param {TickerSymbol} symbol - Ticker Symbol
+   * @returns {Promise<Record<string, FundamentalData>>}
+   */
   getFundamentals = async (symbol) =>
     await this.#handleRequest({
       url: '/v1/instruments',
@@ -177,6 +206,15 @@ export class TDAmeritradeAPI {
       url: `/v1/marketdata/${market}/movers`,
       params: { direction, change },
     });
+  /**
+   * Get Intraday Price History for Ticker Symbol
+   * @param {TickerSymbol} symbol - Ticker Symbol
+   * @param {number} days - Number of Days
+   * @param {number} minutes - Minutes
+   * @param {boolean} extHours - Extended Hours Data
+   * @param {Date|number} endDate - End Date
+   * @returns {Promise<PriceHistory>}
+   */
   getPriceHistory = async (
     symbol,
     days = 5,
@@ -195,6 +233,13 @@ export class TDAmeritradeAPI {
         endDate,
       },
     });
+  /**
+   * Get Daily Price History for Ticker Symbol
+   * @param {TickerSymbol} symbol - Ticker Symbol
+   * @param {number} years - Number of Years
+   * @param {number} days - Number of Days
+   * @returns {Promise<PriceHistory>}
+   */
   getDailyPriceHistory = async (symbol, years = 10, days = 1) =>
     await this.#handleRequest({
       url: `/v1/marketdata/${symbol}/pricehistory`,
@@ -206,6 +251,12 @@ export class TDAmeritradeAPI {
         needExtendedHoursData: false,
       },
     });
+  /**
+   * Get Weekly Price History for Ticker Symbol
+   * @param {TickerSymbol} symbol - Ticker Symbol
+   * @param {number} years - Number of Years
+   * @returns {Promise<PriceHistory>}
+   */
   getWeeklyPriceHistory = async (symbol, years = 20) =>
     await this.#handleRequest({
       url: `/v1/marketdata/${symbol}/pricehistory`,
@@ -217,6 +268,14 @@ export class TDAmeritradeAPI {
         needExtendedHoursData: false,
       },
     });
+  /**
+   * Get Periodic Price History for Ticker Symbol
+   * @param {TickerSymbol} symbol - Ticker Symbol
+   * @param {DateLikeNullable} startDate - Start Date
+   * @param {DateLikeNullable} endDate - End Date
+   * @param {boolean} extHours - Extended Hours Data
+   * @returns {Promise<PriceHistory>}
+   */
   getPeriodicPriceHistory = async (
     symbol,
     startDate,
@@ -258,7 +317,14 @@ export class TDAmeritradeAPI {
       return null;
     }
   };
-  getOptionChain = async (symbol) =>
+  /**
+   *
+   * @param {TickerSymbol} symbol - Ticker Symbol
+   * @param {OptionContractRange} range - Option Contract Range - (ITM, OTM, NTM, etc..)
+   * @param {OptionContractType} optionType - Option Contract Type - (Standard, Non Standard, All)
+   * @returns {Promise<OptionChainData>}
+   */
+  getOptionChain = async (symbol, range = 'ALL', optionType = 'S') =>
     await this.#handleRequest({
       url: '/v1/marketdata/chains',
       params: {
@@ -266,33 +332,36 @@ export class TDAmeritradeAPI {
         includeQuotes: 'TRUE',
         strategy: 'SINGLE',
         contractType: 'ALL',
-        /*
-            ITM: In-the-money
-            NTM: Near-the-money
-            OTM: Out-of-the-money
-            SAK: Strikes Above Market
-            SBK: Strikes Below Market
-            SNK: Strikes Near Market
-            ALL: All Strikes
-            */
-        range: 'ALL',
-        /*
-            S: Standard contracts
-            NS: Non-standard contracts
-            ALL: All contracts
-            */
-        optionType: 'S',
+        range,
+        optionType,
       },
     });
+  /**
+   * Get Watchlists
+   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
+   * @returns {Promise<Watchlists>}
+   */
   getWatchlists = async (accountId) =>
     await this.#handleRequest({
       url: `/v1/accounts/${accountId}/watchlists`,
     });
+  /**
+   * Get Watchlist by ID
+   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
+   * @returns {Promise<Watchlist>}
+   */
   getWatchlist = async (accountId, watchlistId) =>
     await this.#handleRequest({
       url: `/v1/accounts/${accountId}/watchlists/${watchlistId}`,
     });
   // TRADING
+  /**
+   * Place an Order
+   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
+   * @param {number} price - Price
+   * @param {TDAmeritradeOrderLeg[]} orderLegCollection - Order Leg Collection
+   * @returns {Promise<any>}
+   */
   placeOrder = async (accountId, price, orderLegCollection) =>
     await this.#handleRequest({
       method: 'POST',
@@ -303,11 +372,27 @@ export class TDAmeritradeAPI {
         orderLegCollection,
       },
     });
+  /**
+   * Cancel an Order
+   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
+   * @param {string} orderId - Order ID
+   * @returns {Promise<any>}
+   */
   cancelOrder = async (accountId, orderId) =>
     await this.#handleRequest({
       method: 'DELETE',
       url: `/v1/accounts/${accountId}/orders/${orderId}`,
     });
+  /**
+   * Opening Order
+   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
+   * @param {TickerSymbol} symbol - Ticker Symbol
+   * @param {number} quantity - Quantity of Shares / Option Contracts
+   * @param {number} price - Price
+   * @param {boolean} isOption - Is Option Order
+   * @param {boolean} isShort - Is Short Position
+   * @returns {Promise<any>}
+   */
   openOrder = async (
     accountId,
     symbol,
@@ -332,6 +417,16 @@ export class TDAmeritradeAPI {
           : 'SELL_SHORT',
       },
     ]);
+  /**
+   * Closing Order
+   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
+   * @param {TickerSymbol} symbol - Ticker Symbol
+   * @param {number} quantity - Quantity of Shares / Option Contracts
+   * @param {number} price - Price
+   * @param {boolean} isOption - Is Option Order
+   * @param {boolean} isShort - Is Short Position
+   * @returns {Promise<any>}
+   */
   closeOrder = async (
     accountId,
     symbol,
@@ -356,21 +451,84 @@ export class TDAmeritradeAPI {
           : 'BUY_TO_COVER',
       },
     ]);
-  // complexOrderStrategyType: 'NONE'
+  /**
+   * Buy Equtity / Stock Convenience Method
+   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
+   * @param {TickerSymbol} symbol - Ticker Symbol
+   * @param {number} quantity - Quantity of Shares / Option Contracts
+   * @param {number} price - Price
+   * @returns {Promise<any>}
+   */
   buyStock = async (accountId, symbol, quantity = 1, price) =>
     await this.openOrder(accountId, symbol, quantity, price, false, false);
+  /**
+   * Sell Equtity / Stock Convenience Method
+   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
+   * @param {TickerSymbol} symbol - Ticker Symbol
+   * @param {number} quantity - Quantity of Shares / Option Contracts
+   * @param {number} price - Price
+   * @returns {Promise<any>}
+   */
   sellStock = async (accountId, symbol, quantity = 1, price) =>
     await this.closeOrder(accountId, symbol, quantity, price, false, false);
+  /**
+   * Short Equtity / Stock Convenience Method
+   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
+   * @param {TickerSymbol} symbol - Ticker Symbol
+   * @param {number} quantity - Quantity of Shares / Option Contracts
+   * @param {number} price - Price
+   * @returns {Promise<any>}
+   */
   shortStock = async (accountId, symbol, quantity = 1, price) =>
     await this.openOrder(accountId, symbol, quantity, price, false, true);
+  /**
+   * Cover Short Equtity / Stock Convenience Method
+   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
+   * @param {TickerSymbol} symbol - Ticker Symbol
+   * @param {number} quantity - Quantity of Shares / Option Contracts
+   * @param {number} price - Price
+   * @returns {Promise<any>}
+   */
   coverStock = async (accountId, symbol, quantity = 1, price) =>
     await this.closeOrder(accountId, symbol, quantity, price, false, true);
+  /**
+   * Buy Option Convenience Method
+   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
+   * @param {TickerSymbol} symbol - Ticker Symbol
+   * @param {number} quantity - Quantity of Shares / Option Contracts
+   * @param {number} price - Price
+   * @returns {Promise<any>}
+   */
   buyOption = async (accountId, symbol, quantity = 1, price) =>
     await this.openOrder(accountId, symbol, quantity, price, true, false);
+  /**
+   * Sell Option Convenience Method
+   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
+   * @param {TickerSymbol} symbol - Ticker Symbol
+   * @param {number} quantity - Quantity of Shares / Option Contracts
+   * @param {number} price - Price
+   * @returns {Promise<any>}
+   */
   sellOption = async (accountId, symbol, quantity = 1, price) =>
     await this.closeOrder(accountId, symbol, quantity, price, true, false);
+  /**
+   * Write Option Convenience Method
+   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
+   * @param {TickerSymbol} symbol - Ticker Symbol
+   * @param {number} quantity - Quantity of Shares / Option Contracts
+   * @param {number} price - Price
+   * @returns {Promise<any>}
+   */
   writeOption = async (accountId, symbol, quantity = 1, price) =>
     await this.openOrder(accountId, symbol, quantity, price, true, true);
+  /**
+   * Close Option Convenience Method
+   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
+   * @param {TickerSymbol} symbol - Ticker Symbol
+   * @param {number} quantity - Quantity of Shares / Option Contracts
+   * @param {number} price - Price
+   * @returns {Promise<any>}
+   */
   closeOption = async (accountId, symbol, quantity = 1, price) =>
     await this.closeOrder(accountId, symbol, quantity, price, true, true);
 }
