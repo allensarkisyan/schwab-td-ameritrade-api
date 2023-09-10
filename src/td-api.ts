@@ -7,6 +7,14 @@
 import axios from 'axios';
 import moment from 'moment';
 
+import type {
+  TickerSymbol,
+  CUSIP,
+  TDAmeritradeAccountID,
+  TDAmeritradeOrderLeg,
+  LocalMemoryAuthDataStore,
+} from './@types/index.js';
+
 const jsonToQueryString = (json: object): string => Object.keys(json).map((key: string) => `${encodeURIComponent(key)}=${encodeURIComponent(json[key])}`).join('&');
 const getDistinctArray = (arr: any[], key: string): any[] => arr.filter((i, idx) => arr.findIndex(x => x[key] === i[key]) === idx);
 
@@ -24,29 +32,6 @@ const LIMIT_ORDER_TEMPLATE = {
   session: 'NORMAL',
   duration: 'GOOD_TILL_CANCEL',
   orderStrategyType: 'SINGLE'
-};
-
-export type TickerSymbol = string;
-export type CUSIP = string;
-export type TDAmeritradeAccountID = string;
-
-export type BuyOrder = 'BUY'|'BUY_TO_OPEN'|'BUY_TO_CLOSE'|'BUY_TO_COVER';
-export type SellOrder = 'SELL'|'SELL_TO_OPEN'|'SELL_TO_CLOSE'|'SELL_SHORT';
-
-export type TDAmeritradeOrderLeg = {
-  instruction: BuyOrder|SellOrder;
-  quantity: number;
-  instrument: {
-    symbol: TickerSymbol;
-    assetType: 'EQUITY'|'OPTION';
-  }
-}
-
-export type LocalMemoryAuthDataStore = {
-  userAccessToken?: string,
-  accessTokenExpires?: Date|number|string|null,
-  refreshToken?: string,
-  refreshTokenExpires?: Date|number|string|null,
 };
 
 export class TDAmeritradeAPI {

@@ -1,17 +1,27 @@
+'use strict';
 /**
  * @author Allen Sarkisyan
  * @copyright 2019 - 2023 XT-TX
  * @license MIT Open Source License
  */
-import axios from 'axios';
-import moment from 'moment';
+var __importDefault =
+  (this && this.__importDefault) ||
+  function (mod) {
+    return mod && mod.__esModule ? mod : { default: mod };
+  };
+Object.defineProperty(exports, '__esModule', { value: true });
+exports.TDAmeritradeAPI = void 0;
+const axios_1 = __importDefault(require('axios'));
+const moment_1 = __importDefault(require('moment'));
 const jsonToQueryString = (json) =>
   Object.keys(json)
     .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(json[key])}`)
     .join('&');
 const getDistinctArray = (arr, key) =>
   arr.filter((i, idx) => arr.findIndex((x) => x[key] === i[key]) === idx);
-const apiService = axios.create({ baseURL: 'https://api.tdameritrade.com' });
+const apiService = axios_1.default.create({
+  baseURL: 'https://api.tdameritrade.com',
+});
 const dataStore = {
   userAccessToken: '',
   accessTokenExpires: null,
@@ -24,7 +34,7 @@ const LIMIT_ORDER_TEMPLATE = {
   duration: 'GOOD_TILL_CANCEL',
   orderStrategyType: 'SINGLE',
 };
-export class TDAmeritradeAPI {
+class TDAmeritradeAPI {
   #externalRequestHandler;
   constructor(handleRequest = null) {
     if (handleRequest) {
@@ -51,7 +61,7 @@ export class TDAmeritradeAPI {
   ) => {
     try {
       if (accessToken) {
-        const now = moment(new Date().toJSON());
+        const now = (0, moment_1.default)(new Date().toJSON());
         apiService.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
         dataStore.userAccessToken = accessToken;
         // TODO: Resolve possible bug here...
@@ -374,4 +384,5 @@ export class TDAmeritradeAPI {
   closeOption = async (accountId, symbol, quantity = 1, price) =>
     await this.closeOrder(accountId, symbol, quantity, price, true, true);
 }
-export default new TDAmeritradeAPI();
+exports.TDAmeritradeAPI = TDAmeritradeAPI;
+exports.default = new TDAmeritradeAPI();

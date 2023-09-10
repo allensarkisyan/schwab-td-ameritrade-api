@@ -1,30 +1,56 @@
+'use strict';
 /**
  * @author Allen Sarkisyan
  * @copyright 2019 - 2023 XT-TX
  * @license MIT Open Source License
  */
-export const getBuyTrades = (trades) =>
+Object.defineProperty(exports, '__esModule', { value: true });
+exports.groupByAssetType =
+  exports.groupByInstrumentCUSIP =
+  exports.groupByInstrumentUnderlyingSymbol =
+  exports.groupByInstrumentSymbol =
+  exports.groupByInstrument =
+  exports.getEquityTrades =
+  exports.getOptionTrades =
+  exports.groupByOrderId =
+  exports.getClosingShortSales =
+  exports.getOpeningShortSales =
+  exports.getClosingTrades =
+  exports.getOpeningTrades =
+  exports.getSellTrades =
+  exports.getBuyTrades =
+    void 0;
+const getBuyTrades = (trades) =>
   trades?.filter((i) => i.description === 'BUY TRADE');
-export const getSellTrades = (trades) =>
+exports.getBuyTrades = getBuyTrades;
+const getSellTrades = (trades) =>
   trades?.filter((i) => i.description === 'SELL TRADE');
-export const getOpeningTrades = (trades) =>
+exports.getSellTrades = getSellTrades;
+const getOpeningTrades = (trades) =>
   trades?.filter((i) => i.transactionItem.positionEffect === 'OPENING');
-export const getClosingTrades = (trades) =>
+exports.getOpeningTrades = getOpeningTrades;
+const getClosingTrades = (trades) =>
   trades?.filter((i) => i.transactionItem.positionEffect === 'CLOSING');
-export const getOpeningShortSales = (trades) =>
+exports.getClosingTrades = getClosingTrades;
+const getOpeningShortSales = (trades) =>
   trades?.filter((i) => i.description === 'SHORT SALE');
-export const getClosingShortSales = (trades) =>
+exports.getOpeningShortSales = getOpeningShortSales;
+const getClosingShortSales = (trades) =>
   trades?.filter((i) => i.description === 'CLOSE SHORT POSITION');
-export const groupByOrderId = (trades) =>
+exports.getClosingShortSales = getClosingShortSales;
+const groupByOrderId = (trades) =>
   trades?.reduce((a, b) => {
     a[b.orderId] = [...(a[b.orderId] || []), b];
     return a;
   }, {});
-export const getOptionTrades = (trades) =>
+exports.groupByOrderId = groupByOrderId;
+const getOptionTrades = (trades) =>
   trades?.filter((i) => i.transactionItem.instrument.assetType === 'OPTION');
-export const getEquityTrades = (trades) =>
+exports.getOptionTrades = getOptionTrades;
+const getEquityTrades = (trades) =>
   trades?.filter((i) => i.transactionItem.instrument.assetType === 'EQUITY');
-export const groupByInstrument = (trades) =>
+exports.getEquityTrades = getEquityTrades;
+const groupByInstrument = (trades) =>
   trades?.reduce((a, b) => {
     if (b.transactionItem.instrument.assetType === 'OPTION') {
       a[b.transactionItem.instrument.underlyingSymbol] = [
@@ -39,7 +65,8 @@ export const groupByInstrument = (trades) =>
     }
     return a;
   }, {});
-export const groupByInstrumentSymbol = (trades) =>
+exports.groupByInstrument = groupByInstrument;
+const groupByInstrumentSymbol = (trades) =>
   trades?.reduce((a, b) => {
     a[b.transactionItem.instrument.symbol] = [
       ...(a[b.transactionItem.instrument.symbol] || []),
@@ -47,7 +74,8 @@ export const groupByInstrumentSymbol = (trades) =>
     ];
     return a;
   }, {});
-export const groupByInstrumentUnderlyingSymbol = (trades) =>
+exports.groupByInstrumentSymbol = groupByInstrumentSymbol;
+const groupByInstrumentUnderlyingSymbol = (trades) =>
   trades?.reduce((a, b) => {
     a[b.transactionItem.instrument.underlyingSymbol] = [
       ...(a[b.transactionItem.instrument.underlyingSymbol] || []),
@@ -55,7 +83,8 @@ export const groupByInstrumentUnderlyingSymbol = (trades) =>
     ];
     return a;
   }, {});
-export const groupByInstrumentCUSIP = (trades) =>
+exports.groupByInstrumentUnderlyingSymbol = groupByInstrumentUnderlyingSymbol;
+const groupByInstrumentCUSIP = (trades) =>
   trades?.reduce((a, b) => {
     a[b.transactionItem.instrument.cusip] = [
       ...(a[b.transactionItem.instrument.cusip] || []),
@@ -63,7 +92,8 @@ export const groupByInstrumentCUSIP = (trades) =>
     ];
     return a;
   }, {});
-export const groupByAssetType = (trades) =>
+exports.groupByInstrumentCUSIP = groupByInstrumentCUSIP;
+const groupByAssetType = (trades) =>
   trades?.reduce((a, b) => {
     const symbol =
       b.transactionItem.instrument.assetType === 'OPTION'
@@ -79,3 +109,4 @@ export const groupByAssetType = (trades) =>
     }
     return a;
   }, {});
+exports.groupByAssetType = groupByAssetType;
