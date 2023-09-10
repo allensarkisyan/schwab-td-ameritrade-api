@@ -20,6 +20,10 @@ import type {
   OptionChainData,
   OptionContractRange,
   OptionContractType,
+  Watchlists,
+  Watchlist,
+  TDAmeritradeAccounts,
+  TDAmeritradeAccount,
 } from './@types/index.js';
 
 const jsonToQueryString = (json: object): string => Object.keys(json).map((key: string) => `${encodeURIComponent(key)}=${encodeURIComponent(json[key])}`).join('&');
@@ -143,11 +147,20 @@ export class TDAmeritradeAPI {
     }
   };
 
+  /**
+   * Get Accounts
+   * @returns {Promise<TDAmeritradeAccounts>}
+   */
   getAccounts = async () => await this.#handleRequest({
     url: '/v1/accounts',
     params: { fields: 'positions,orders' }
   });
 
+  /**
+   * Get Account
+   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
+   * @returns {Promise<TDAmeritradeAccount>}
+   */
   getAccount = async (
     accountId: TDAmeritradeAccountID
   ) => await this.#handleRequest({
@@ -376,16 +389,26 @@ export class TDAmeritradeAPI {
     }
   });
 
+  /**
+   * Get Watchlists
+   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
+   * @returns {Promise<Watchlists>}
+   */
   getWatchlists = async (
     accountId: TDAmeritradeAccountID
-  ) => await this.#handleRequest({
+  ): Promise<Watchlists> => await this.#handleRequest({
     url: `/v1/accounts/${accountId}/watchlists`
   });
 
+  /**
+   * Get Watchlist by ID
+   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
+   * @returns {Promise<Watchlist>}
+   */
   getWatchlist = async (
     accountId: TDAmeritradeAccountID,
     watchlistId: string,
-  ) => await this.#handleRequest({
+  ): Promise<Watchlist> => await this.#handleRequest({
     url: `/v1/accounts/${accountId}/watchlists/${watchlistId}`
   });
 
@@ -489,7 +512,6 @@ export class TDAmeritradeAPI {
     }
   ]);
 
-  // complexOrderStrategyType: 'NONE'
   /**
    * Buy Equtity / Stock Convenience Method
    * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID

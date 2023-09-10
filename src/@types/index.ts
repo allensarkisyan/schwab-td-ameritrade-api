@@ -561,3 +561,280 @@ export type OptionChainData = {
   putExpDateMap: Record<string, Record<string, OptionContractData[]>>;
   callExpDateMap: Record<string, Record<string, OptionContractData[]>>;
 };
+
+/**
+ * Represents an instrument.
+ * @typedef {Object} WatchlistItemInstrument
+ * @property {string} symbol - The symbol of the instrument.
+ * @property {string} assetType - The asset type of the instrument (e.g., "EQUITY").
+ */
+export type WatchlistItemInstrument = {
+  symbol: TickerSymbol;
+  assetType: string;
+};
+
+/**
+ * Represents an instrument within a watchlist.
+ * @typedef {Object} WatchlistItem
+ * @property {number} sequenceId - The sequence ID of the watchlist item.
+ * @property {number} quantity - The quantity of the instrument.
+ * @property {number} averagePrice - The average price of the instrument.
+ * @property {number} commission - The commission associated with the instrument.
+ * @property {WatchlistItemInstrument} instrument - The instrument details.
+ */
+export type WatchlistItem = {
+  sequenceId: number;
+  quantity: number;
+  averagePrice: number;
+  commission: number;
+  instrument: WatchlistItemInstrument;
+};
+
+/**
+ * Represents a watchlist.
+ * @typedef {Object} Watchlist
+ * @property {string} name - The name of the watchlist.
+ * @property {string} watchlistId - The ID of the watchlist.
+ * @property {string} accountId - The ID of the account associated with the watchlist.
+ * @property {Array<WatchlistItem>} watchlistItems - The list of watchlist items.
+ */
+export type Watchlist = {
+  name: string;
+  watchlistId: string;
+  accountId: string;
+  watchlistItems: WatchlistItem[];
+};
+
+/**
+ * Represents multiple watchlists.
+ * @typedef {Watchlist[]} Watchlists
+ */
+export type Watchlists = Watchlist[];
+
+
+
+
+/**
+ * Represents an account's financial summary.
+ * @typedef {Object} CurrentBalances
+ * @property {number} accruedInterest - Accrued interest.
+ * @property {number} cashBalance - Cash balance.
+ * @property {number} cashReceipts - Cash receipts.
+ * @property {number} longOptionMarketValue - Long option market value.
+ * @property {number} liquidationValue - Liquidation value.
+ * @property {number} longMarketValue - Long market value.
+ * @property {number} moneyMarketFund - Money market fund.
+ * @property {number} savings - Savings amount.
+ * @property {number} shortMarketValue - Short market value.
+ * @property {number} pendingDeposits - Pending deposits.
+ * @property {number} availableFunds - Available funds.
+ * @property {number} availableFundsNonMarginableTrade - Available funds for non-marginable trade.
+ * @property {number} buyingPower - Buying power.
+ * @property {number} buyingPowerNonMarginableTrade - Buying power for non-marginable trade.
+ * @property {number} dayTradingBuyingPower - Day trading buying power.
+ * @property {number} equity - Equity.
+ * @property {number} equityPercentage - Equity percentage.
+ * @property {number} longMarginValue - Long margin value.
+ * @property {number} maintenanceCall - Maintenance call amount.
+ * @property {number} maintenanceRequirement - Maintenance requirement.
+ * @property {number} marginBalance - Margin balance.
+ * @property {number} regTCall - Regulation T call amount.
+ * @property {number} shortBalance - Short balance.
+ * @property {number} shortMarginValue - Short margin value.
+ * @property {number} shortOptionMarketValue - Short option market value.
+ * @property {number} sma - Special memorandum account (SMA).
+ * @property {number} mutualFundValue - Mutual fund value.
+ * @property {number} bondValue - Bond value.
+ */
+export type CurrentBalances = {
+  accruedInterest: number;
+  cashBalance: number;
+  cashReceipts: number;
+  longOptionMarketValue: number;
+  liquidationValue: number;
+  longMarketValue: number;
+  moneyMarketFund: number;
+  savings: number;
+  shortMarketValue: number;
+  pendingDeposits: number;
+  availableFunds: number;
+  availableFundsNonMarginableTrade: number;
+  buyingPower: number;
+  buyingPowerNonMarginableTrade: number;
+  dayTradingBuyingPower: number;
+  equity: number;
+  equityPercentage: number;
+  longMarginValue: number;
+  maintenanceCall: number;
+  maintenanceRequirement: number;
+  marginBalance: number;
+  regTCall: number;
+  shortBalance: number;
+  shortMarginValue: number;
+  shortOptionMarketValue: number;
+  sma: number;
+  mutualFundValue: number;
+  bondValue: number;
+};
+
+
+/**
+ * Represents an account's financial summary.
+ * @typedef {Object} InitialBalances
+ * @property {number} accruedInterest - Accrued interest.
+ * @property {number} availableFundsNonMarginableTrade - Available funds for non-marginable trade.
+ * @property {number} bondValue - Bond value.
+ * @property {number} buyingPower - Buying power.
+ * @property {number} cashBalance - Cash balance.
+ * @property {number} cashAvailableForTrading - Cash available for trading.
+ * @property {number} cashReceipts - Cash receipts.
+ * @property {number} dayTradingBuyingPower - Day trading buying power.
+ * @property {number} dayTradingBuyingPowerCall - Day trading buying power call.
+ * @property {number} dayTradingEquityCall - Day trading equity call.
+ * @property {number} equity - Equity.
+ * @property {number} equityPercentage - Equity percentage.
+ * @property {number} liquidationValue - Liquidation value.
+ * @property {number} longMarginValue - Long margin value.
+ * @property {number} longOptionMarketValue - Long option market value.
+ * @property {number} longStockValue - Long stock value.
+ * @property {number} maintenanceCall - Maintenance call amount.
+ * @property {number} maintenanceRequirement - Maintenance requirement.
+ * @property {number} margin - Margin amount.
+ * @property {number} marginEquity - Margin equity.
+ * @property {number} moneyMarketFund - Money market fund.
+ * @property {number} mutualFundValue - Mutual fund value.
+ * @property {number} regTCall - Regulation T call amount.
+ * @property {number} shortMarginValue - Short margin value.
+ * @property {number} shortOptionMarketValue - Short option market value.
+ * @property {number} shortStockValue - Short stock value.
+ * @property {number} totalCash - Total cash.
+ * @property {number} isInCall - Is in call status.
+ * @property {number} pendingDeposits - Pending deposits.
+ * @property {number} marginBalance - Margin balance.
+ * @property {number} shortBalance - Short balance.
+ * @property {number} accountValue - Account value.
+ */
+export type InitialBalances = {
+  accruedInterest: number;
+  availableFundsNonMarginableTrade: number;
+  bondValue: number;
+  buyingPower: number;
+  cashBalance: number;
+  cashAvailableForTrading: number;
+  cashReceipts: number;
+  dayTradingBuyingPower: number;
+  dayTradingBuyingPowerCall: number;
+  dayTradingEquityCall: number;
+  equity: number;
+  equityPercentage: number;
+  liquidationValue: number;
+  longMarginValue: number;
+  longOptionMarketValue: number;
+  longStockValue: number;
+  maintenanceCall: number;
+  maintenanceRequirement: number;
+  margin: number;
+  marginEquity: number;
+  moneyMarketFund: number;
+  mutualFundValue: number;
+  regTCall: number;
+  shortMarginValue: number;
+  shortOptionMarketValue: number;
+  shortStockValue: number;
+  totalCash: number;
+  isInCall: number;
+  pendingDeposits: number;
+  marginBalance: number;
+  shortBalance: number;
+  accountValue: number;
+};
+
+
+/**
+ * Represents account-related data.
+ * @typedef {Object} ProjectedBalances
+ * @property {number} availableFunds - The available funds in the account.
+ * @property {number} availableFundsNonMarginableTrade - The available funds for non-marginable trades.
+ * @property {number} buyingPower - The buying power of the account.
+ * @property {number} dayTradingBuyingPower - The buying power for day trading.
+ * @property {number} dayTradingBuyingPowerCall - The day trading buying power call.
+ * @property {number} maintenanceCall - The maintenance call.
+ * @property {number} regTCall - The Regulation T (Reg T) call.
+ * @property {number} isInCall - Indicates whether the account is in a call state.
+ * @property {number} stockBuyingPower - The buying power for stock trades.
+ */
+export type ProjectedBalances = {
+  availableFunds: number;
+  availableFundsNonMarginableTrade: number;
+  buyingPower: number;
+  dayTradingBuyingPower: number;
+  dayTradingBuyingPowerCall: number;
+  maintenanceCall: number;
+  regTCall: number;
+  isInCall: number;
+  stockBuyingPower: number;
+};
+
+/**
+ * Represents data related to a financial instrument.
+ * @typedef {Object} PositionInstrumentData
+ * @property {string} assetType - The type of asset (e.g., "EQUITY").
+ * @property {string} cusip - The CUSIP of the instrument.
+ * @property {string} symbol - The symbol of the instrument.
+ */
+export type PositionInstrumentData = {
+  assetType: string;
+  cusip: string;
+  symbol: string;
+};
+
+/**
+ * Represents data related to a trading position.
+ * @typedef {Object} PositionData
+ * @property {number} shortQuantity - The quantity of short positions.
+ * @property {number} averagePrice - The average price of the positions.
+ * @property {number} currentDayCost - The current day cost.
+ * @property {number} currentDayProfitLoss - The current day profit or loss.
+ * @property {number} currentDayProfitLossPercentage - The percentage of profit or loss for the current day.
+ * @property {number} longQuantity - The quantity of long positions.
+ * @property {number} settledLongQuantity - The settled quantity of long positions.
+ * @property {number} settledShortQuantity - The settled quantity of short positions.
+ * @property {PositionInstrumentData} instrument - Information about the financial instrument.
+ * @property {number} marketValue - The market value of the positions.
+ * @property {number} maintenanceRequirement - The maintenance requirement.
+ * @property {number} previousSessionLongQuantity - The quantity of long positions from the previous session.
+ */
+export type PositionData = {
+  shortQuantity: number;
+  averagePrice: number;
+  currentDayCost: number;
+  currentDayProfitLoss: number;
+  currentDayProfitLossPercentage: number;
+  longQuantity: number;
+  settledLongQuantity: number;
+  settledShortQuantity: number;
+  instrument: PositionInstrumentData;
+  marketValue: number;
+  maintenanceRequirement: number;
+  previousSessionLongQuantity: number;
+};
+
+export type TDAmeritradeAccount = {
+  securitiesAccount: {
+    accountId: TDAmeritradeAccountID;
+    currentBalances: CurrentBalances;
+    initialBalances: InitialBalances;
+    projectedBalances: ProjectedBalances;
+    isClosingOnlyRestricted: boolean;
+    isDayTrader: boolean;
+    roundtrips: number;
+    type: string;
+    positions: PositionData[];
+  }
+}
+
+/**
+ * Represents multiple watchlists.
+ * @typedef {TDAmeritradeAccount[]} TDAmeritradeAccounts
+ */
+export type TDAmeritradeAccounts = TDAmeritradeAccount[];
