@@ -24,6 +24,7 @@ import type {
   Watchlist,
   TDAmeritradeAccounts,
   TDAmeritradeAccount,
+  UserPrincipalsData,
 } from './@types/index.js';
 
 const jsonToQueryString = (json: object): string => Object.keys(json).map((key: string) => `${encodeURIComponent(key)}=${encodeURIComponent(json[key])}`).join('&');
@@ -168,7 +169,11 @@ export class TDAmeritradeAPI {
     params: { fields: 'positions,orders' }
   });
 
-  getUserPrincipals = async () => await this.#handleRequest({
+  /**
+   * Get User Principals Data - for use with `schwab-td-ameritrade-streamer`
+   * @returns {Promise<UserPrincipalsData>}
+   */
+  getUserPrincipals = async (): Promise<UserPrincipalsData> => await this.#handleRequest({
     url: '/v1/userprincipals',
     params: { fields: 'streamerSubscriptionKeys,streamerConnectionInfo,preferences,surrogateIds' }
   });

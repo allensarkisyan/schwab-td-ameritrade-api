@@ -611,9 +611,6 @@ export type Watchlist = {
  */
 export type Watchlists = Watchlist[];
 
-
-
-
 /**
  * Represents an account's financial summary.
  * @typedef {Object} CurrentBalances
@@ -838,3 +835,105 @@ export type TDAmeritradeAccount = {
  * @typedef {TDAmeritradeAccount[]} TDAmeritradeAccounts
  */
 export type TDAmeritradeAccounts = TDAmeritradeAccount[];
+
+/**
+ * Represents a delay status for various exchanges.
+ * @typedef {Object} ExchangeDelayStatus
+ * @property {boolean} isNyseDelayed - Indicates if NYSE data is delayed.
+ * @property {boolean} isNasdaqDelayed - Indicates if NASDAQ data is delayed.
+ * @property {boolean} isOpraDelayed - Indicates if OPRA data is delayed.
+ * @property {boolean} isAmexDelayed - Indicates if AMEX data is delayed.
+ * @property {boolean} isCmeDelayed - Indicates if CME data is delayed.
+ * @property {boolean} isIceDelayed - Indicates if ICE data is delayed.
+ * @property {boolean} isForexDelayed - Indicates if Forex data is delayed.
+ */
+export type ExchangeDelayStatus = {
+  isNyseDelayed: boolean;
+  isNasdaqDelayed: boolean;
+  isOpraDelayed: boolean;
+  isAmexDelayed: boolean;
+  isCmeDelayed: boolean;
+  isIceDelayed: boolean;
+  isForexDelayed: boolean;
+};
+
+/**
+ * Represents a single streamer subscription key.
+ * @typedef {Object} StreamerSubscriptionKey
+ * @property {string} key - The subscription key.
+ */
+export type StreamerSubscriptionKey = {
+  key: string
+};
+
+/**
+ * Represents an array of streamer subscription keys.
+ * @typedef {Object} StreamerSubscriptionKeys
+ * @property {StreamerSubscriptionKey[]} keys - An array of streamer subscription keys.
+ */
+export type StreamerSubscriptionKeys = {
+  keys: StreamerSubscriptionKey[]
+};
+
+/**
+ * Represents streamer information.
+ * @typedef {Object} StreamerInfo
+ * @property {string} accessLevel - The access level of the streamer.
+ * @property {string} acl - The ACL (Access Control List) of the streamer.
+ * @property {string} appId - The application ID of the streamer.
+ * @property {string} streamerBinaryUrl - The binary URL of the streamer.
+ * @property {string} streamerSocketUrl - The socket URL of the streamer.
+ * @property {string} token - The token for authentication.
+ * @property {Date} tokenTimestamp - The timestamp of the token.
+ * @property {string} userGroup - The user group of the streamer.
+ */
+export type StreamerInfo = {
+  accessLevel: string;
+  acl: string;
+  appId: string;
+  streamerBinaryUrl: string;
+  streamerSocketUrl: string;
+  token: string;
+  tokenTimestamp: Date;
+  userGroup: string;
+}
+
+/**
+ * Represents principal data.
+ * @typedef {Object} UserPrincipalsData
+ * @property {string} accessLevel - The access level of the principal.
+ * @property {Object} exchangeAgreements - Exchange agreements status.
+ * @property {'ACCEPTED' | 'REJECTED'} exchangeAgreements.NASDAQ_EXCHANGE_AGREEMENT - NASDAQ exchange agreement status.
+ * @property {'ACCEPTED' | 'REJECTED'} exchangeAgreements.NYSE_EXCHANGE_AGREEMENT - NYSE exchange agreement status.
+ * @property {'ACCEPTED' | 'REJECTED'} exchangeAgreements.OPRA_EXCHANGE_AGREEMENT - OPRA exchange agreement status.
+ * @property {Date | string | number | null} lastLoginTime - The timestamp of the last login time.
+ * @property {Date | string | number | null} loginTime - The timestamp of the login time.
+ * @property {TDAmeritradeAccountID} primaryAccountId - The primary account ID.
+ * @property {'PROFESSIONAL' | 'NON_PROFESSIONAL'} professionaStatus - The professional status.
+ * @property {boolean} stalePassword - Indicates if the password is stale.
+ * @property {Date | string | number | null} tokenExpirationTime - The timestamp of the token expiration time.
+ * @property {string} userCdDomainId - The user's CD domain ID.
+ * @property {string} userId - The user ID.
+ * @property {StreamerSubscriptionKeys[]} streamerSubscriptionKeys - An array of streamer subscription keys.
+ * @property {ExchangeDelayStatus} quotes - Exchange delay status.
+ * @property {StreamerInfo} streamerInfo - Streamer information.
+ */
+export type UserPrincipalsData = {
+  accessLevel: string;
+  exchangeAgreements: {
+    NASDAQ_EXCHANGE_AGREEMENT: 'ACCEPTED' | 'REJECTED';
+    NYSE_EXCHANGE_AGREEMENT: 'ACCEPTED' | 'REJECTED';
+    OPRA_EXCHANGE_AGREEMENT: 'ACCEPTED' | 'REJECTED';
+  };
+  lastLoginTime: Date | string | number | null;
+  loginTime: Date | string | number | null;
+  primaryAccountId: TDAmeritradeAccountID;
+  professionaStatus: 'PROFESSIONAL' | 'NON_PROFESSIONAL';
+  stalePassword: boolean;
+  tokenExpirationTime: Date | string | number | null;
+  userCdDomainId: string;
+  userId: string;
+  streamerSubscriptionKeys: StreamerSubscriptionKeys[];
+  quotes: ExchangeDelayStatus;
+  streamerInfo: StreamerInfo;
+}
