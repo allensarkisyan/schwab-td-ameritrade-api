@@ -32,7 +32,6 @@
     }
   },
   "scripts": {
-    "build:rollup": "rollup --config",
     "build:types": "tsc --declaration --project tsconfig.types.json",
     "build:esm": "tsc --project tsconfig.esm.json",
     "build:cjs": "tsc --project tsconfig.cjs.json",
@@ -40,14 +39,12 @@
   },
   "dependencies": {
     "axios": "1.5.0",
-    "moment": "2.29.4"
+    "moment": "2.29.4",
+    "zod": "3.22.2"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "25.0.4",
-    "@rollup/plugin-node-resolve": "15.2.1",
     "@types/node": "20.6.0",
     "prettier": "3.0.3",
-    "rollup": "3.29.0",
     "typescript": "5.2.2"
   },
   "prettier": {
