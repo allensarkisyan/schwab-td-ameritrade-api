@@ -30,6 +30,8 @@ export type AssetType = 'EQUITY' | 'OPTION';
 
 export type AcceptedOrRejected = 'ACCEPTED' | 'REJECTED';
 
+export type PositionEffect = 'OPENING' | 'CLOSING';
+
 export type GetTransactionsType =
   | 'ALL'
   | 'TRADE'
@@ -86,20 +88,6 @@ export type LocalMemoryAuthDataStore = {
   refreshTokenExpires?: DateLikeNullable;
 };
 
-export type TradeTransaction = {
-  orderId: string;
-  description: OrderDescription;
-  transactionItem: {
-    positionEffect: 'OPENING' | 'CLOSING';
-    instrument: {
-      assetType: AssetType;
-      symbol: TickerSymbol;
-      cusip: CUSIP;
-      underlyingSymbol: TickerSymbol;
-    };
-  };
-};
-
 /** Represents Instrument data. */
 export type InstrumentData = {
   /** The CUSIP (Committee on Uniform Securities Identification Procedures) number. */
@@ -112,6 +100,12 @@ export type InstrumentData = {
   exchange?: string;
   /** The asset type, such as "EQUITY". */
   assetType: AssetType;
+  /** The underlying symbol of the instrument. */
+  underlyingSymbol?: string;
+  /** The option expiration date in ISO 8601 format. */
+  optionExpirationDate?: string;
+  /** The type of option (e.g., "CALL" or "PUT"). */
+  putCall?: 'PUT' | 'CALL';
 };
 
 /** Represents Quote data. */
@@ -884,7 +878,7 @@ export type TradeTransactionFees = {
 };
 
 /** Represents a trade transaction item. */
-export type TradeTransactionItem = {
+export type TransactionItem = {
   /** The ID of the account associated with the transaction item. */
   accountId: TDAmeritradeAccountID;
   /** The amount of the transaction item. */
@@ -893,6 +887,8 @@ export type TradeTransactionItem = {
   price: number;
   /** The cost associated with the transaction item. */
   cost: number;
+  /** The position effect (e.g., "OPENING"). */
+  positionEffect: PositionEffect;
   /** The instruction for the transaction item (e.g., "BUY"). */
   instruction: BuyOrder | SellOrder;
   /** Information about the instrument involved in the transaction item. */
@@ -900,7 +896,7 @@ export type TradeTransactionItem = {
 };
 
 /** Represents a trade transaction. */
-export type TransactionsData = {
+export type TransactionData = {
   /** The type of transaction (e.g., "TRADE"). */
   type: string;
   /** The sub-account associated with the transaction. */
@@ -922,9 +918,9 @@ export type TransactionsData = {
   /** Indicates whether the transaction affects the cash balance. */
   cashBalanceEffectFlag: boolean;
   /** A description of the transaction. */
-  description: string;
+  description: OrderDescription;
   /** Object containing various fee information related to the transaction. */
   fees: TradeTransactionFees;
   /** Detailed information about the transaction item. */
-  transactionItem: TradeTransactionItem;
+  transactionItem: TransactionItem;
 };

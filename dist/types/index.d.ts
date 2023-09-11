@@ -25,6 +25,7 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api/@types' {
     | 'CLOSE SHORT POSITION';
   export type AssetType = 'EQUITY' | 'OPTION';
   export type AcceptedOrRejected = 'ACCEPTED' | 'REJECTED';
+  export type PositionEffect = 'OPENING' | 'CLOSING';
   export type GetTransactionsType =
     | 'ALL'
     | 'TRADE'
@@ -75,19 +76,6 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api/@types' {
     refreshToken?: string;
     refreshTokenExpires?: DateLikeNullable;
   };
-  export type TradeTransaction = {
-    orderId: string;
-    description: OrderDescription;
-    transactionItem: {
-      positionEffect: 'OPENING' | 'CLOSING';
-      instrument: {
-        assetType: AssetType;
-        symbol: TickerSymbol;
-        cusip: CUSIP;
-        underlyingSymbol: TickerSymbol;
-      };
-    };
-  };
   /** Represents Instrument data. */
   export type InstrumentData = {
     /** The CUSIP (Committee on Uniform Securities Identification Procedures) number. */
@@ -100,6 +88,12 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api/@types' {
     exchange?: string;
     /** The asset type, such as "EQUITY". */
     assetType: AssetType;
+    /** The underlying symbol of the instrument. */
+    underlyingSymbol?: string;
+    /** The option expiration date in ISO 8601 format. */
+    optionExpirationDate?: string;
+    /** The type of option (e.g., "CALL" or "PUT"). */
+    putCall?: 'PUT' | 'CALL';
   };
   /** Represents Quote data. */
   export type QuoteData = {
@@ -846,7 +840,7 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api/@types' {
     secFee: number;
   };
   /** Represents a trade transaction item. */
-  export type TradeTransactionItem = {
+  export type TransactionItem = {
     /** The ID of the account associated with the transaction item. */
     accountId: TDAmeritradeAccountID;
     /** The amount of the transaction item. */
@@ -855,13 +849,15 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api/@types' {
     price: number;
     /** The cost associated with the transaction item. */
     cost: number;
+    /** The position effect (e.g., "OPENING"). */
+    positionEffect: PositionEffect;
     /** The instruction for the transaction item (e.g., "BUY"). */
     instruction: BuyOrder | SellOrder;
     /** Information about the instrument involved in the transaction item. */
     instrument: InstrumentData;
   };
   /** Represents a trade transaction. */
-  export type TransactionsData = {
+  export type TransactionData = {
     /** The type of transaction (e.g., "TRADE"). */
     type: string;
     /** The sub-account associated with the transaction. */
@@ -883,11 +879,11 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api/@types' {
     /** Indicates whether the transaction affects the cash balance. */
     cashBalanceEffectFlag: boolean;
     /** A description of the transaction. */
-    description: string;
+    description: OrderDescription;
     /** Object containing various fee information related to the transaction. */
     fees: TradeTransactionFees;
     /** Detailed information about the transaction item. */
-    transactionItem: TradeTransactionItem;
+    transactionItem: TransactionItem;
   };
 }
 declare module '@allensarkisyan/schwab-td-ameritrade-api' {
@@ -908,7 +904,7 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
     TDAmeritradeAccounts,
     TDAmeritradeAccount,
     UserPrincipalsData,
-    TransactionsData,
+    TransactionData,
     DateLikeNullable,
     GetTransactionsType,
   } from '@allensarkisyan/schwab-td-ameritrade-api/@types';
@@ -956,14 +952,14 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
      * @param {GetTransactionsType} transactionsType - Transactions Type - Default 'TRADE'
      * @param {DateLikeNullable} startDate - Start Date
      * @param {DateLikeNullable} endDate - End Date
-     * @returns {Promise<TransactionsData>}
+     * @returns {Promise<TransactionData[]>}
      */
     getTransactions: (
       accountId: TDAmeritradeAccountID,
       transactionsType?: GetTransactionsType,
       startDate?: DateLikeNullable,
       endDate?: DateLikeNullable,
-    ) => Promise<TransactionsData>;
+    ) => Promise<TransactionData[]>;
     getOrders: (accountId: TDAmeritradeAccountID) => Promise<any>;
     /**
      * Get Quote Data for Ticker Symbol(s)
@@ -1253,103 +1249,105 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api/td-utils' {
    * @copyright 2019 - 2023 XT-TX
    * @license MIT Open Source License
    */
-  import type { TradeTransaction } from '@allensarkisyan/schwab-td-ameritrade-api/@types';
+  import type { TransactionData } from '@allensarkisyan/schwab-td-ameritrade-api/@types';
   /**
-   * Get Buy Trades
-   * @param {TradeTransaction[]} trades - TRADE Transactions
-   * @returns {TradeTransaction[]}
+   * Filter Buy Trades
+   * @param {TransactionData[]} trades - TRADE Transactions
+   * @returns {TransactionData[]}
    */
-  export function getBuyTrades(trades: TradeTransaction[]): TradeTransaction[];
+  export function filterBuyTrades(trades: TransactionData[]): TransactionData[];
   /**
-   * Get Sell Trades
-   * @param {TradeTransaction[]} trades - TRADE Transactions
-   * @returns {TradeTransaction[]}
+   * Filter Sell Trades
+   * @param {TransactionData[]} trades - TRADE Transactions
+   * @returns {TransactionData[]}
    */
-  export function getSellTrades(trades: TradeTransaction[]): TradeTransaction[];
+  export function filterSellTrades(
+    trades: TransactionData[],
+  ): TransactionData[];
   /**
-   * Get Opening Trades
-   * @param {TradeTransaction[]} trades - TRADE Transactions
-   * @returns {TradeTransaction[]}
+   * Filter Opening Trades
+   * @param {TransactionData[]} trades - TRADE Transactions
+   * @returns {TransactionData[]}
    */
-  export function getOpeningTrades(
-    trades: TradeTransaction[],
-  ): TradeTransaction[];
+  export function filterOpeningTrades(
+    trades: TransactionData[],
+  ): TransactionData[];
   /**
-   * Get Closing Trades
-   * @param {TradeTransaction[]} trades - TRADE Transactions
-   * @returns {TradeTransaction[]}
+   * Filter Closing Trades
+   * @param {TransactionData[]} trades - TRADE Transactions
+   * @returns {TransactionData[]}
    */
-  export function getClosingTrades(
-    trades: TradeTransaction[],
-  ): TradeTransaction[];
+  export function filterClosingTrades(
+    trades: TransactionData[],
+  ): TransactionData[];
   /**
-   * Get Open Short Sale Trades
-   * @param {TradeTransaction[]} trades - TRADE Transactions
-   * @returns {TradeTransaction[]}
+   * Filter Open Short Sale Trades
+   * @param {TransactionData[]} trades - TRADE Transactions
+   * @returns {TransactionData[]}
    */
-  export function getOpeningShortSales(
-    trades: TradeTransaction[],
-  ): TradeTransaction[];
+  export function filterOpeningShortSales(
+    trades: TransactionData[],
+  ): TransactionData[];
   /**
-   * Get Closing Short Sale Trades
-   * @param {TradeTransaction[]} trades - TRADE Transactions
-   * @returns {TradeTransaction[]}
+   * Filter Closing Short Sale Trades
+   * @param {TransactionData[]} trades - TRADE Transactions
+   * @returns {TransactionData[]}
    */
-  export function getClosingShortSales(
-    trades: TradeTransaction[],
-  ): TradeTransaction[];
+  export function filterClosingShortSales(
+    trades: TransactionData[],
+  ): TransactionData[];
+  /**
+   * Filter Option Trades
+   * @param {TransactionData[]} trades - TRADE Transactions
+   * @returns {TransactionData[]}
+   */
+  export function filterOptionTrades(
+    trades: TransactionData[],
+  ): TransactionData[];
+  /**
+   * Filter Equity Trades
+   * @param {TransactionData[]} trades - TRADE Transactions
+   * @returns {TransactionData[]}
+   */
+  export function filterEquityTrades(
+    trades: TransactionData[],
+  ): TransactionData[];
   /**
    * Group Trades by Order ID
-   * @param {TradeTransaction[]} trades - TRADE Transactions
-   * @returns {TradeTransaction[]}
+   * @param {TransactionData[]} trades - TRADE Transactions
+   * @returns {TransactionData[]}
    */
-  export function groupByOrderId(trades: TradeTransaction[]): {};
-  /**
-   * Get Option Trades
-   * @param {TradeTransaction[]} trades - TRADE Transactions
-   * @returns {TradeTransaction[]}
-   */
-  export function getOptionTrades(
-    trades: TradeTransaction[],
-  ): TradeTransaction[];
-  /**
-   * Get Equity Trades
-   * @param {TradeTransaction[]} trades - TRADE Transactions
-   * @returns {TradeTransaction[]}
-   */
-  export function getEquityTrades(
-    trades: TradeTransaction[],
-  ): TradeTransaction[];
+  export function groupByOrderId(trades: TransactionData[]): {};
   /**
    * Group Trades by Instrument
-   * @param {TradeTransaction[]} trades - TRADE Transactions
-   * @returns {TradeTransaction[]}
+   * @param {TransactionData[]} trades - TRADE Transactions
+   * @returns {TransactionData[]}
    */
-  export function groupByInstrument(trades: TradeTransaction[]): {};
+  export function groupByInstrument(trades: TransactionData[]): {};
   /**
    * Group Trades by Instrument Symbol
-   * @param {TradeTransaction[]} trades - TRADE Transactions
-   * @returns {TradeTransaction[]}
+   * @param {TransactionData[]} trades - TRADE Transactions
+   * @returns {TransactionData[]}
    */
-  export function groupByInstrumentSymbol(trades: TradeTransaction[]): {};
+  export function groupByInstrumentSymbol(trades: TransactionData[]): {};
   /**
    * Group Trades by Instrument Underlying Symbol
-   * @param {TradeTransaction[]} trades - TRADE Transactions
-   * @returns {TradeTransaction[]}
+   * @param {TransactionData[]} trades - TRADE Transactions
+   * @returns {TransactionData[]}
    */
   export function groupByInstrumentUnderlyingSymbol(
-    trades: TradeTransaction[],
+    trades: TransactionData[],
   ): {};
   /**
    * Group Trades by Instrument CUSIP
-   * @param {TradeTransaction[]} trades - TRADE Transactions
-   * @returns {TradeTransaction[]}
+   * @param {TransactionData[]} trades - TRADE Transactions
+   * @returns {TransactionData[]}
    */
-  export function groupByInstrumentCUSIP(trades: TradeTransaction[]): {};
+  export function groupByInstrumentCUSIP(trades: TransactionData[]): {};
   /**
    * Group Trades by Asset Type
-   * @param {TradeTransaction[]} trades - TRADE Transactions
-   * @returns {TradeTransaction[]}
+   * @param {TransactionData[]} trades - TRADE Transactions
+   * @returns {TransactionData[]}
    */
-  export function groupByAssetType(trades: TradeTransaction[]): {};
+  export function groupByAssetType(trades: TransactionData[]): {};
 }

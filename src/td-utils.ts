@@ -5,69 +5,87 @@
  */
 
 import type {
-  TradeTransaction
+  TransactionData
 } from './@types/index.js';
 
 /**
- * Get Buy Trades
- * @param {TradeTransaction[]} trades - TRADE Transactions
- * @returns {TradeTransaction[]}
+ * Filter Buy Trades
+ * @param {TransactionData[]} trades - TRADE Transactions
+ * @returns {TransactionData[]}
  */
-export function getBuyTrades(trades: TradeTransaction[]) {
-  return trades?.filter(i => i.description === 'BUY TRADE');
+export function filterBuyTrades(trades: TransactionData[]) {
+  return trades?.filter(({ description }) => description === 'BUY TRADE');
 }
 
 /**
- * Get Sell Trades
- * @param {TradeTransaction[]} trades - TRADE Transactions
- * @returns {TradeTransaction[]}
+ * Filter Sell Trades
+ * @param {TransactionData[]} trades - TRADE Transactions
+ * @returns {TransactionData[]}
  */
-export function getSellTrades(trades: TradeTransaction[]) {
-  return trades?.filter(i => i.description === 'SELL TRADE');
+export function filterSellTrades(trades: TransactionData[]) {
+  return trades?.filter(({ description }) => description === 'SELL TRADE');
 }
 
 /**
- * Get Opening Trades
- * @param {TradeTransaction[]} trades - TRADE Transactions
- * @returns {TradeTransaction[]}
+ * Filter Opening Trades
+ * @param {TransactionData[]} trades - TRADE Transactions
+ * @returns {TransactionData[]}
  */
-export function getOpeningTrades(trades: TradeTransaction[]) {
+export function filterOpeningTrades(trades: TransactionData[]) {
   return trades?.filter(i => i.transactionItem.positionEffect === 'OPENING');
 }
 
 /**
- * Get Closing Trades
- * @param {TradeTransaction[]} trades - TRADE Transactions
- * @returns {TradeTransaction[]}
+ * Filter Closing Trades
+ * @param {TransactionData[]} trades - TRADE Transactions
+ * @returns {TransactionData[]}
  */
-export function getClosingTrades(trades: TradeTransaction[]) {
+export function filterClosingTrades(trades: TransactionData[]) {
   return trades?.filter(i => i.transactionItem.positionEffect === 'CLOSING');
 }
 
 /**
- * Get Open Short Sale Trades
- * @param {TradeTransaction[]} trades - TRADE Transactions
- * @returns {TradeTransaction[]}
+ * Filter Open Short Sale Trades
+ * @param {TransactionData[]} trades - TRADE Transactions
+ * @returns {TransactionData[]}
  */
-export function getOpeningShortSales(trades: TradeTransaction[]) {
-  return trades?.filter(i => i.description === 'SHORT SALE');
+export function filterOpeningShortSales(trades: TransactionData[]) {
+  return trades?.filter(({ description }) => description === 'SHORT SALE');
 }
 
 /**
- * Get Closing Short Sale Trades
- * @param {TradeTransaction[]} trades - TRADE Transactions
- * @returns {TradeTransaction[]}
+ * Filter Closing Short Sale Trades
+ * @param {TransactionData[]} trades - TRADE Transactions
+ * @returns {TransactionData[]}
  */
-export function getClosingShortSales(trades: TradeTransaction[]) {
-  return trades?.filter(i => i.description === 'CLOSE SHORT POSITION');
+export function filterClosingShortSales(trades: TransactionData[]) {
+  return trades?.filter(({ description }) => description === 'CLOSE SHORT POSITION');
+}
+
+/**
+ * Filter Option Trades
+ * @param {TransactionData[]} trades - TRADE Transactions
+ * @returns {TransactionData[]}
+ */
+export function filterOptionTrades(trades: TransactionData[]) {
+  return trades?.filter(({ transactionItem }) => (transactionItem?.instrument?.assetType === 'OPTION'));
+}
+
+/**
+ * Filter Equity Trades
+ * @param {TransactionData[]} trades - TRADE Transactions
+ * @returns {TransactionData[]}
+ */
+export function filterEquityTrades(trades: TransactionData[]) {
+  return trades?.filter(({ transactionItem }) => (transactionItem?.instrument?.assetType === 'EQUITY'));
 }
 
 /**
  * Group Trades by Order ID
- * @param {TradeTransaction[]} trades - TRADE Transactions
- * @returns {TradeTransaction[]}
+ * @param {TransactionData[]} trades - TRADE Transactions
+ * @returns {TransactionData[]}
  */
-export function groupByOrderId(trades: TradeTransaction[]) {
+export function groupByOrderId(trades: TransactionData[]) {
   return trades?.reduce((a, b) => {
     a[b.orderId] = [...(a[b.orderId] || []), b];
     return a;
@@ -75,38 +93,24 @@ export function groupByOrderId(trades: TradeTransaction[]) {
 }
 
 /**
- * Get Option Trades
- * @param {TradeTransaction[]} trades - TRADE Transactions
- * @returns {TradeTransaction[]}
- */
-export function getOptionTrades(trades: TradeTransaction[]) {
-  return trades?.filter((i) => (i.transactionItem.instrument.assetType === 'OPTION'));
-}
-
-/**
- * Get Equity Trades
- * @param {TradeTransaction[]} trades - TRADE Transactions
- * @returns {TradeTransaction[]}
- */
-export function getEquityTrades(trades: TradeTransaction[]) {
-  return trades?.filter((i) => (i.transactionItem.instrument.assetType === 'EQUITY'));
-}
-
-/**
  * Group Trades by Instrument
- * @param {TradeTransaction[]} trades - TRADE Transactions
- * @returns {TradeTransaction[]}
+ * @param {TransactionData[]} trades - TRADE Transactions
+ * @returns {TransactionData[]}
  */
-export function groupByInstrument(trades: TradeTransaction[]) {
+export function groupByInstrument(trades: TransactionData[]) {
   return trades?.reduce((a, b) => {
-    if (b.transactionItem.instrument.assetType === 'OPTION') {
-      a[b.transactionItem.instrument.underlyingSymbol] = [
-        ...(a[b.transactionItem.instrument.underlyingSymbol] || []),
+    if (b?.transactionItem?.instrument?.assetType === 'OPTION') {
+      if (!b?.transactionItem?.instrument?.underlyingSymbol) {
+        return a;
+      }
+
+      a[b?.transactionItem?.instrument?.underlyingSymbol] = [
+        ...(a[b?.transactionItem?.instrument?.underlyingSymbol] || []),
         b
       ];
     } else {
-      a[b.transactionItem.instrument.symbol] = [
-        ...(a[b.transactionItem.instrument.symbol] || []),
+      a[b?.transactionItem?.instrument?.symbol] = [
+        ...(a[b?.transactionItem?.instrument?.symbol] || []),
         b
       ];
     }
@@ -117,11 +121,15 @@ export function groupByInstrument(trades: TradeTransaction[]) {
 
 /**
  * Group Trades by Instrument Symbol
- * @param {TradeTransaction[]} trades - TRADE Transactions
- * @returns {TradeTransaction[]}
+ * @param {TransactionData[]} trades - TRADE Transactions
+ * @returns {TransactionData[]}
  */
-export function groupByInstrumentSymbol(trades: TradeTransaction[]) {
+export function groupByInstrumentSymbol(trades: TransactionData[]) {
   return trades?.reduce((a, b) => {
+    if (!b?.transactionItem?.instrument?.symbol) {
+      return a;
+    }
+
     a[b.transactionItem.instrument.symbol] = [
       ...(a[b.transactionItem.instrument.symbol] || []),
       b
@@ -132,11 +140,15 @@ export function groupByInstrumentSymbol(trades: TradeTransaction[]) {
 
 /**
  * Group Trades by Instrument Underlying Symbol
- * @param {TradeTransaction[]} trades - TRADE Transactions
- * @returns {TradeTransaction[]}
+ * @param {TransactionData[]} trades - TRADE Transactions
+ * @returns {TransactionData[]}
  */
-export function groupByInstrumentUnderlyingSymbol(trades: TradeTransaction[]) {
+export function groupByInstrumentUnderlyingSymbol(trades: TransactionData[]) {
   return trades?.reduce((a, b) => {
+    if (!b?.transactionItem?.instrument?.underlyingSymbol) {
+      return a;
+    }
+
     a[b.transactionItem.instrument.underlyingSymbol] = [
       ...(a[b.transactionItem.instrument.underlyingSymbol] || []),
       b
@@ -147,11 +159,15 @@ export function groupByInstrumentUnderlyingSymbol(trades: TradeTransaction[]) {
 
 /**
  * Group Trades by Instrument CUSIP
- * @param {TradeTransaction[]} trades - TRADE Transactions
- * @returns {TradeTransaction[]}
+ * @param {TransactionData[]} trades - TRADE Transactions
+ * @returns {TransactionData[]}
  */
-export function groupByInstrumentCUSIP(trades: TradeTransaction[]) {
+export function groupByInstrumentCUSIP(trades: TransactionData[]) {
   return trades?.reduce((a, b) => {
+    if (!b?.transactionItem?.instrument?.cusip) {
+      return a;
+    }
+
     a[b.transactionItem.instrument.cusip] = [
       ...(a[b.transactionItem.instrument.cusip] || []),
       b
@@ -162,15 +178,19 @@ export function groupByInstrumentCUSIP(trades: TradeTransaction[]) {
 
 /**
  * Group Trades by Asset Type
- * @param {TradeTransaction[]} trades - TRADE Transactions
- * @returns {TradeTransaction[]}
+ * @param {TransactionData[]} trades - TRADE Transactions
+ * @returns {TransactionData[]}
  */
-export function groupByAssetType(trades: TradeTransaction[]) {
+export function groupByAssetType(trades: TransactionData[]) {
   return trades?.reduce((a, b) => {
-    const symbol = (b.transactionItem.instrument.assetType === 'OPTION'
-      ? b.transactionItem.instrument.underlyingSymbol
-      : b.transactionItem.instrument.symbol
+    const symbol = (b?.transactionItem?.instrument?.assetType === 'OPTION'
+      ? b?.transactionItem?.instrument?.underlyingSymbol
+      : b?.transactionItem?.instrument?.symbol
     );
+
+    if (!symbol) {
+      return a;
+    }
 
     if (!a[symbol]) {
       a[symbol] = { symbol, equity: [], options: [] };

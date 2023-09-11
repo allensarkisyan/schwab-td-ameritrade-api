@@ -25,7 +25,7 @@ import type {
   TDAmeritradeAccounts,
   TDAmeritradeAccount,
   UserPrincipalsData,
-  TransactionsData,
+  TransactionData,
   DateLikeNullable,
   GetTransactionsType,
 } from './@types/index.js';
@@ -201,14 +201,14 @@ export class TDAmeritradeAPI {
    * @param {GetTransactionsType} transactionsType - Transactions Type - Default 'TRADE'
    * @param {DateLikeNullable} startDate - Start Date
    * @param {DateLikeNullable} endDate - End Date
-   * @returns {Promise<TransactionsData>}
+   * @returns {Promise<TransactionData[]>}
    */
   getTransactions = async (
     accountId: TDAmeritradeAccountID,
     transactionsType: GetTransactionsType = 'TRADE',
     startDate: DateLikeNullable = null,
     endDate: DateLikeNullable = null
-  ): Promise<TransactionsData> => await this.#handleRequest({
+  ): Promise<TransactionData[]> => await this.#handleRequest({
     url: `/v1/accounts/${accountId}/transactions`,
     params: {
       type: transactionsType,

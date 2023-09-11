@@ -4,6 +4,7 @@
 /** @typedef {string} TDAmeritradeAccountID */
 /** @typedef {'EQUITY' | 'OPTION'} AssetType */
 /** @typedef {'ACCEPTED' | 'REJECTED'} AcceptedOrRejected */
+/** @typedef {'OPENING' | 'CLOSING'} PositionEffect */
 /** @typedef {'BUY' | 'BUY_TO_OPEN' | 'BUY_TO_CLOSE' | 'BUY_TO_COVER'} BuyOrder */
 /** @typedef {'SELL' | 'SELL_TO_OPEN' | 'SELL_TO_CLOSE' | 'SELL_SHORT'} SellOrder */
 /** @typedef {'BUY TRADE' | 'SELL TRADE' | 'SHORT SALE' | 'CLOSE SHORT POSITION'} OrderDescription */
@@ -33,6 +34,9 @@
  * @property {string} description - The description of the stock.
  * @property {string} exchange - The exchange where the stock is traded.
  * @property {AssetType} assetType - The asset type, such as "EQUITY".
+ * @property {string} [underlyingSymbol] - The underlying symbol of the instrument.
+ * @property {DateLikeNullable} [optionExpirationDate] - The option expiration date in ISO 8601 format.
+ * @property {'PUT' | 'CALL'} [putCall] - The type of option (e.g., "CALL" or "PUT").
  */
 
 /**
@@ -492,10 +496,11 @@
 
 /**
  * Represents a trade transaction item.
- * @typedef {Object} TradeTransactionItem
+ * @typedef {Object} TransactionItem
  * @property {TDAmeritradeAccountID} accountId - The ID of the account associated with the transaction item.
  * @property {number} amount - The amount of the transaction item.
  * @property {number} price - The price of the transaction item.
+ * @property {PositionEffect} positionEffect - The position effect (e.g., "OPENING").
  * @property {number} cost - The cost associated with the transaction item.
  * @property {BuyOrder | SellOrder} instruction - The instruction for the transaction item (e.g., "BUY").
  * @property {InstrumentData} instrument - Information about the instrument involved in the transaction item.
@@ -503,7 +508,7 @@
 
 /**
  * Represents a trade transaction.
- * @typedef {Object} TransactionsData
+ * @typedef {Object} TransactionData
  * @property {string} type - The type of transaction (e.g., "TRADE").
  * @property {string} subAccount - The sub-account associated with the transaction.
  * @property {DateLikeNullable} settlementDate - The settlement date of the transaction (e.g., "2022-09-14").
@@ -514,20 +519,7 @@
  * @property {string} transactionSubType - The sub-type of the transaction (e.g., "BY").
  * @property {number} transactionId - The unique ID of the transaction.
  * @property {boolean} cashBalanceEffectFlag - Indicates whether the transaction affects the cash balance.
- * @property {string} description - A description of the transaction.
+ * @property {OrderDescription} description - A description of the transaction.
  * @property {TradeTransactionFees} fees - Object containing various fee information related to the transaction.
- * @property {TradeTransactionItem} transactionItem - Detailed information about the transaction item.
- */
-
-/**
- * @typedef {Object} TradeTransaction
- * @property {string} orderId
- * @property {OrderDescription} description
- * @property {Object} transactionItem
- * @property {'OPENING' | 'CLOSING'} transactionItem.positionEffect
- * @property {Object} transactionItem.instrument
- * @property {AssetType} transactionItem.instrument.assetType
- * @property {TickerSymbol} transactionItem.instrument.symbol
- * @property {CUSIP} transactionItem.instrument.cusip
- * @property {TickerSymbol} transactionItem.instrument.underlyingSymbol
+ * @property {TransactionItem} transactionItem - Detailed information about the transaction item.
  */

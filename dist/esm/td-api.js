@@ -165,7 +165,7 @@ export class TDAmeritradeAPI {
    * @param {GetTransactionsType} transactionsType - Transactions Type - Default 'TRADE'
    * @param {DateLikeNullable} startDate - Start Date
    * @param {DateLikeNullable} endDate - End Date
-   * @returns {Promise<TransactionsData>}
+   * @returns {Promise<TransactionData[]>}
    */
   getTransactions = async (
     accountId,
