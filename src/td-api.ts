@@ -49,9 +49,23 @@ const LIMIT_ORDER_TEMPLATE = {
   orderStrategyType: 'SINGLE'
 };
 
+/**
+ * Represents the TDAmeritradeAPI class for handling requests.
+ * @module TDAmeritradeAPI
+ * @class
+ */
 export class TDAmeritradeAPI {
+  /**
+   * External request handler function.
+   * @private
+   * @type {function | null}
+   */
   #externalRequestHandler?: Function | null;
 
+  /**
+   * Creates an instance of TDAmeritradeAPI.
+   * @param {function | null} [handleRequest=null] - An optional request handler function.
+   */
   constructor(handleRequest: Function | null = null) {
     if (handleRequest) {
       this.#externalRequestHandler = handleRequest;

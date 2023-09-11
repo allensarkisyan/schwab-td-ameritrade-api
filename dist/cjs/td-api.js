@@ -34,8 +34,22 @@ const LIMIT_ORDER_TEMPLATE = {
   duration: 'GOOD_TILL_CANCEL',
   orderStrategyType: 'SINGLE',
 };
+/**
+ * Represents the TDAmeritradeAPI class for handling requests.
+ * @module TDAmeritradeAPI
+ * @class
+ */
 class TDAmeritradeAPI {
+  /**
+   * External request handler function.
+   * @private
+   * @type {function | null}
+   */
   #externalRequestHandler;
+  /**
+   * Creates an instance of TDAmeritradeAPI.
+   * @param {function | null} [handleRequest=null] - An optional request handler function.
+   */
   constructor(handleRequest = null) {
     if (handleRequest) {
       this.#externalRequestHandler = handleRequest;

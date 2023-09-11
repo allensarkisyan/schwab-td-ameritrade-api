@@ -12,6 +12,8 @@
     "rootDir": "./src",
     // "outDir": "./dist",
     "esModuleInterop": true,
-    "lib": ["DOM", "ESNext"]
+    "lib": ["DOM", "ESNext"],
+    "preserveConstEnums": true,
+    "removeComments": false
   }
 }

@@ -30,7 +30,7 @@ export type AssetType = 'EQUITY' | 'OPTION';
 
 export type AcceptedOrRejected = 'ACCEPTED' | 'REJECTED';
 
-export type GetTransactionsType = 
+export type GetTransactionsType =
   | 'ALL'
   | 'TRADE'
   | 'BUY_ONLY'
@@ -40,7 +40,7 @@ export type GetTransactionsType =
   | 'DIVIDEND'
   | 'INTEREST'
   | 'ADVISOR_FEES'
-  | 'OTHER'
+  | 'OTHER';
 
 /**
  * ITM: In-the-money
@@ -51,7 +51,14 @@ export type GetTransactionsType =
  * SNK: Strikes Near Market
  * ALL: All Strikes
  */
-export type OptionContractRange = 'ALL' | 'ITM' | 'OTM' | 'NTM' | 'SAK' | 'SBK' | 'SNK';
+export type OptionContractRange =
+  | 'ALL'
+  | 'ITM'
+  | 'OTM'
+  | 'NTM'
+  | 'SAK'
+  | 'SBK'
+  | 'SNK';
 
 /**
  * S: Standard contracts
@@ -327,13 +334,13 @@ export type OHLC = {
 export type OHLCVolume = OHLC & {
   /** The trading volume. */
   volume: number;
-}
+};
 
 /** Represents a candlestick. */
 export type Candlestick = OHLCVolume & {
   /** The timestamp of the candlestick. */
   datetime: number;
-}
+};
 
 /** Represents Price History Data. */
 export type PriceHistory = {
@@ -766,7 +773,7 @@ export type TDAmeritradeAccount = {
     type: string;
     /** The positions in the account. */
     positions: PositionData[];
-  }
+  };
 };
 
 /** Represents a delay status for various exchanges. */
@@ -790,13 +797,13 @@ export type ExchangeDelayStatus = {
 /** Represents a single streamer subscription key. */
 export type StreamerSubscriptionKey = {
   /** The subscription key. */
-  key: string
+  key: string;
 };
 
 /** Represents an array of streamer subscription keys. */
 export type StreamerSubscriptionKeys = {
   /** An array of streamer subscription keys. */
-  keys: StreamerSubscriptionKey[]
+  keys: StreamerSubscriptionKey[];
 };
 
 /** Represents streamer information. */

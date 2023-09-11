@@ -1,5 +1,6 @@
 {
   "extends": "./tsconfig.json",
+  "exclude": ["node_modules", "src/@types/jsdoc.js"],
   "compilerOptions": {
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
