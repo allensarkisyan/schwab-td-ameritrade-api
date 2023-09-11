@@ -20,7 +20,7 @@ export type SellOrder =
   | 'SELL_TO_CLOSE'
   | 'SELL_SHORT';
 
-export type OrderDesciption =
+export type OrderDescription =
   | 'BUY TRADE'
   | 'SELL TRADE'
   | 'SHORT SALE'
@@ -42,328 +42,6 @@ export type GetTransactionsType =
   | 'ADVISOR_FEES'
   | 'OTHER'
 
-export type TDAmeritradeOrderLeg = {
-  instruction: BuyOrder | SellOrder;
-  quantity: number;
-  instrument: {
-    symbol: TickerSymbol;
-    assetType: AssetType;
-  };
-};
-
-export type LocalMemoryAuthDataStore = {
-  userAccessToken?: string;
-  accessTokenExpires?: DateLikeNullable;
-  refreshToken?: string;
-  refreshTokenExpires?: DateLikeNullable;
-};
-
-export type TradeTransaction = {
-  orderId: string;
-  description: OrderDesciption;
-  transactionItem: {
-    positionEffect: 'OPENING' | 'CLOSING';
-    instrument: {
-      assetType: AssetType;
-      symbol: TickerSymbol;
-      cusip: CUSIP;
-      underlyingSymbol: TickerSymbol;
-    };
-  };
-};
-
-/**
- * Represents stock information.
- * @typedef {Object} InstrumentData
- * @property {CUSIP} cusip - The CUSIP (Committee on Uniform Securities Identification Procedures) number.
- * @property {TickerSymbol} symbol - The stock symbol.
- * @property {string} description - The description of the stock.
- * @property {string} exchange - The exchange where the stock is traded.
- * @property {AssetType} assetType - The asset type, such as "EQUITY".
- */
-export type InstrumentData = {
-  symbol: TickerSymbol;
-  cusip: CUSIP;
-  assetType: AssetType;
-  description?: string;
-  exchange?: string;
-};
-
-/**
- * Represents stock data.
- * @typedef {Object} QuoteData
- * @property {AssetType} assetType - The asset type.
- * @property {string} assetMainType - The asset main type.
- * @property {CUSIP} cusip - The CUSIP.
- * @property {string} assetSubType - The asset sub type.
- * @property {TickerSymbol} symbol - The stock symbol.
- * @property {string} description - The stock description.
- * @property {number} bidPrice - The bid price.
- * @property {number} bidSize - The bid size.
- * @property {string} bidId - The bid ID.
- * @property {number} askPrice - The ask price.
- * @property {number} askSize - The ask size.
- * @property {string} askId - The ask ID.
- * @property {number} lastPrice - The last price.
- * @property {number} lastSize - The last size.
- * @property {string} lastId - The last ID.
- * @property {number} openPrice - The opening price.
- * @property {number} highPrice - The highest price of the day.
- * @property {number} lowPrice - The lowest price of the day.
- * @property {string} bidTick - The bid tick.
- * @property {number} closePrice - The closing price.
- * @property {number} netChange - The net price change.
- * @property {number} totalVolume - The total volume.
- * @property {number} quoteTimeInLong - The quote time in long format.
- * @property {number} tradeTimeInLong - The trade time in long format.
- * @property {number} mark - The mark price.
- * @property {string} exchange - The exchange.
- * @property {string} exchangeName - The exchange name.
- * @property {boolean} marginable - Indicates if it's marginable.
- * @property {boolean} shortable - Indicates if it's shortable.
- * @property {number} volatility - The volatility.
- * @property {number} digits - The number of digits.
- * @property {number} 52WkHigh - The 52-week high price.
- * @property {number} 52WkLow - The 52-week low price.
- * @property {number} nAV - The NAV (Net Asset Value).
- * @property {number} peRatio - The P/E (Price-to-Earnings) ratio.
- * @property {number} divAmount - The dividend amount.
- * @property {number} divYield - The dividend yield.
- * @property {string} divDate - The dividend date.
- * @property {string} securityStatus - The security status.
- * @property {number} regularMarketLastPrice - The last price in the regular market.
- * @property {number} regularMarketLastSize - The last size in the regular market.
- * @property {number} regularMarketNetChange - The net change in the regular market.
- * @property {number} regularMarketTradeTimeInLong - The trade time in long format in the regular market.
- * @property {number} netPercentChangeInDouble - The net percent change in double format.
- * @property {number} markChangeInDouble - The mark change in double format.
- * @property {number} markPercentChangeInDouble - The mark percent change in double format.
- * @property {boolean} delayed - Indicates if the data is delayed.
- * @property {boolean} realtimeEntitled - Indicates if real-time data is entitled.
- */
-export type QuoteData = {
-  assetType: AssetType;
-  assetMainType: string;
-  cusip: CUSIP;
-  assetSubType: string;
-  symbol: TickerSymbol;
-  description: string;
-  bidPrice: number;
-  bidSize: number;
-  bidId: string;
-  askPrice: number;
-  askSize: number;
-  askId: string;
-  lastPrice: number;
-  lastSize: number;
-  lastId: string;
-  openPrice: number;
-  highPrice: number;
-  lowPrice: number;
-  bidTick: string;
-  closePrice: number;
-  netChange: number;
-  totalVolume: number;
-  quoteTimeInLong: number;
-  tradeTimeInLong: number;
-  mark: number;
-  exchange: string;
-  exchangeName: string;
-  marginable: boolean;
-  shortable: boolean;
-  volatility: number;
-  digits: number;
-  '52WkHigh': number;
-  '52WkLow': number;
-  nAV: number;
-  peRatio: number;
-  divAmount: number;
-  divYield: number;
-  divDate: string;
-  securityStatus: string;
-  regularMarketLastPrice: number;
-  regularMarketLastSize: number;
-  regularMarketNetChange: number;
-  regularMarketTradeTimeInLong: number;
-  netPercentChangeInDouble: number;
-  markChangeInDouble: number;
-  markPercentChangeInDouble: number;
-  regularMarketPercentChangeInDouble: number;
-  delayed: boolean;
-  realtimeEntitled: boolean;
-};
-
-/**
- * Represents fundamental data for a stock.
- * @typedef {Object} Fundamentals
- * @property {TickerSymbol} symbol - The stock symbol.
- * @property {number} high52 - The 52-week high price.
- * @property {number} low52 - The 52-week low price.
- * @property {number} dividendAmount - The dividend amount.
- * @property {number} dividendYield - The dividend yield.
- * @property {string} dividendDate - The dividend date.
- * @property {number} peRatio - The Price-to-Earnings (P/E) ratio.
- * @property {number} pegRatio - The Price/Earnings to Growth (PEG) ratio.
- * @property {number} pbRatio - The Price-to-Book (P/B) ratio.
- * @property {number} prRatio - The Price-to-Revenue (P/R) ratio.
- * @property {number} pcfRatio - The Price-to-Cash Flow (P/CF) ratio.
- * @property {number} grossMarginTTM - The gross margin trailing twelve months (TTM).
- * @property {number} grossMarginMRQ - The gross margin most recent quarter (MRQ).
- * @property {number} netProfitMarginTTM - The net profit margin TTM.
- * @property {number} netProfitMarginMRQ - The net profit margin MRQ.
- * @property {number} operatingMarginTTM - The operating margin TTM.
- * @property {number} operatingMarginMRQ - The operating margin MRQ.
- * @property {number} returnOnEquity - The return on equity.
- * @property {number} returnOnAssets - The return on assets.
- * @property {number} returnOnInvestment - The return on investment.
- * @property {number} quickRatio - The quick ratio.
- * @property {number} currentRatio - The current ratio.
- * @property {number} interestCoverage - The interest coverage.
- * @property {number} totalDebtToCapital - The total debt to capital ratio.
- * @property {number} ltDebtToEquity - The long-term debt to equity ratio.
- * @property {number} totalDebtToEquity - The total debt to equity ratio.
- * @property {number} epsTTM - The earnings per share TTM.
- * @property {number} epsChangePercentTTM - The percentage change in earnings per share TTM.
- * @property {number} epsChangeYear - The change in earnings per share in a year.
- * @property {number} epsChange - The overall change in earnings per share.
- * @property {number} revChangeYear - The change in revenue in a year.
- * @property {number} revChangeTTM - The change in revenue TTM.
- * @property {number} revChangeIn - The percentage change in revenue.
- * @property {number} sharesOutstanding - The number of outstanding shares.
- * @property {number} marketCapFloat - The market capitalization (float).
- * @property {number} marketCap - The total market capitalization.
- * @property {number} bookValuePerShare - The book value per share.
- * @property {number} shortIntToFloat - The short interest to float ratio.
- * @property {number} shortIntDayToCover - The short interest days to cover.
- * @property {number} divGrowthRate3Year - The 3-year dividend growth rate.
- * @property {number} dividendPayAmount - The dividend payment amount.
- * @property {string} dividendPayDate - The dividend payment date.
- * @property {number} beta - The beta value.
- * @property {number} vol1DayAvg - The average volume over 1 day.
- * @property {number} vol10DayAvg - The average volume over 10 days.
- * @property {number} vol3MonthAvg - The average volume over 3 months.
- */
-/**
- * Represents fundamental data for a stock.
- */
-export type Fundamentals = {
-  symbol: TickerSymbol;
-  high52: number;
-  low52: number;
-  dividendAmount: number;
-  dividendYield: number;
-  dividendDate: string;
-  peRatio: number;
-  pegRatio: number;
-  pbRatio: number;
-  prRatio: number;
-  pcfRatio: number;
-  grossMarginTTM: number;
-  grossMarginMRQ: number;
-  netProfitMarginTTM: number;
-  netProfitMarginMRQ: number;
-  operatingMarginTTM: number;
-  operatingMarginMRQ: number;
-  returnOnEquity: number;
-  returnOnAssets: number;
-  returnOnInvestment: number;
-  quickRatio: number;
-  currentRatio: number;
-  interestCoverage: number;
-  totalDebtToCapital: number;
-  ltDebtToEquity: number;
-  totalDebtToEquity: number;
-  epsTTM: number;
-  epsChangePercentTTM: number;
-  epsChangeYear: number;
-  epsChange: number;
-  revChangeYear: number;
-  revChangeTTM: number;
-  revChangeIn: number;
-  sharesOutstanding: number;
-  marketCapFloat: number;
-  marketCap: number;
-  bookValuePerShare: number;
-  shortIntToFloat: number;
-  shortIntDayToCover: number;
-  divGrowthRate3Year: number;
-  dividendPayAmount: number;
-  dividendPayDate: string;
-  beta: number;
-  vol1DayAvg: number;
-  vol10DayAvg: number;
-  vol3MonthAvg: number;
-};
-
-/**
- * Represents Fundamental Data
- * @typedef {Object} FundamentalData
- * @property {Fundamentals} fundamental - Fundamental data for the stock.
- * @property {CUSIP} cusip - The CUSIP.
- * @property {TickerSymbol} symbol - The stock symbol.
- * @property {string} description - The stock description.
- * @property {string} exchange - The exchange where the stock is traded.
- * @property {string} assetType - The asset type.
- */
-export type FundamentalData = InstrumentData & {
-  fundamental: Fundamentals;
-};
-
-/**
- * Represents Open, High, Low Close Values
- * @typedef {Object} OHLC
- * @property {number} open - The opening price.
- * @property {number} high - The highest price during the period.
- * @property {number} low - The lowest price during the period.
- * @property {number} close - The closing price.
- */
-export type OHLC = {
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-};
-
-/**
- * Represents OHLC with Volume Values
- * @typedef {Object} OHLCVolume
- * @property {number} open - The opening price.
- * @property {number} high - The highest price during the period.
- * @property {number} low - The lowest price during the period.
- * @property {number} close - The closing price.
- * @property {number} volume - The trading volume.
- */
-export type OHLCVolume = OHLC & {
-  volume: number;
-}
-
-/**
- * Represents a candlestick.
- * @typedef {Object} Candlestick
- * @property {number} open - The opening price.
- * @property {number} high - The highest price during the period.
- * @property {number} low - The lowest price during the period.
- * @property {number} close - The closing price.
- * @property {number} volume - The trading volume.
- * @property {number} datetime - The timestamp of the candlestick.
- */
-export type Candlestick = OHLCVolume & {
-  datetime: number;
-}
-
-/**
- * Represents candlestick data.
- * @typedef {Object} PriceHistory
- * @property {Candlestick[]} candles - An array of candlesticks.
- * @property {TickerSymbol} symbol - The symbol associated with the data.
- * @property {boolean} empty - Indicates whether the data is empty.
- */
-export type PriceHistory = {
-  candles: Candlestick[];
-  symbol: TickerSymbol;
-  empty: boolean;
-};
-
 /**
  * ITM: In-the-money
  * NTM: Near-the-money
@@ -382,632 +60,864 @@ export type OptionContractRange = 'ALL' | 'ITM' | 'OTM' | 'NTM' | 'SAK' | 'SBK' 
  */
 export type OptionContractType = 'S' | 'NS' | 'ALL';
 
-/**
- * Represents option contract data.
- * @typedef {Object} OptionContractData
- * @property {string} putCall - The option type (e.g., "CALL" or "PUT").
- * @property {TickerSymbol} symbol - The option symbol.
- * @property {string} description - A description of the option contract.
- * @property {string} exchangeName - The exchange where the option is traded.
- * @property {number} bid - The bid price for the option.
- * @property {number} ask - The ask price for the option.
- * @property {number} last - The last traded price for the option.
- * @property {number} mark - The mark price for the option.
- * @property {number} bidSize - The size of the bid for the option.
- * @property {number} askSize - The size of the ask for the option.
- * @property {string} bidAskSize - The bid and ask sizes (e.g., "45X25").
- * @property {number} lastSize - The size of the last trade for the option.
- * @property {number} highPrice - The highest price of the option.
- * @property {number} lowPrice - The lowest price of the option.
- * @property {number} openPrice - The opening price of the option.
- * @property {number} closePrice - The closing price of the option.
- * @property {number} totalVolume - The total trading volume for the option.
- * @property {Date | null} tradeDate - The date of the last trade (nullable).
- * @property {number} tradeTimeInLong - The timestamp of the last trade.
- * @property {number} quoteTimeInLong - The timestamp of the quote.
- * @property {number} netChange - The net change in the option price.
- * @property {number} volatility - The volatility of the option.
- * @property {number} delta - The delta value of the option.
- * @property {number} gamma - The gamma value of the option.
- * @property {number} theta - The theta value of the option.
- * @property {number} vega - The vega value of the option.
- * @property {number} rho - The rho value of the option.
- * @property {number} openInterest - The open interest in the option.
- * @property {number} timeValue - The time value of the option.
- * @property {number} theoreticalOptionValue - The theoretical option value.
- * @property {number} theoreticalVolatility - The theoretical volatility of the option.
- * @property {string | null} optionDeliverablesList - The list of option deliverables (nullable).
- * @property {number} strikePrice - The strike price of the option.
- * @property {number} expirationDate - The expiration date of the option (timestamp).
- * @property {number} daysToExpiration - The number of days to option expiration.
- * @property {string} expirationType - The type of expiration (e.g., "S" for standard).
- * @property {number} lastTradingDay - The last trading day (timestamp).
- * @property {number} multiplier - The multiplier for the option (e.g., 100 for standard options).
- * @property {string} settlementType - The settlement type (e.g., " " for space).
- * @property {string} deliverableNote - A note about deliverables.
- * @property {boolean| null} isIndexOption - Indicates if the option is an index option (nullable).
- * @property {number} percentChange - The percentage change in the option price.
- * @property {number} markChange - The change in the mark price.
- * @property {number} markPercentChange - The percentage change in the mark price.
- * @property {number} intrinsicValue - The intrinsic value of the option.
- * @property {boolean} pennyPilot - Indicates if the option is part of the penny pilot program.
- * @property {boolean} nonStandard - Indicates if the option is non-standard.
- * @property {boolean} inTheMoney - Indicates if the option is in the money.
- * @property {boolean} mini - Indicates if the option is a mini option.
- */
-export type OptionContractData = {
-  putCall: 'PUT' | 'CALL';
+/** Represents multiple watchlists. */
+export type TDAmeritradeAccounts = TDAmeritradeAccount[];
+
+export type TDAmeritradeOrderLeg = {
+  instruction: BuyOrder | SellOrder;
+  quantity: number;
+  instrument: {
+    symbol: TickerSymbol;
+    assetType: AssetType;
+  };
+};
+
+export type LocalMemoryAuthDataStore = {
+  userAccessToken?: string;
+  accessTokenExpires?: DateLikeNullable;
+  refreshToken?: string;
+  refreshTokenExpires?: DateLikeNullable;
+};
+
+export type TradeTransaction = {
+  orderId: string;
+  description: OrderDescription;
+  transactionItem: {
+    positionEffect: 'OPENING' | 'CLOSING';
+    instrument: {
+      assetType: AssetType;
+      symbol: TickerSymbol;
+      cusip: CUSIP;
+      underlyingSymbol: TickerSymbol;
+    };
+  };
+};
+
+/** Represents Instrument data. */
+export type InstrumentData = {
+  /** The CUSIP (Committee on Uniform Securities Identification Procedures) number. */
+  cusip: CUSIP;
+  /** The stock symbol. */
   symbol: TickerSymbol;
+  /** The description of the stock. */
+  description?: string;
+  /** The exchange where the stock is traded. */
+  exchange?: string;
+  /** The asset type, such as "EQUITY". */
+  assetType: AssetType;
+};
+
+/** Represents Quote data. */
+export type QuoteData = {
+  /** The asset type. */
+  assetType: AssetType;
+  /** The asset main type. */
+  assetMainType: string;
+  /** The CUSIP. */
+  cusip: CUSIP;
+  /** The asset sub type. */
+  assetSubType: string;
+  /** The stock symbol. */
+  symbol: TickerSymbol;
+  /** The stock description. */
   description: string;
-  exchangeName: string;
-  bid: number;
-  ask: number;
-  last: number;
-  mark: number;
+  /** The bid price. */
+  bidPrice: number;
+  /** The bid size. */
   bidSize: number;
+  /** The bid ID. */
+  bidId: string;
+  /** The ask price. */
+  askPrice: number;
+  /** The ask size. */
   askSize: number;
-  bidAskSize: string;
+  /** The ask ID. */
+  askId: string;
+  /** The last price. */
+  lastPrice: number;
+  /** The last size. */
   lastSize: number;
-  highPrice: number;
-  lowPrice: number;
+  /** The last ID. */
+  lastId: string;
+  /** The opening price. */
   openPrice: number;
+  /** The highest price of the day. */
+  highPrice: number;
+  /** The lowest price of the day. */
+  lowPrice: number;
+  /** The bid tick. */
+  bidTick: string;
+  /** The closing price. */
   closePrice: number;
-  totalVolume: number;
-  tradeDate: Date | number | null;
-  tradeTimeInLong: number;
-  quoteTimeInLong: number;
+  /** The net price change. */
   netChange: number;
+  /** The total volume. */
+  totalVolume: number;
+  /** The quote time in long format. */
+  quoteTimeInLong: number;
+  /** The trade time in long format. */
+  tradeTimeInLong: number;
+  /** The mark price. */
+  mark: number;
+  /** The exchange. */
+  exchange: string;
+  /** The exchange name. */
+  exchangeName: string;
+  /** Indicates if it's marginable. */
+  marginable: boolean;
+  /** Indicates if it's shortable. */
+  shortable: boolean;
+  /** The volatility. */
   volatility: number;
+  /** The number of digits. */
+  digits: number;
+  /** The 52-week high price. */
+  '52WkHigh': number;
+  /** The 52-week low price. */
+  '52WkLow': number;
+  /** The NAV (Net Asset Value). */
+  nAV: number;
+  /** The P/E (Price-to-Earnings) ratio. */
+  peRatio: number;
+  /** The dividend amount. */
+  divAmount: number;
+  /** The dividend yield. */
+  divYield: number;
+  /** The dividend date. */
+  divDate: string;
+  /** The security status. */
+  securityStatus: string;
+  /** The last price in the regular market. */
+  regularMarketLastPrice: number;
+  /** The last size in the regular market. */
+  regularMarketLastSize: number;
+  /** The net change in the regular market. */
+  regularMarketNetChange: number;
+  /** The trade time in long format in the regular market. */
+  regularMarketTradeTimeInLong: number;
+  /** The net percent change in double format. */
+  netPercentChangeInDouble: number;
+  /** The mark change in double format. */
+  markChangeInDouble: number;
+  /** The mark percent change in double format. */
+  markPercentChangeInDouble: number;
+  /** The percent change in double format. */
+  regularMarketPercentChangeInDouble: number;
+  /** Indicates if the data is delayed. */
+  delayed: boolean;
+  /** Indicates if real-time data is entitled. */
+  realtimeEntitled: boolean;
+};
+
+/** Represents fundamental data for a stock. */
+export type Fundamentals = {
+  /** The stock symbol. */
+  symbol: TickerSymbol;
+  /** The 52-week high price. */
+  high52: number;
+  /** The 52-week low price. */
+  low52: number;
+  /** The dividend amount. */
+  dividendAmount: number;
+  /** The dividend yield. */
+  dividendYield: number;
+  /** The dividend date. */
+  dividendDate: string;
+  /** The Price-to-Earnings (P/E) ratio. */
+  peRatio: number;
+  /** The Price/Earnings to Growth (PEG) ratio. */
+  pegRatio: number;
+  /** The Price-to-Book (P/B) ratio. */
+  pbRatio: number;
+  /** The Price-to-Revenue (P/R) ratio. */
+  prRatio: number;
+  /** The Price-to-Cash Flow (P/CF) ratio. */
+  pcfRatio: number;
+  /** The gross margin trailing twelve months (TTM). */
+  grossMarginTTM: number;
+  /** The gross margin most recent quarter (MRQ). */
+  grossMarginMRQ: number;
+  /** The net profit margin TTM. */
+  netProfitMarginTTM: number;
+  /** The net profit margin MRQ. */
+  netProfitMarginMRQ: number;
+  /** The operating margin TTM. */
+  operatingMarginTTM: number;
+  /** The operating margin MRQ. */
+  operatingMarginMRQ: number;
+  /** The return on equity. */
+  returnOnEquity: number;
+  /** The return on assets. */
+  returnOnAssets: number;
+  /** The return on investment. */
+  returnOnInvestment: number;
+  /** The quick ratio. */
+  quickRatio: number;
+  /** The current ratio. */
+  currentRatio: number;
+  /** The interest coverage. */
+  interestCoverage: number;
+  /** The total debt to capital ratio. */
+  totalDebtToCapital: number;
+  /** The long-term debt to equity ratio. */
+  ltDebtToEquity: number;
+  /** The total debt to equity ratio. */
+  totalDebtToEquity: number;
+  /** The earnings per share TTM. */
+  epsTTM: number;
+  /** The percentage change in earnings per share TTM. */
+  epsChangePercentTTM: number;
+  /** The change in earnings per share in a year. */
+  epsChangeYear: number;
+  /** The overall change in earnings per share. */
+  epsChange: number;
+  /** The change in revenue in a year. */
+  revChangeYear: number;
+  /** The change in revenue TTM. */
+  revChangeTTM: number;
+  /** The percentage change in revenue. */
+  revChangeIn: number;
+  /** The number of outstanding shares. */
+  sharesOutstanding: number;
+  /** The market capitalization (float). */
+  marketCapFloat: number;
+  /** The total market capitalization. */
+  marketCap: number;
+  /** The book value per share. */
+  bookValuePerShare: number;
+  /** The short interest to float ratio. */
+  shortIntToFloat: number;
+  /** The short interest days to cover. */
+  shortIntDayToCover: number;
+  /** The 3-year dividend growth rate. */
+  divGrowthRate3Year: number;
+  /** The dividend payment amount. */
+  dividendPayAmount: number;
+  /** The dividend payment date. */
+  dividendPayDate: string;
+  /** The beta value. */
+  beta: number;
+  /** The average volume over 1 day. */
+  vol1DayAvg: number;
+  /** The average volume over 10 days. */
+  vol10DayAvg: number;
+  /** The average volume over 3 months. */
+  vol3MonthAvg: number;
+};
+
+/** Represents Fundamental Data */
+export type FundamentalData = InstrumentData & {
+  /** Fundamental data for the stock. */
+  fundamental: Fundamentals;
+};
+
+/** Represents Open, High, Low, Close Values. */
+export type OHLC = {
+  /** The opening price. */
+  open: number;
+  /** The highest price during the period. */
+  high: number;
+  /** The lowest price during the period. */
+  low: number;
+  /** The closing price. */
+  close: number;
+};
+
+/** Represents OHLC with Volume Data. */
+export type OHLCVolume = OHLC & {
+  /** The trading volume. */
+  volume: number;
+}
+
+/** Represents a candlestick. */
+export type Candlestick = OHLCVolume & {
+  /** The timestamp of the candlestick. */
+  datetime: number;
+}
+
+/** Represents Price History Data. */
+export type PriceHistory = {
+  /** An array of candlesticks. */
+  candles: Candlestick[];
+  /** The symbol associated with the data. */
+  symbol: TickerSymbol;
+  /** Indicates whether the data is empty. */
+  empty: boolean;
+};
+
+/** Represents option contract data. */
+export type OptionContractData = {
+  /** The option type (e.g., "CALL" or "PUT"). */
+  putCall: 'PUT' | 'CALL';
+  /** The option symbol. */
+  symbol: TickerSymbol;
+  /** A description of the option contract. */
+  description: string;
+  /** The exchange where the option is traded. */
+  exchangeName: string;
+  /** The bid price for the option. */
+  bid: number;
+  /** The ask price for the option. */
+  ask: number;
+  /** The last traded price for the option. */
+  last: number;
+  /** The mark price for the option. */
+  mark: number;
+  /** The size of the bid for the option. */
+  bidSize: number;
+  /** The size of the ask for the option. */
+  askSize: number;
+  /** The bid and ask sizes (e.g., "45X25"). */
+  bidAskSize: string;
+  /** The size of the last trade for the option. */
+  lastSize: number;
+  /** The highest price of the option. */
+  highPrice: number;
+  /** The lowest price of the option. */
+  lowPrice: number;
+  /** The opening price of the option. */
+  openPrice: number;
+  /** The closing price of the option. */
+  closePrice: number;
+  /** The total trading volume for the option. */
+  totalVolume: number;
+  /** The date of the last trade (nullable). */
+  tradeDate: Date | number | null;
+  /** The timestamp of the last trade. */
+  tradeTimeInLong: number;
+  /** The timestamp of the quote. */
+  quoteTimeInLong: number;
+  /** The net change in the option price. */
+  netChange: number;
+  /** The volatility of the option. */
+  volatility: number;
+  /** The delta value of the option. */
   delta: number;
+  /** The gamma value of the option. */
   gamma: number;
+  /** The theta value of the option. */
   theta: number;
+  /** The vega value of the option. */
   vega: number;
+  /** The rho value of the option. */
   rho: number;
+  /** The open interest in the option. */
   openInterest: number;
+  /** The time value of the option. */
   timeValue: number;
+  /** The theoretical option value. */
   theoreticalOptionValue: number;
+  /** The theoretical volatility of the option. */
   theoreticalVolatility: number;
+  /** The list of option deliverables (nullable). */
   optionDeliverablesList: string | null;
+  /** The strike price of the option. */
   strikePrice: number;
+  /** The expiration date of the option (timestamp). */
   expirationDate: number;
+  /** The number of days to option expiration. */
   daysToExpiration: number;
+  /** The type of expiration (e.g., "S" for standard). */
   expirationType: string;
+  /** The last trading day (timestamp). */
   lastTradingDay: number;
+  /** The multiplier for the option (e.g., 100 for standard options). */
   multiplier: number;
+  /** The settlement type (e.g., " " for space). */
   settlementType: string;
+  /** A note about deliverables. */
   deliverableNote: string;
+  /** Indicates if the option is an index option (nullable). */
   isIndexOption: boolean | null;
+  /** The percentage change in the option price. */
   percentChange: number;
+  /** The change in the mark price. */
   markChange: number;
+  /** The percentage change in the mark price. */
   markPercentChange: number;
+  /** The intrinsic value of the option. */
   intrinsicValue: number;
+  /** Indicates if the option is part of the penny pilot program. */
   pennyPilot: boolean;
+  /** Indicates if the option is non-standard. */
   nonStandard: boolean;
+  /** Indicates if the option is in the money. */
   inTheMoney: boolean;
+  /** Indicates if the option is a mini option. */
   mini: boolean;
 };
 
-
-/**
- * Represents information about the underlying asset.
- * @typedef {Object} UnderlyingAsset
- * @property {TickerSymbol} symbol - The symbol of the underlying asset.
- * @property {string} description - The description of the underlying asset.
- * @property {number} change - The change in the underlying asset's price.
- * @property {number} percentChange - The percentage change in the underlying asset's price.
- * @property {number} close - The closing price of the underlying asset.
- * @property {number} quoteTime - The timestamp of the underlying asset's quote time.
- * @property {number} tradeTime - The timestamp of the underlying asset's trade time.
- * @property {number} bid - The bid price for the underlying asset.
- * @property {number} ask - The ask price for the underlying asset.
- * @property {number} last - The last traded price for the underlying asset.
- * @property {number} mark - The mark price for the underlying asset.
- * @property {number} markChange - The change in the mark price for the underlying asset.
- * @property {number} markPercentChange - The percentage change in the mark price for the underlying asset.
- * @property {number} bidSize - The size of the bid for the underlying asset.
- * @property {number} askSize - The size of the ask for the underlying asset.
- * @property {number} highPrice - The highest price of the underlying asset.
- * @property {number} lowPrice - The lowest price of the underlying asset.
- * @property {number} openPrice - The opening price of the underlying asset.
- * @property {number} totalVolume - The total trading volume for the underlying asset.
- * @property {string} exchangeName - The name of the exchange where the underlying asset is traded.
- * @property {number} fiftyTwoWeekHigh - The fifty-two week high price of the underlying asset.
- * @property {number} fiftyTwoWeekLow - The fifty-two week low price of the underlying asset.
- * @property {boolean} delayed - Indicates if the data is delayed for the underlying asset.
- */
+/** Represents information about the underlying asset. */
 export type UnderlyingAsset = {
+  /** The symbol of the underlying asset. */
   symbol: TickerSymbol;
+  /** The description of the underlying asset. */
   description: string;
+  /** The change in the underlying asset's price. */
   change: number;
+  /** The percentage change in the underlying asset's price. */
   percentChange: number;
+  /** The closing price of the underlying asset. */
   close: number;
+  /** The timestamp of the underlying asset's quote time. */
   quoteTime: number;
+  /** The timestamp of the underlying asset's trade time. */
   tradeTime: number;
+  /** The bid price for the underlying asset. */
   bid: number;
+  /** The ask price for the underlying asset. */
   ask: number;
+  /** The last traded price for the underlying asset. */
   last: number;
+  /** The mark price for the underlying asset. */
   mark: number;
+  /** The change in the mark price for the underlying asset. */
   markChange: number;
+  /** The percentage change in the mark price for the underlying asset. */
   markPercentChange: number;
+  /** The size of the bid for the underlying asset. */
   bidSize: number;
+  /** The size of the ask for the underlying asset. */
   askSize: number;
+  /** The highest price of the underlying asset. */
   highPrice: number;
+  /** The lowest price of the underlying asset. */
   lowPrice: number;
+  /** The opening price of the underlying asset. */
   openPrice: number;
+  /** The total trading volume for the underlying asset. */
   totalVolume: number;
+  /** The name of the exchange where the underlying asset is traded. */
   exchangeName: string;
+  /** The fifty-two week high price of the underlying asset. */
   fiftyTwoWeekHigh: number;
+  /** The fifty-two week low price of the underlying asset. */
   fiftyTwoWeekLow: number;
+  /** Indicates if the data is delayed for the underlying asset. */
   delayed: boolean;
 };
 
-/**
- * Represents option chain data.
- * @typedef {Object} OptionChainData
- * @property {TickerSymbol} symbol - The symbol.
- * @property {string} status - The status of the option chain (e.g., "SUCCESS").
- * @property {UnderlyingAsset} underlying - Information about the underlying asset.
- * @property {string} strategy - The trading strategy (e.g., "SINGLE").
- * @property {number} interval - The interval.
- * @property {boolean} isDelayed - Indicates if the data is delayed.
- * @property {boolean} isIndex - Indicates if the data is related to an index.
- * @property {number} interestRate - The interest rate.
- * @property {number} underlyingPrice - The price of the underlying asset.
- * @property {number} volatility - The volatility.
- * @property {number} daysToExpiration - The number of days to expiration.
- * @property {number} numberOfContracts - The number of contracts.
- * @property {Record<string, Record<string, OptionContractData[]>>} putExpDateMap - Map of put expiration dates and their data.
- * @property {Record<string, Record<string, OptionContractData[]>>} callExpDateMap - Map of call expiration dates and their data.
- */
+/** Represents option chain data. */
 export type OptionChainData = {
+  /** The symbol. */
   symbol: TickerSymbol;
+  /** The status of the option chain (e.g., "SUCCESS"). */
   status: string;
+  /** Information about the underlying asset. */
   underlying: UnderlyingAsset;
+  /** The trading strategy (e.g., "SINGLE"). */
   strategy: string;
+  /** The interval. */
   interval: number;
+  /** Indicates if the data is delayed. */
   isDelayed: boolean;
+  /** Indicates if the data is related to an index. */
   isIndex: boolean;
+  /** The interest rate. */
   interestRate: number;
+  /** The price of the underlying asset. */
   underlyingPrice: number;
+  /** The volatility. */
   volatility: number;
+  /** The number of days to expiration. */
   daysToExpiration: number;
+  /** The number of contracts. */
   numberOfContracts: number;
+  /** Map of put expiration dates and their data. */
   putExpDateMap: Record<string, Record<string, OptionContractData[]>>;
+  /** Map of call expiration dates and their data. */
   callExpDateMap: Record<string, Record<string, OptionContractData[]>>;
 };
 
-/**
- * Represents an instrument.
- * @typedef {Object} WatchlistItemInstrument
- * @property {string} symbol - The symbol of the instrument.
- * @property {string} assetType - The asset type of the instrument (e.g., "EQUITY").
- */
+/** Represents an instrument. */
 export type WatchlistItemInstrument = {
+  /** The symbol of the instrument. */
   symbol: TickerSymbol;
-  assetType: string;
+  /** The asset type of the instrument (e.g., "EQUITY"). */
+  assetType: AssetType;
 };
 
-/**
- * Represents an instrument within a watchlist.
- * @typedef {Object} WatchlistItem
- * @property {number} sequenceId - The sequence ID of the watchlist item.
- * @property {number} quantity - The quantity of the instrument.
- * @property {number} averagePrice - The average price of the instrument.
- * @property {number} commission - The commission associated with the instrument.
- * @property {WatchlistItemInstrument} instrument - The instrument details.
- */
+/** Represents an instrument within a watchlist. */
 export type WatchlistItem = {
+  /** The sequence ID of the watchlist item. */
   sequenceId: number;
+  /** The quantity of the instrument. */
   quantity: number;
+  /** The average price of the instrument. */
   averagePrice: number;
+  /** The commission associated with the instrument. */
   commission: number;
+  /** The instrument details. */
   instrument: WatchlistItemInstrument;
 };
 
-/**
- * Represents a watchlist.
- * @typedef {Object} Watchlist
- * @property {string} name - The name of the watchlist.
- * @property {string} watchlistId - The ID of the watchlist.
- * @property {string} accountId - The ID of the account associated with the watchlist.
- * @property {Array<WatchlistItem>} watchlistItems - The list of watchlist items.
- */
+/** Represents a watchlist. */
 export type Watchlist = {
+  /** The name of the watchlist. */
   name: string;
+  /** The ID of the watchlist. */
   watchlistId: string;
+  /** The ID of the account associated with the watchlist. */
   accountId: string;
+  /** The list of watchlist items. */
   watchlistItems: WatchlistItem[];
 };
 
-/**
- * Represents multiple watchlists.
- * @typedef {Watchlist[]} Watchlists
- */
+/** Represents multiple watchlists. */
 export type Watchlists = Watchlist[];
 
-/**
- * Represents an account's financial summary.
- * @typedef {Object} CurrentBalances
- * @property {number} accruedInterest - Accrued interest.
- * @property {number} cashBalance - Cash balance.
- * @property {number} cashReceipts - Cash receipts.
- * @property {number} longOptionMarketValue - Long option market value.
- * @property {number} liquidationValue - Liquidation value.
- * @property {number} longMarketValue - Long market value.
- * @property {number} moneyMarketFund - Money market fund.
- * @property {number} savings - Savings amount.
- * @property {number} shortMarketValue - Short market value.
- * @property {number} pendingDeposits - Pending deposits.
- * @property {number} availableFunds - Available funds.
- * @property {number} availableFundsNonMarginableTrade - Available funds for non-marginable trade.
- * @property {number} buyingPower - Buying power.
- * @property {number} buyingPowerNonMarginableTrade - Buying power for non-marginable trade.
- * @property {number} dayTradingBuyingPower - Day trading buying power.
- * @property {number} equity - Equity.
- * @property {number} equityPercentage - Equity percentage.
- * @property {number} longMarginValue - Long margin value.
- * @property {number} maintenanceCall - Maintenance call amount.
- * @property {number} maintenanceRequirement - Maintenance requirement.
- * @property {number} marginBalance - Margin balance.
- * @property {number} regTCall - Regulation T call amount.
- * @property {number} shortBalance - Short balance.
- * @property {number} shortMarginValue - Short margin value.
- * @property {number} shortOptionMarketValue - Short option market value.
- * @property {number} sma - Special memorandum account (SMA).
- * @property {number} mutualFundValue - Mutual fund value.
- * @property {number} bondValue - Bond value.
- */
+/** Represents Current Balances. */
 export type CurrentBalances = {
+  /** Accrued interest. */
   accruedInterest: number;
+  /** Cash balance. */
   cashBalance: number;
+  /** Cash receipts. */
   cashReceipts: number;
+  /** Long option market value. */
   longOptionMarketValue: number;
+  /** Liquidation value. */
   liquidationValue: number;
+  /** Long market value. */
   longMarketValue: number;
+  /** Money market fund. */
   moneyMarketFund: number;
+  /** Savings amount. */
   savings: number;
+  /** Short market value. */
   shortMarketValue: number;
+  /** Pending deposits. */
   pendingDeposits: number;
+  /** Available funds. */
   availableFunds: number;
+  /** Available funds for non-marginable trade. */
   availableFundsNonMarginableTrade: number;
+  /** Buying power. */
   buyingPower: number;
+  /** Buying power for non-marginable trade. */
   buyingPowerNonMarginableTrade: number;
+  /** Day trading buying power. */
   dayTradingBuyingPower: number;
+  /** Equity. */
   equity: number;
+  /** Equity percentage. */
   equityPercentage: number;
+  /** Long margin value. */
   longMarginValue: number;
+  /** Maintenance call amount. */
   maintenanceCall: number;
+  /** Maintenance requirement. */
   maintenanceRequirement: number;
+  /** Margin balance. */
   marginBalance: number;
+  /** Regulation T call amount. */
   regTCall: number;
+  /** Short balance. */
   shortBalance: number;
+  /** Short margin value. */
   shortMarginValue: number;
+  /** Short option market value. */
   shortOptionMarketValue: number;
+  /** Special memorandum account (SMA). */
   sma: number;
+  /** Mutual fund value. */
   mutualFundValue: number;
+  /** Bond value. */
   bondValue: number;
 };
 
-/**
- * Represents an account's financial summary.
- * @typedef {Object} InitialBalances
- * @property {number} accruedInterest - Accrued interest.
- * @property {number} availableFundsNonMarginableTrade - Available funds for non-marginable trade.
- * @property {number} bondValue - Bond value.
- * @property {number} buyingPower - Buying power.
- * @property {number} cashBalance - Cash balance.
- * @property {number} cashAvailableForTrading - Cash available for trading.
- * @property {number} cashReceipts - Cash receipts.
- * @property {number} dayTradingBuyingPower - Day trading buying power.
- * @property {number} dayTradingBuyingPowerCall - Day trading buying power call.
- * @property {number} dayTradingEquityCall - Day trading equity call.
- * @property {number} equity - Equity.
- * @property {number} equityPercentage - Equity percentage.
- * @property {number} liquidationValue - Liquidation value.
- * @property {number} longMarginValue - Long margin value.
- * @property {number} longOptionMarketValue - Long option market value.
- * @property {number} longStockValue - Long stock value.
- * @property {number} maintenanceCall - Maintenance call amount.
- * @property {number} maintenanceRequirement - Maintenance requirement.
- * @property {number} margin - Margin amount.
- * @property {number} marginEquity - Margin equity.
- * @property {number} moneyMarketFund - Money market fund.
- * @property {number} mutualFundValue - Mutual fund value.
- * @property {number} regTCall - Regulation T call amount.
- * @property {number} shortMarginValue - Short margin value.
- * @property {number} shortOptionMarketValue - Short option market value.
- * @property {number} shortStockValue - Short stock value.
- * @property {number} totalCash - Total cash.
- * @property {number} isInCall - Is in call status.
- * @property {number} pendingDeposits - Pending deposits.
- * @property {number} marginBalance - Margin balance.
- * @property {number} shortBalance - Short balance.
- * @property {number} accountValue - Account value.
- */
+/** Represents Initial Balances. */
 export type InitialBalances = {
+  /** Accrued interest. */
   accruedInterest: number;
+  /** Available funds for non-marginable trade. */
   availableFundsNonMarginableTrade: number;
+  /** Bond value. */
   bondValue: number;
+  /** Buying power. */
   buyingPower: number;
+  /** Cash balance. */
   cashBalance: number;
+  /** Cash available for trading. */
   cashAvailableForTrading: number;
+  /** Cash receipts. */
   cashReceipts: number;
+  /** Day trading buying power. */
   dayTradingBuyingPower: number;
+  /** Day trading buying power call. */
   dayTradingBuyingPowerCall: number;
+  /** Day trading equity call. */
   dayTradingEquityCall: number;
+  /** Equity. */
   equity: number;
+  /** Equity percentage. */
   equityPercentage: number;
+  /** Liquidation value. */
   liquidationValue: number;
+  /** Long margin value. */
   longMarginValue: number;
+  /** Long option market value. */
   longOptionMarketValue: number;
+  /** Long stock value. */
   longStockValue: number;
+  /** Maintenance call amount. */
   maintenanceCall: number;
+  /** Maintenance requirement. */
   maintenanceRequirement: number;
+  /** Margin amount. */
   margin: number;
+  /** Margin equity. */
   marginEquity: number;
+  /** Money market fund. */
   moneyMarketFund: number;
+  /** Mutual fund value. */
   mutualFundValue: number;
+  /** Regulation T call amount. */
   regTCall: number;
+  /** Short margin value. */
   shortMarginValue: number;
+  /** Short option market value. */
   shortOptionMarketValue: number;
+  /** Short stock value. */
   shortStockValue: number;
+  /** Total cash. */
   totalCash: number;
+  /** Is in call status. */
   isInCall: number;
+  /** Pending deposits. */
   pendingDeposits: number;
+  /** Margin balance. */
   marginBalance: number;
+  /** Short balance. */
   shortBalance: number;
+  /** Account value. */
   accountValue: number;
 };
 
-/**
- * Represents account-related data.
- * @typedef {Object} ProjectedBalances
- * @property {number} availableFunds - The available funds in the account.
- * @property {number} availableFundsNonMarginableTrade - The available funds for non-marginable trades.
- * @property {number} buyingPower - The buying power of the account.
- * @property {number} dayTradingBuyingPower - The buying power for day trading.
- * @property {number} dayTradingBuyingPowerCall - The day trading buying power call.
- * @property {number} maintenanceCall - The maintenance call.
- * @property {number} regTCall - The Regulation T (Reg T) call.
- * @property {number} isInCall - Indicates whether the account is in a call state.
- * @property {number} stockBuyingPower - The buying power for stock trades.
- */
+/** Represents Projected Balances. */
 export type ProjectedBalances = {
+  /** The available funds in the account. */
   availableFunds: number;
+  /** The available funds for non-marginable trades. */
   availableFundsNonMarginableTrade: number;
+  /** The buying power of the account. */
   buyingPower: number;
+  /** The buying power for day trading. */
   dayTradingBuyingPower: number;
+  /** The day trading buying power call. */
   dayTradingBuyingPowerCall: number;
+  /** The maintenance call. */
   maintenanceCall: number;
+  /** The Regulation T (Reg T) call. */
   regTCall: number;
+  /** Indicates whether the account is in a call state. */
   isInCall: number;
+  /** The buying power for stock trades. */
   stockBuyingPower: number;
 };
 
-/**
- * Represents data related to a trading position.
- * @typedef {Object} PositionData
- * @property {number} shortQuantity - The quantity of short positions.
- * @property {number} averagePrice - The average price of the positions.
- * @property {number} currentDayCost - The current day cost.
- * @property {number} currentDayProfitLoss - The current day profit or loss.
- * @property {number} currentDayProfitLossPercentage - The percentage of profit or loss for the current day.
- * @property {number} longQuantity - The quantity of long positions.
- * @property {number} settledLongQuantity - The settled quantity of long positions.
- * @property {number} settledShortQuantity - The settled quantity of short positions.
- * @property {InstrumentData} instrument - Information about the financial instrument.
- * @property {number} marketValue - The market value of the positions.
- * @property {number} maintenanceRequirement - The maintenance requirement.
- * @property {number} previousSessionLongQuantity - The quantity of long positions from the previous session.
- */
+/** Represents Positions Data. */
 export type PositionData = {
+  /** The quantity of short positions. */
   shortQuantity: number;
+  /** The average price of the positions. */
   averagePrice: number;
+  /** The current day cost. */
   currentDayCost: number;
+  /** The current day profit or loss. */
   currentDayProfitLoss: number;
+  /** The percentage of profit or loss for the current day. */
   currentDayProfitLossPercentage: number;
+  /** The quantity of long positions. */
   longQuantity: number;
+  /** The settled quantity of long positions. */
   settledLongQuantity: number;
+  /** The settled quantity of short positions. */
   settledShortQuantity: number;
+  /** Information about the financial instrument. */
   instrument: InstrumentData;
+  /** The market value of the positions. */
   marketValue: number;
+  /** The maintenance requirement. */
   maintenanceRequirement: number;
+  /** The quantity of long positions from the previous session. */
   previousSessionLongQuantity: number;
 };
 
+/** Represents a TD Ameritrade account. */
 export type TDAmeritradeAccount = {
+  /** Information about the securities account. */
   securitiesAccount: {
+    /** The account ID. */
     accountId: TDAmeritradeAccountID;
+    /** The current balances. */
     currentBalances: CurrentBalances;
+    /** The initial balances. */
     initialBalances: InitialBalances;
+    /** The projected balances. */
     projectedBalances: ProjectedBalances;
+    /** Indicates if the account is closing-only restricted. */
     isClosingOnlyRestricted: boolean;
+    /** Indicates if the account is a day trader account. */
     isDayTrader: boolean;
+    /** The number of round trips. */
     roundtrips: number;
+    /** The account type. */
     type: string;
+    /** The positions in the account. */
     positions: PositionData[];
   }
-}
+};
 
-/**
- * Represents multiple watchlists.
- * @typedef {TDAmeritradeAccount[]} TDAmeritradeAccounts
- */
-export type TDAmeritradeAccounts = TDAmeritradeAccount[];
-
-/**
- * Represents a delay status for various exchanges.
- * @typedef {Object} ExchangeDelayStatus
- * @property {boolean} isNyseDelayed - Indicates if NYSE data is delayed.
- * @property {boolean} isNasdaqDelayed - Indicates if NASDAQ data is delayed.
- * @property {boolean} isOpraDelayed - Indicates if OPRA data is delayed.
- * @property {boolean} isAmexDelayed - Indicates if AMEX data is delayed.
- * @property {boolean} isCmeDelayed - Indicates if CME data is delayed.
- * @property {boolean} isIceDelayed - Indicates if ICE data is delayed.
- * @property {boolean} isForexDelayed - Indicates if Forex data is delayed.
- */
+/** Represents a delay status for various exchanges. */
 export type ExchangeDelayStatus = {
+  /** Indicates if NYSE data is delayed. */
   isNyseDelayed: boolean;
+  /** Indicates if NASDAQ data is delayed. */
   isNasdaqDelayed: boolean;
+  /** Indicates if OPRA data is delayed. */
   isOpraDelayed: boolean;
+  /** Indicates if AMEX data is delayed. */
   isAmexDelayed: boolean;
+  /** Indicates if CME data is delayed. */
   isCmeDelayed: boolean;
+  /** Indicates if ICE data is delayed. */
   isIceDelayed: boolean;
+  /** Indicates if Forex data is delayed. */
   isForexDelayed: boolean;
 };
 
-/**
- * Represents a single streamer subscription key.
- * @typedef {Object} StreamerSubscriptionKey
- * @property {string} key - The subscription key.
- */
+/** Represents a single streamer subscription key. */
 export type StreamerSubscriptionKey = {
+  /** The subscription key. */
   key: string
 };
 
-/**
- * Represents an array of streamer subscription keys.
- * @typedef {Object} StreamerSubscriptionKeys
- * @property {StreamerSubscriptionKey[]} keys - An array of streamer subscription keys.
- */
+/** Represents an array of streamer subscription keys. */
 export type StreamerSubscriptionKeys = {
+  /** An array of streamer subscription keys. */
   keys: StreamerSubscriptionKey[]
 };
 
-/**
- * Represents streamer information.
- * @typedef {Object} StreamerInfo
- * @property {string} accessLevel - The access level of the streamer.
- * @property {string} acl - The ACL (Access Control List) of the streamer.
- * @property {string} appId - The application ID of the streamer.
- * @property {string} streamerBinaryUrl - The binary URL of the streamer.
- * @property {string} streamerSocketUrl - The socket URL of the streamer.
- * @property {string} token - The token for authentication.
- * @property {DateLikeNullable} tokenTimestamp - The timestamp of the token.
- * @property {string} userGroup - The user group of the streamer.
- */
+/** Represents streamer information. */
 export type StreamerInfo = {
+  /** The access level of the streamer. */
   accessLevel: string;
+  /** The ACL (Access Control List) of the streamer. */
   acl: string;
+  /** The application ID of the streamer. */
   appId: string;
+  /** The binary URL of the streamer. */
   streamerBinaryUrl: string;
+  /** The socket URL of the streamer. */
   streamerSocketUrl: string;
+  /** The token for authentication. */
   token: string;
+  /** The timestamp of the token. */
   tokenTimestamp: DateLikeNullable;
+  /** The user group of the streamer. */
   userGroup: string;
-}
+};
 
-/**
- * Represents principal data.
- * @typedef {Object} UserPrincipalsData
- * @property {string} accessLevel - The access level of the principal.
- * @property {Object} exchangeAgreements - Exchange agreements status.
- * @property {AcceptedOrRejected} exchangeAgreements.NASDAQ_EXCHANGE_AGREEMENT - NASDAQ exchange agreement status.
- * @property {AcceptedOrRejected} exchangeAgreements.NYSE_EXCHANGE_AGREEMENT - NYSE exchange agreement status.
- * @property {AcceptedOrRejected} exchangeAgreements.OPRA_EXCHANGE_AGREEMENT - OPRA exchange agreement status.
- * @property {DateLikeNullable} lastLoginTime - The timestamp of the last login time.
- * @property {DateLikeNullable} loginTime - The timestamp of the login time.
- * @property {TDAmeritradeAccountID} primaryAccountId - The primary account ID.
- * @property {'PROFESSIONAL' | 'NON_PROFESSIONAL'} professionaStatus - The professional status.
- * @property {boolean} stalePassword - Indicates if the password is stale.
- * @property {DateLikeNullable} tokenExpirationTime - The timestamp of the token expiration time.
- * @property {string} userCdDomainId - The user's CD domain ID.
- * @property {string} userId - The user ID.
- * @property {StreamerSubscriptionKeys[]} streamerSubscriptionKeys - An array of streamer subscription keys.
- * @property {ExchangeDelayStatus} quotes - Exchange delay status.
- * @property {StreamerInfo} streamerInfo - Streamer information.
- */
+/** Represents principal data. */
 export type UserPrincipalsData = {
+  /** The access level of the principal. */
   accessLevel: string;
+  /** Exchange agreements status. */
   exchangeAgreements: {
+    /** NASDAQ exchange agreement status. */
     NASDAQ_EXCHANGE_AGREEMENT: AcceptedOrRejected;
+    /** NYSE exchange agreement status. */
     NYSE_EXCHANGE_AGREEMENT: AcceptedOrRejected;
+    /** OPRA exchange agreement status. */
     OPRA_EXCHANGE_AGREEMENT: AcceptedOrRejected;
   };
+  /** The timestamp of the last login time. */
   lastLoginTime: DateLikeNullable;
+  /** The timestamp of the login time. */
   loginTime: DateLikeNullable;
+  /** The primary account ID. */
   primaryAccountId: TDAmeritradeAccountID;
+  /** The professional status. */
   professionaStatus: 'PROFESSIONAL' | 'NON_PROFESSIONAL';
+  /** Indicates if the password is stale. */
   stalePassword: boolean;
+  /** The timestamp of the token expiration time. */
   tokenExpirationTime: DateLikeNullable;
+  /** The user's CD domain ID. */
   userCdDomainId: string;
+  /** The user ID. */
   userId: string;
+  /** An array of streamer subscription keys. */
   streamerSubscriptionKeys: StreamerSubscriptionKeys[];
+  /** Exchange delay status. */
   quotes: ExchangeDelayStatus;
+  /** Streamer information. */
   streamerInfo: StreamerInfo;
-}
+};
 
-/**
- * Represents fees associated with a trade transaction.
- * @typedef {Object} TradeTransactionFees
- * @property {number} rFee - The R fee.
- * @property {number} additionalFee - Additional fees.
- * @property {number} cdscFee - CDSC (Contingent Deferred Sales Charge) fee.
- * @property {number} regFee - Registration fee.
- * @property {number} otherCharges - Other charges.
- * @property {number} commission - Commission fee.
- * @property {number} optRegFee - Options registration fee.
- * @property {number} secFee - SEC (U.S. Securities and Exchange Commission) fee.
- */
+/** Represents fees associated with a trade transaction. */
 export type TradeTransactionFees = {
+  /** The R fee. */
   rFee: number;
+  /** Additional fees. */
   additionalFee: number;
+  /** CDSC (Contingent Deferred Sales Charge) fee. */
   cdscFee: number;
+  /** Registration fee. */
   regFee: number;
+  /** Other charges. */
   otherCharges: number;
+  /** Commission fee. */
   commission: number;
+  /** Options registration fee. */
   optRegFee: number;
+  /** SEC (U.S. Securities and Exchange Commission) fee. */
   secFee: number;
 };
 
-/**
- * Represents a trade transaction item.
- * @typedef {Object} TradeTransactionItem
- * @property {TDAmeritradeAccountID} accountId - The ID of the account associated with the transaction item.
- * @property {number} amount - The amount of the transaction item.
- * @property {number} price - The price of the transaction item.
- * @property {number} cost - The cost associated with the transaction item.
- * @property {BuyOrder | SellOrder} instruction - The instruction for the transaction item (e.g., "BUY").
- * @property {InstrumentData} instrument - Information about the instrument involved in the transaction item.
- */
+/** Represents a trade transaction item. */
 export type TradeTransactionItem = {
+  /** The ID of the account associated with the transaction item. */
   accountId: TDAmeritradeAccountID;
+  /** The amount of the transaction item. */
   amount: number;
+  /** The price of the transaction item. */
   price: number;
+  /** The cost associated with the transaction item. */
   cost: number;
+  /** The instruction for the transaction item (e.g., "BUY"). */
   instruction: BuyOrder | SellOrder;
+  /** Information about the instrument involved in the transaction item. */
   instrument: InstrumentData;
 };
 
-/**
- * Represents a trade transaction.
- * @typedef {Object} TransactionsData
- * @property {string} type - The type of transaction (e.g., "TRADE").
- * @property {string} subAccount - The sub-account associated with the transaction.
- * @property {DateLikeNullable} settlementDate - The settlement date of the transaction (e.g., "2022-09-14").
- * @property {string} orderId - The ID of the order associated with the transaction.
- * @property {number} netAmount - The net amount of the transaction.
- * @property {DateLikeNullable} transactionDate - The date and time of the transaction in ISO 8601 format.
- * @property {DateLikeNullable} orderDate - The date and time when the order was placed in ISO 8601 format.
- * @property {string} transactionSubType - The sub-type of the transaction (e.g., "BY").
- * @property {number} transactionId - The unique ID of the transaction.
- * @property {boolean} cashBalanceEffectFlag - Indicates whether the transaction affects the cash balance.
- * @property {string} description - A description of the transaction.
- * @property {TradeTransactionFees} fees - Object containing various fee information related to the transaction.
- * @property {TradeTransactionItem} transactionItem - Detailed information about the transaction item.
- */
+/** Represents a trade transaction. */
 export type TransactionsData = {
+  /** The type of transaction (e.g., "TRADE"). */
   type: string;
+  /** The sub-account associated with the transaction. */
   subAccount: string;
+  /** The settlement date of the transaction (e.g., "2022-09-14"). */
   settlementDate: DateLikeNullable;
+  /** The ID of the order associated with the transaction. */
   orderId: string;
+  /** The net amount of the transaction. */
   netAmount: number;
+  /** The date and time of the transaction in ISO 8601 format. */
   transactionDate: DateLikeNullable;
+  /** The date and time when the order was placed in ISO 8601 format. */
   orderDate: DateLikeNullable;
+  /** The sub-type of the transaction (e.g., "BY"). */
   transactionSubType: string;
+  /** The unique ID of the transaction. */
   transactionId: number;
+  /** Indicates whether the transaction affects the cash balance. */
   cashBalanceEffectFlag: boolean;
+  /** A description of the transaction. */
   description: string;
+  /** Object containing various fee information related to the transaction. */
   fees: TradeTransactionFees;
+  /** Detailed information about the transaction item. */
   transactionItem: TradeTransactionItem;
 };
