@@ -1259,99 +1259,97 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api/td-utils' {
    * @param {TradeTransaction[]} trades - TRADE Transactions
    * @returns {TradeTransaction[]}
    */
-  export const getBuyTrades: (trades: TradeTransaction[]) => TradeTransaction[];
+  export function getBuyTrades(trades: TradeTransaction[]): TradeTransaction[];
   /**
    * Get Sell Trades
    * @param {TradeTransaction[]} trades - TRADE Transactions
    * @returns {TradeTransaction[]}
    */
-  export const getSellTrades: (
-    trades: TradeTransaction[],
-  ) => TradeTransaction[];
+  export function getSellTrades(trades: TradeTransaction[]): TradeTransaction[];
   /**
    * Get Opening Trades
    * @param {TradeTransaction[]} trades - TRADE Transactions
    * @returns {TradeTransaction[]}
    */
-  export const getOpeningTrades: (
+  export function getOpeningTrades(
     trades: TradeTransaction[],
-  ) => TradeTransaction[];
+  ): TradeTransaction[];
   /**
    * Get Closing Trades
    * @param {TradeTransaction[]} trades - TRADE Transactions
    * @returns {TradeTransaction[]}
    */
-  export const getClosingTrades: (
+  export function getClosingTrades(
     trades: TradeTransaction[],
-  ) => TradeTransaction[];
+  ): TradeTransaction[];
   /**
    * Get Open Short Sale Trades
    * @param {TradeTransaction[]} trades - TRADE Transactions
    * @returns {TradeTransaction[]}
    */
-  export const getOpeningShortSales: (
+  export function getOpeningShortSales(
     trades: TradeTransaction[],
-  ) => TradeTransaction[];
+  ): TradeTransaction[];
   /**
    * Get Closing Short Sale Trades
    * @param {TradeTransaction[]} trades - TRADE Transactions
    * @returns {TradeTransaction[]}
    */
-  export const getClosingShortSales: (
+  export function getClosingShortSales(
     trades: TradeTransaction[],
-  ) => TradeTransaction[];
+  ): TradeTransaction[];
   /**
    * Group Trades by Order ID
    * @param {TradeTransaction[]} trades - TRADE Transactions
    * @returns {TradeTransaction[]}
    */
-  export const groupByOrderId: (trades: TradeTransaction[]) => {};
+  export function groupByOrderId(trades: TradeTransaction[]): {};
   /**
    * Get Option Trades
    * @param {TradeTransaction[]} trades - TRADE Transactions
    * @returns {TradeTransaction[]}
    */
-  export const getOptionTrades: (
+  export function getOptionTrades(
     trades: TradeTransaction[],
-  ) => TradeTransaction[];
+  ): TradeTransaction[];
   /**
    * Get Equity Trades
    * @param {TradeTransaction[]} trades - TRADE Transactions
    * @returns {TradeTransaction[]}
    */
-  export const getEquityTrades: (
+  export function getEquityTrades(
     trades: TradeTransaction[],
-  ) => TradeTransaction[];
+  ): TradeTransaction[];
   /**
    * Group Trades by Instrument
    * @param {TradeTransaction[]} trades - TRADE Transactions
    * @returns {TradeTransaction[]}
    */
-  export const groupByInstrument: (trades: TradeTransaction[]) => {};
+  export function groupByInstrument(trades: TradeTransaction[]): {};
   /**
    * Group Trades by Instrument Symbol
    * @param {TradeTransaction[]} trades - TRADE Transactions
    * @returns {TradeTransaction[]}
    */
-  export const groupByInstrumentSymbol: (trades: TradeTransaction[]) => {};
+  export function groupByInstrumentSymbol(trades: TradeTransaction[]): {};
   /**
    * Group Trades by Instrument Underlying Symbol
    * @param {TradeTransaction[]} trades - TRADE Transactions
    * @returns {TradeTransaction[]}
    */
-  export const groupByInstrumentUnderlyingSymbol: (
+  export function groupByInstrumentUnderlyingSymbol(
     trades: TradeTransaction[],
-  ) => {};
+  ): {};
   /**
    * Group Trades by Instrument CUSIP
    * @param {TradeTransaction[]} trades - TRADE Transactions
    * @returns {TradeTransaction[]}
    */
-  export const groupByInstrumentCUSIP: (trades: TradeTransaction[]) => {};
+  export function groupByInstrumentCUSIP(trades: TradeTransaction[]): {};
   /**
    * Group Trades by Asset Type
    * @param {TradeTransaction[]} trades - TRADE Transactions
    * @returns {TradeTransaction[]}
    */
-  export const groupByAssetType: (trades: TradeTransaction[]) => {};
+  export function groupByAssetType(trades: TradeTransaction[]): {};
 }
