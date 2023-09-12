@@ -797,4 +797,13 @@ export class TDAmeritradeAPI {
   );
 }
 
+/**
+ * Creates a new instance of the TD Ameritrade API
+ * @param {APIClientConfig} config - API Client Configuration 
+ * @returns {TDAmeritradeAPI}
+ */
+export function createTDAmeritradeAPIClient(config?: APIClientConfig) {
+  return new TDAmeritradeAPI(config);
+}
+
 export default new TDAmeritradeAPI();

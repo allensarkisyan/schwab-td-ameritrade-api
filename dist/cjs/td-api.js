@@ -5,7 +5,7 @@
  * @license MIT Open Source License
  */
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.TDAmeritradeAPI = void 0;
+exports.createTDAmeritradeAPIClient = exports.TDAmeritradeAPI = void 0;
 const zod_1 = require('zod');
 const jsonToQueryString = (json) =>
   Object.keys(json)
@@ -654,4 +654,13 @@ class TDAmeritradeAPI {
     await this.closeOrder(orderRequest, true, true);
 }
 exports.TDAmeritradeAPI = TDAmeritradeAPI;
+/**
+ * Creates a new instance of the TD Ameritrade API
+ * @param {APIClientConfig} config - API Client Configuration
+ * @returns {TDAmeritradeAPI}
+ */
+function createTDAmeritradeAPIClient(config) {
+  return new TDAmeritradeAPI(config);
+}
+exports.createTDAmeritradeAPIClient = createTDAmeritradeAPIClient;
 exports.default = new TDAmeritradeAPI();

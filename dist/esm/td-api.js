@@ -650,4 +650,12 @@ export class TDAmeritradeAPI {
   closeOption = async (orderRequest) =>
     await this.closeOrder(orderRequest, true, true);
 }
+/**
+ * Creates a new instance of the TD Ameritrade API
+ * @param {APIClientConfig} config - API Client Configuration
+ * @returns {TDAmeritradeAPI}
+ */
+export function createTDAmeritradeAPIClient(config) {
+  return new TDAmeritradeAPI(config);
+}
 export default new TDAmeritradeAPI();

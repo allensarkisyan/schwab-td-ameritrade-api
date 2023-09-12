@@ -1317,6 +1317,14 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
      */
     closeOption: (orderRequest: OrderRequest) => Promise<void>;
   }
+  /**
+   * Creates a new instance of the TD Ameritrade API
+   * @param {APIClientConfig} config - API Client Configuration
+   * @returns {TDAmeritradeAPI}
+   */
+  export function createTDAmeritradeAPIClient(
+    config?: APIClientConfig,
+  ): TDAmeritradeAPI;
   const _default: TDAmeritradeAPI;
   export default _default;
 }

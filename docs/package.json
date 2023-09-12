@@ -12,7 +12,7 @@
     "serve": "docusaurus serve",
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
-    "docs-readme": "echo \"---\nslug: /\n---\n$(cat ../README.md)\" > docs/README.md",
+    "docs-readme": "echo \"---\nslug: /\n---\n# README\n\n$(cat ../README.md)\" > docs/README.md",
     "docs-api": "npx jsdoc2md {../dist/esm/td-api.js,../dist/esm/td-utils.js,../dist/esm/@types/jsdoc.js} > docs/td-api.md",
     "docs": "npm run docs-readme && npm run docs-api && npm run build && npm run serve",
     "jsdoc": "npx jsdoc@latest -r ../dist/esm"
