@@ -6,6 +6,10 @@
 
 export type DateLikeNullable = Date | number | string | null;
 
+export type QueryParameters = string | Record<string, string> | string[][] | URLSearchParams | undefined;
+
+export type JSONValue = null | boolean | number | string | JSONValue[] | { [key: string]: JSONValue };
+
 export type TickerSymbol = string;
 
 export type CUSIP = string;

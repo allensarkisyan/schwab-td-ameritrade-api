@@ -5,6 +5,21 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api/@types' {
    * @license MIT Open Source License
    */
   export type DateLikeNullable = Date | number | string | null;
+  export type QueryParameters =
+    | string
+    | Record<string, string>
+    | string[][]
+    | URLSearchParams
+    | undefined;
+  export type JSONValue =
+    | null
+    | boolean
+    | number
+    | string
+    | JSONValue[]
+    | {
+        [key: string]: JSONValue;
+      };
   export type TickerSymbol = string;
   export type CUSIP = string;
   export type TDAmeritradeAccountID = string;

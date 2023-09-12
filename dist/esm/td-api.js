@@ -4,10 +4,13 @@
  * @license MIT Open Source License
  */
 import { z } from 'zod';
-const jsonToQueryString = (json) =>
-  Object.keys(json)
-    .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(json[key])}`)
-    .join('&');
+const jsonToQueryString = (json) => {
+  const queryParams = [];
+  for (const [k, v] of Object.entries(json)) {
+    queryParams.push(`${encodeURIComponent(k)}=${encodeURIComponent(v)}`);
+  }
+  return queryParams.join('&');
+};
 const getDistinctArray = (arr, key) =>
   arr.filter((i, idx) => arr.findIndex((x) => x[key] === i[key]) === idx);
 const dataStore = {
@@ -170,6 +173,11 @@ export class TDAmeritradeAPI {
    */
   authenticate = async (code) => {
     try {
+      if (!this.#clientId || !this.#callbackUrl) {
+        throw new Error(
+          'Missing TD Ameritrade API Client ID / Client Callback URL',
+        );
+      }
       const authResponse = await this.#handleRequest({
         method: 'POST',
         url: '/v1/oauth2/token',
@@ -201,6 +209,11 @@ export class TDAmeritradeAPI {
    */
   refreshAccessToken = async (refresh_token) => {
     try {
+      if (!this.#clientId) {
+        throw new Error(
+          'Missing TD Ameritrade API Client ID / Client Callback URL',
+        );
+      }
       const refreshTokenResponse = await this.#handleRequest({
         method: 'POST',
         url: '/v1/oauth2/token',
