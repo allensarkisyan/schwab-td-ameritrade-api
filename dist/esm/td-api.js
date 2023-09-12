@@ -105,7 +105,10 @@ export class TDAmeritradeAPI {
         },
       };
       if (config?.data) {
-        requestConfig.body = JSON.stringify(config.data);
+        requestConfig.body =
+          typeof config.data === 'string'
+            ? config.data
+            : JSON.stringify(config.data);
       }
       if (this.#userAccessToken) {
         requestConfig.headers['Authorization'] = `Bearer ${
