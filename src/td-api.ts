@@ -4,7 +4,6 @@
  * @license MIT Open Source License
  */
 
-import axios from 'axios';
 import { z } from 'zod';
 
 import type {
@@ -35,9 +34,8 @@ import type {
 } from './@types/index.js';
 
 const jsonToQueryString = <TObj extends object>(json: TObj): string => Object.keys(json).map((key: string) => `${encodeURIComponent(key)}=${encodeURIComponent(json[key])}`).join('&');
-const getDistinctArray = <TArr>(arr: TArr[], key: string): TArr[] => arr.filter((i, idx) => arr.findIndex(x => x[key] === i[key]) === idx);
 
-const apiService = axios.create({ baseURL: 'https://api.tdameritrade.com' });
+const getDistinctArray = <TArr>(arr: TArr[], key: string): TArr[] => arr.filter((i, idx) => arr.findIndex(x => x[key] === i[key]) === idx);
 
 const dataStore: LocalMemoryAuthDataStore = {
   userAccessToken: '',
@@ -67,6 +65,14 @@ const OrderRequestSchema = <z.ZodSchema<{
 
 type OrderRequest = z.infer<typeof OrderRequestSchema>;
 
+type APIRequestConfig = {
+  url: string;
+  method?: string;
+  params?: Record<string, any>;
+  headers?: any;
+  data?: Record<string, any> | Record<string, any>[] | string | string[] | number | number[];
+};
+
 /**
  * Represents the TDAmeritradeAPI class for handling requests.
  * @module TDAmeritradeAPI
@@ -79,6 +85,13 @@ export class TDAmeritradeAPI {
    * @type {string}
   */
   #clientId: string;
+  
+  /** 
+   * TD Ameritrade API Access Token
+   * @private
+   * @type {string | null}
+  */
+  #userAccessToken?: string | null;
 
   /**
    * External request handler function.
@@ -110,21 +123,42 @@ export class TDAmeritradeAPI {
   /**
    * Internal Request Handler
    * @private
-   * @param config - Request Configuration
+   * @param {APIRequestConfig} config - API Request Configuration
    * @returns {Promise<any>}
    */
-  #handleRequest = async (config: object): Promise<any> => {
+  #handleRequest = async (config: APIRequestConfig): Promise<any> => {
     try {
       if (this.#externalRequestHandler) {
         return await this.#externalRequestHandler(config);
       }
 
-      const response = await apiService.request({
-        method: 'GET',
-        ...config
-      });
+      const query = config?.params ? `?${new URLSearchParams(config?.params)}` : '';
 
-      const data = await response.data;
+      const url = new URL(`${config.url}${query}`, 'https://api.tdameritrade.com');
+
+      const requestConfig = <Record<string, any>>{
+        method: config?.method || 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...config?.headers,
+        },
+      };
+
+      if (config?.data) {
+        requestConfig.body = JSON.stringify(config.data);
+      }
+
+      if (this.#userAccessToken) {
+        requestConfig.headers['Authorization'] = `Bearer ${this.#userAccessToken}`;
+      }
+
+      const response = await fetch(url, requestConfig);
+
+      if (!response.ok) {
+        throw new Error();
+      }
+
+      const data = await response.json();
 
       return data;
     } catch (e) {
@@ -137,20 +171,20 @@ export class TDAmeritradeAPI {
    * @param {string} accessToken - Access Token
    * @param {boolean} isNewToken - Is New Access Token
    * @param {string} [refreshToken] - Refresh Token
-   * @param {string} [refreshTokenExpiresIn] - Refresh Token Expires in
+   * @param {number | null} [refreshTokenExpiresIn] - Refresh Token Expires in
    */
   setUserAccessToken = (
     accessToken: string,
     isNewToken: boolean = false,
-    refreshToken: string|null = null,
-    refreshTokenExpiresIn: Date|number|any = null,
+    refreshToken: string | null = null,
+    refreshTokenExpiresIn: number | null = null,
   ): void => {
     try {
       if (accessToken) {
         const now = Date.now();
   
-        apiService.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
-  
+        this.#userAccessToken = accessToken;
+
         dataStore.userAccessToken = accessToken;
 
         if (isNewToken) {
@@ -162,7 +196,8 @@ export class TDAmeritradeAPI {
           dataStore.refreshTokenExpires =  new Date(now + (refreshTokenExpiresIn * 1000)).toJSON();
         }
       } else {
-        delete apiService.defaults.headers.common.Authorization;
+        this.#userAccessToken = null;
+
         delete dataStore.userAccessToken;
         delete dataStore.refreshToken;
         delete dataStore.accessTokenExpires;
@@ -214,8 +249,6 @@ export class TDAmeritradeAPI {
    */
   refreshAccessToken = async (refresh_token: string): Promise<RefreshTokenResponse | null> => {
     try {
-      delete apiService.defaults.headers.common.Authorization;
-
       const refreshTokenResponse: RefreshTokenResponse = await this.#handleRequest({
         method: 'POST',
         url: '/v1/oauth2/token',

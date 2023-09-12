@@ -939,6 +939,11 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api/@types' {
   };
 }
 declare module '@allensarkisyan/schwab-td-ameritrade-api' {
+  /**
+   * @author Allen Sarkisyan
+   * @copyright 2019 - 2023 XT-TX
+   * @license MIT Open Source License
+   */
   import { z } from 'zod';
   import type {
     AuthenticationResponse,
@@ -999,13 +1004,13 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
      * @param {string} accessToken - Access Token
      * @param {boolean} isNewToken - Is New Access Token
      * @param {string} [refreshToken] - Refresh Token
-     * @param {string} [refreshTokenExpiresIn] - Refresh Token Expires in
+     * @param {number | null} [refreshTokenExpiresIn] - Refresh Token Expires in
      */
     setUserAccessToken: (
       accessToken: string,
       isNewToken?: boolean,
       refreshToken?: string | null,
-      refreshTokenExpiresIn?: Date | number | any,
+      refreshTokenExpiresIn?: number | null,
     ) => void;
     /**
      * Authenticate with the TD Ameritrade OAuth2 Authorization endpoint

@@ -3,7 +3,6 @@
  * @copyright 2019 - 2023 XT-TX
  * @license MIT Open Source License
  */
-import axios from 'axios';
 import { z } from 'zod';
 const jsonToQueryString = (json) =>
   Object.keys(json)
@@ -11,7 +10,6 @@ const jsonToQueryString = (json) =>
     .join('&');
 const getDistinctArray = (arr, key) =>
   arr.filter((i, idx) => arr.findIndex((x) => x[key] === i[key]) === idx);
-const apiService = axios.create({ baseURL: 'https://api.tdameritrade.com' });
 const dataStore = {
   userAccessToken: '',
   accessTokenExpires: null,
@@ -43,6 +41,12 @@ export class TDAmeritradeAPI {
    */
   #clientId;
   /**
+   * TD Ameritrade API Access Token
+   * @private
+   * @type {string | null}
+   */
+  #userAccessToken;
+  /**
    * External request handler function.
    * @private
    * @type {function | null}
@@ -68,7 +72,7 @@ export class TDAmeritradeAPI {
   /**
    * Internal Request Handler
    * @private
-   * @param config - Request Configuration
+   * @param {APIRequestConfig} config - API Request Configuration
    * @returns {Promise<any>}
    */
   #handleRequest = async (config) => {
@@ -76,11 +80,33 @@ export class TDAmeritradeAPI {
       if (this.#externalRequestHandler) {
         return await this.#externalRequestHandler(config);
       }
-      const response = await apiService.request({
-        method: 'GET',
-        ...config,
-      });
-      const data = await response.data;
+      const query = config?.params
+        ? `?${new URLSearchParams(config?.params)}`
+        : '';
+      const url = new URL(
+        `${config.url}${query}`,
+        'https://api.tdameritrade.com',
+      );
+      const requestConfig = {
+        method: config?.method || 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...config?.headers,
+        },
+      };
+      if (config?.data) {
+        requestConfig.body = JSON.stringify(config.data);
+      }
+      if (this.#userAccessToken) {
+        requestConfig.headers['Authorization'] = `Bearer ${
+          this.#userAccessToken
+        }`;
+      }
+      const response = await fetch(url, requestConfig);
+      if (!response.ok) {
+        throw new Error();
+      }
+      const data = await response.json();
       return data;
     } catch (e) {
       return Promise.reject(e);
@@ -91,7 +117,7 @@ export class TDAmeritradeAPI {
    * @param {string} accessToken - Access Token
    * @param {boolean} isNewToken - Is New Access Token
    * @param {string} [refreshToken] - Refresh Token
-   * @param {string} [refreshTokenExpiresIn] - Refresh Token Expires in
+   * @param {number | null} [refreshTokenExpiresIn] - Refresh Token Expires in
    */
   setUserAccessToken = (
     accessToken,
@@ -102,7 +128,7 @@ export class TDAmeritradeAPI {
     try {
       if (accessToken) {
         const now = Date.now();
-        apiService.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+        this.#userAccessToken = accessToken;
         dataStore.userAccessToken = accessToken;
         if (isNewToken) {
           dataStore.accessTokenExpires = new Date(now + 1800 * 1000).toJSON();
@@ -114,7 +140,7 @@ export class TDAmeritradeAPI {
           ).toJSON();
         }
       } else {
-        delete apiService.defaults.headers.common.Authorization;
+        this.#userAccessToken = null;
         delete dataStore.userAccessToken;
         delete dataStore.refreshToken;
         delete dataStore.accessTokenExpires;
@@ -162,7 +188,6 @@ export class TDAmeritradeAPI {
    */
   refreshAccessToken = async (refresh_token) => {
     try {
-      delete apiService.defaults.headers.common.Authorization;
       const refreshTokenResponse = await this.#handleRequest({
         method: 'POST',
         url: '/v1/oauth2/token',
