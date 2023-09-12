@@ -73,6 +73,12 @@ type APIRequestConfig = {
   data?: Record<string, any> | Record<string, any>[] | string | string[] | number | number[];
 };
 
+type APIClientConfig = {
+  clientId?: string | undefined;
+  callbackUrl?: string | undefined;
+  handleRequest?: Function | undefined;
+};
+
 /**
  * Represents the TDAmeritradeAPI class for handling requests.
  * @module TDAmeritradeAPI
@@ -84,7 +90,14 @@ export class TDAmeritradeAPI {
    * @private
    * @type {string}
   */
-  #clientId: string;
+  #clientId: string | undefined;
+
+  /** 
+   * TD Ameritrade Application Client Callback URL
+   * @private
+   * @type {string}
+  */
+  #callbackUrl: string | undefined;
   
   /** 
    * TD Ameritrade API Access Token
@@ -102,21 +115,26 @@ export class TDAmeritradeAPI {
 
   /**
    * Creates an instance of TDAmeritradeAPI.
-   * @param {string} clientId - TD Amertitrade Client ID - defaults to TD_AMERITRADE_CLIENT_ID environment variable.
-   * @param {function | null} [handleRequest=null] - An optional request handler function.
+   * @param {Object} [config] - API Client Configuration
+   * @param {string} [config.clientId] - TD Amertitrade Client ID - defaults to TD_AMERITRADE_CLIENT_ID environment variable.
+   * @param {string} [config.callbackUrl] - Callback URL - defaults to TD_AMERITRADE_CALLBACK_URL environment variable.
+   * @param {function | null} [config.handleRequest=null] - An optional request handler function.
    */
-  constructor(
-    clientId: string | undefined = process?.env?.TD_AMERITRADE_CLIENT_ID,
-    handleRequest: Function | null = null
-  ) {
-    if (!clientId) {
-      throw new Error('Missing TD Ameritrade Client ID');
+  constructor(config?: APIClientConfig) {
+    this.#clientId = config?.clientId ?? process?.env?.TD_AMERITRADE_CLIENT_ID;
+
+    this.#callbackUrl = config?.callbackUrl ?? process?.env?.TD_AMERITRADE_CALLBACK_URL;
+    
+    if (!this.#clientId) {
+      throw new Error('Missing TD Ameritrade API Client ID.');
     }
 
-    this.#clientId = clientId;
+    if (!this.#callbackUrl) {
+      throw new Error('Missing TD Ameritrade API Client Callback URL.');
+    }
 
-    if (handleRequest) {
-      this.#externalRequestHandler = handleRequest;
+    if (config?.handleRequest) {
+      this.#externalRequestHandler = config.handleRequest;
     }
   }
 
@@ -221,10 +239,10 @@ export class TDAmeritradeAPI {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         data: jsonToQueryString({
           code,
-          redirect_uri: 'http://localhost:8282/v1/tdcallback',
+          client_id: this.#clientId,
+          redirect_uri: this.#callbackUrl,
           grant_type: 'authorization_code',
           access_type: 'offline',
-          client_id: this.#clientId,
         })
       });
 

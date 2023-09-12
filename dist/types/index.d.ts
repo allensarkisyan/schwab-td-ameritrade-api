@@ -986,6 +986,11 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
     }
   >;
   type OrderRequest = z.infer<typeof OrderRequestSchema>;
+  type APIClientConfig = {
+    clientId?: string | undefined;
+    callbackUrl?: string | undefined;
+    handleRequest?: Function | undefined;
+  };
   /**
    * Represents the TDAmeritradeAPI class for handling requests.
    * @module TDAmeritradeAPI
@@ -995,10 +1000,12 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
     #private;
     /**
      * Creates an instance of TDAmeritradeAPI.
-     * @param {string} clientId - TD Amertitrade Client ID - defaults to TD_AMERITRADE_CLIENT_ID environment variable.
-     * @param {function | null} [handleRequest=null] - An optional request handler function.
+     * @param {Object} [config] - API Client Configuration
+     * @param {string} [config.clientId] - TD Amertitrade Client ID - defaults to TD_AMERITRADE_CLIENT_ID environment variable.
+     * @param {string} [config.callbackUrl] - Callback URL - defaults to TD_AMERITRADE_CALLBACK_URL environment variable.
+     * @param {function | null} [config.handleRequest=null] - An optional request handler function.
      */
-    constructor(clientId?: string | undefined, handleRequest?: Function | null);
+    constructor(config?: APIClientConfig);
     /**
      * Set User Access Token / Refresh Token
      * @param {string} accessToken - Access Token

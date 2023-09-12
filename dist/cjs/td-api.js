@@ -44,6 +44,12 @@ class TDAmeritradeAPI {
    */
   #clientId;
   /**
+   * TD Ameritrade Application Client Callback URL
+   * @private
+   * @type {string}
+   */
+  #callbackUrl;
+  /**
    * TD Ameritrade API Access Token
    * @private
    * @type {string | null}
@@ -57,19 +63,23 @@ class TDAmeritradeAPI {
   #externalRequestHandler;
   /**
    * Creates an instance of TDAmeritradeAPI.
-   * @param {string} clientId - TD Amertitrade Client ID - defaults to TD_AMERITRADE_CLIENT_ID environment variable.
-   * @param {function | null} [handleRequest=null] - An optional request handler function.
+   * @param {Object} [config] - API Client Configuration
+   * @param {string} [config.clientId] - TD Amertitrade Client ID - defaults to TD_AMERITRADE_CLIENT_ID environment variable.
+   * @param {string} [config.callbackUrl] - Callback URL - defaults to TD_AMERITRADE_CALLBACK_URL environment variable.
+   * @param {function | null} [config.handleRequest=null] - An optional request handler function.
    */
-  constructor(
-    clientId = process?.env?.TD_AMERITRADE_CLIENT_ID,
-    handleRequest = null,
-  ) {
-    if (!clientId) {
-      throw new Error('Missing TD Ameritrade Client ID');
+  constructor(config) {
+    this.#clientId = config?.clientId ?? process?.env?.TD_AMERITRADE_CLIENT_ID;
+    this.#callbackUrl =
+      config?.callbackUrl ?? process?.env?.TD_AMERITRADE_CALLBACK_URL;
+    if (!this.#clientId) {
+      throw new Error('Missing TD Ameritrade API Client ID.');
     }
-    this.#clientId = clientId;
-    if (handleRequest) {
-      this.#externalRequestHandler = handleRequest;
+    if (!this.#callbackUrl) {
+      throw new Error('Missing TD Ameritrade API Client Callback URL.');
+    }
+    if (config?.handleRequest) {
+      this.#externalRequestHandler = config.handleRequest;
     }
   }
   /**
@@ -166,10 +176,10 @@ class TDAmeritradeAPI {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         data: jsonToQueryString({
           code,
-          redirect_uri: 'http://localhost:8282/v1/tdcallback',
+          client_id: this.#clientId,
+          redirect_uri: this.#callbackUrl,
           grant_type: 'authorization_code',
           access_type: 'offline',
-          client_id: this.#clientId,
         }),
       });
       this.setUserAccessToken(
