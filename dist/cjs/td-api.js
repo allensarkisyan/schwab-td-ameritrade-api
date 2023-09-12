@@ -12,7 +12,7 @@ var __importDefault =
 Object.defineProperty(exports, '__esModule', { value: true });
 exports.TDAmeritradeAPI = void 0;
 const axios_1 = __importDefault(require('axios'));
-const moment_1 = __importDefault(require('moment'));
+const zod_1 = require('zod');
 const jsonToQueryString = (json) =>
   Object.keys(json)
     .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(json[key])}`)
@@ -34,12 +34,24 @@ const LIMIT_ORDER_TEMPLATE = {
   duration: 'GOOD_TILL_CANCEL',
   orderStrategyType: 'SINGLE',
 };
+const OrderRequestSchema = zod_1.z.object({
+  accountId: zod_1.z.string(),
+  symbol: zod_1.z.string().toUpperCase(),
+  quantity: zod_1.z.number().min(1).default(1),
+  price: zod_1.z.number().min(0.01),
+});
 /**
  * Represents the TDAmeritradeAPI class for handling requests.
  * @module TDAmeritradeAPI
  * @class
  */
 class TDAmeritradeAPI {
+  /**
+   * TD Ameritrade Application Client ID
+   * @private
+   * @type {string}
+   */
+  #clientId;
   /**
    * External request handler function.
    * @private
@@ -48,25 +60,49 @@ class TDAmeritradeAPI {
   #externalRequestHandler;
   /**
    * Creates an instance of TDAmeritradeAPI.
+   * @param {string} clientId - TD Amertitrade Client ID - defaults to TD_AMERITRADE_CLIENT_ID environment variable.
    * @param {function | null} [handleRequest=null] - An optional request handler function.
    */
-  constructor(handleRequest = null) {
+  constructor(
+    clientId = process?.env?.TD_AMERITRADE_CLIENT_ID,
+    handleRequest = null,
+  ) {
+    if (!clientId) {
+      throw new Error('Missing TD Ameritrade Client ID');
+    }
+    this.#clientId = clientId;
     if (handleRequest) {
       this.#externalRequestHandler = handleRequest;
     }
   }
+  /**
+   * Internal Request Handler
+   * @private
+   * @param config - Request Configuration
+   * @returns {Promise<any>}
+   */
   #handleRequest = async (config) => {
     try {
       if (this.#externalRequestHandler) {
         return await this.#externalRequestHandler(config);
       }
-      return (
-        await apiService.request(Object.assign({}, { method: 'GET' }, config))
-      ).data;
+      const response = await apiService.request({
+        method: 'GET',
+        ...config,
+      });
+      const data = await response.data;
+      return data;
     } catch (e) {
       return Promise.reject(e);
     }
   };
+  /**
+   * Set User Access Token / Refresh Token
+   * @param {string} accessToken - Access Token
+   * @param {boolean} isNewToken - Is New Access Token
+   * @param {string} [refreshToken] - Refresh Token
+   * @param {string} [refreshTokenExpiresIn] - Refresh Token Expires in
+   */
   setUserAccessToken = (
     accessToken,
     isNewToken = false,
@@ -75,18 +111,17 @@ class TDAmeritradeAPI {
   ) => {
     try {
       if (accessToken) {
-        const now = (0, moment_1.default)(new Date().toJSON());
+        const now = Date.now();
         apiService.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
         dataStore.userAccessToken = accessToken;
-        // TODO: Resolve possible bug here...
         if (isNewToken) {
-          dataStore.accessTokenExpires = now.add(1800, 'seconds').toJSON();
+          dataStore.accessTokenExpires = new Date(now + 1800 * 1000).toJSON();
         }
         if (refreshToken && refreshTokenExpiresIn) {
           dataStore.refreshToken = refreshToken;
-          dataStore.refreshTokenExpires = now
-            .add(refreshTokenExpiresIn, 'seconds')
-            .toJSON();
+          dataStore.refreshTokenExpires = new Date(
+            now + refreshTokenExpiresIn * 1000,
+          ).toJSON();
         }
       } else {
         delete apiService.defaults.headers.common.Authorization;
@@ -99,6 +134,11 @@ class TDAmeritradeAPI {
       return;
     }
   };
+  /**
+   * Authenticate with the TD Ameritrade OAuth2 Authorization endpoint
+   * @param {string} code - Authorization Resonse Code from TD Ameritrade Authentication API
+   * @returns {AuthenticationResponse | null}
+   */
   authenticate = async (code) => {
     try {
       const authResponse = await this.#handleRequest({
@@ -110,31 +150,43 @@ class TDAmeritradeAPI {
           redirect_uri: 'http://localhost:8282/v1/tdcallback',
           grant_type: 'authorization_code',
           access_type: 'offline',
-          client_id: process.env.NEXT_PUBLIC_TD_CLIENT_ID,
+          client_id: this.#clientId,
         }),
       });
-      this.setUserAccessToken(authResponse);
+      this.setUserAccessToken(
+        authResponse.access_token,
+        true,
+        authResponse.refresh_token,
+        authResponse.refresh_token_expires_in,
+      );
       return authResponse;
     } catch (e) {
+      console.log('TDAmeritradeAPI authenticate Error', e);
       return null;
     }
   };
+  /**
+   * Refresh Access Token with Refresh Token
+   * @param {string} refresh_token - Refresh Token
+   * @returns {RefreshTokenResponse | null}
+   */
   refreshAccessToken = async (refresh_token) => {
     try {
       delete apiService.defaults.headers.common.Authorization;
-      const authResponse = await this.#handleRequest({
+      const refreshTokenResponse = await this.#handleRequest({
         method: 'POST',
         url: '/v1/oauth2/token',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         data: jsonToQueryString({
           refresh_token,
           grant_type: 'refresh_token',
-          client_id: process.env.NEXT_PUBLIC_TD_CLIENT_ID,
+          client_id: this.#clientId,
         }),
       });
-      this.setUserAccessToken(authResponse);
-      return authResponse;
+      this.setUserAccessToken(refreshTokenResponse.access_token);
+      return refreshTokenResponse;
     } catch (e) {
+      console.log('TDAmeritradeAPI refreshAccessToken Error', e);
       return null;
     }
   };
@@ -225,6 +277,13 @@ class TDAmeritradeAPI {
       url: '/v1/instruments',
       params: { symbol, projection: 'fundamental' },
     });
+  /**
+   * Get Market Directional Mover (e.g. '$SPX.X', 'up', 'percent')
+   * @param {'$SPX.X' | '$DJI' | '$COMPX'} market - Market
+   * @param {'up' | 'down'} direction - Direction
+   * @param {'percent' | 'value'} change - Change Type
+   * @returns {Promise<TrendingEquity[]>}
+   */
   getMarketDirectionalMover = async (market, direction, change = 'percent') =>
     await this.#handleRequest({
       url: `/v1/marketdata/${market}/movers`,
@@ -317,6 +376,10 @@ class TDAmeritradeAPI {
         endDate,
       },
     });
+  /**
+   * Get Market Movers - Current Trending Equities of $SPX.X, $COMPX, $DJI
+   * @returns {Promise<MarketMovers>}
+   */
   getMarketMovers = async () => {
     try {
       const MARKETS = ['$SPX.X', '$COMPX', '$DJI'];
@@ -342,7 +405,7 @@ class TDAmeritradeAPI {
     }
   };
   /**
-   *
+   * Get Option Chain
    * @param {TickerSymbol} symbol - Ticker Symbol
    * @param {OptionContractRange} range - Option Contract Range - (ITM, OTM, NTM, etc..)
    * @param {OptionContractType} optionType - Option Contract Type - (Standard, Non Standard, All)
@@ -409,27 +472,25 @@ class TDAmeritradeAPI {
     });
   /**
    * Opening Order
-   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
-   * @param {TickerSymbol} symbol - Ticker Symbol
-   * @param {number} quantity - Quantity of Shares / Option Contracts
-   * @param {number} price - Price
+   * @param {OrderRequest} orderRequest - Order Request
+   * @param {TDAmeritradeAccountID} orderRequest.accountId - TD Ameritrade Account ID
+   * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
+   * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
+   * @param {number} orderRequest.price - Price
    * @param {boolean} isOption - Is Option Order
    * @param {boolean} isShort - Is Short Position
    * @returns {Promise<any>}
    */
-  openOrder = async (
-    accountId,
-    symbol,
-    quantity = 1,
-    price,
-    isOption = false,
-    isShort = false,
-  ) =>
-    await this.placeOrder(accountId, price, [
+  openOrder = async (orderRequest, isOption = false, isShort = false) => {
+    const { success } = OrderRequestSchema.safeParse(orderRequest);
+    if (!success) {
+      throw new Error('Invalid Order Request');
+    }
+    return await this.placeOrder(orderRequest.accountId, orderRequest.price, [
       {
-        quantity,
+        quantity: orderRequest.quantity,
         instrument: {
-          symbol,
+          symbol: orderRequest.symbol,
           assetType: isOption ? 'OPTION' : 'EQUITY',
         },
         instruction: !isShort
@@ -441,29 +502,28 @@ class TDAmeritradeAPI {
           : 'SELL_SHORT',
       },
     ]);
+  };
   /**
    * Closing Order
-   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
-   * @param {TickerSymbol} symbol - Ticker Symbol
-   * @param {number} quantity - Quantity of Shares / Option Contracts
-   * @param {number} price - Price
+   * @param {OrderRequest} orderRequest - Order Request
+   * @param {TDAmeritradeAccountID} orderRequest.accountId - TD Ameritrade Account ID
+   * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
+   * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
+   * @param {number} orderRequest.price - Price
    * @param {boolean} isOption - Is Option Order
    * @param {boolean} isShort - Is Short Position
    * @returns {Promise<any>}
    */
-  closeOrder = async (
-    accountId,
-    symbol,
-    quantity = 1,
-    price,
-    isOption = false,
-    isShort = false,
-  ) =>
-    await this.placeOrder(accountId, price, [
+  closeOrder = async (orderRequest, isOption = false, isShort = false) => {
+    const { success } = OrderRequestSchema.safeParse(orderRequest);
+    if (!success) {
+      throw new Error('Invalid Order Request');
+    }
+    await this.placeOrder(orderRequest.accountId, orderRequest.price, [
       {
-        quantity,
+        quantity: orderRequest.quantity,
         instrument: {
-          symbol,
+          symbol: orderRequest.symbol,
           assetType: isOption ? 'OPTION' : 'EQUITY',
         },
         instruction: !isShort
@@ -475,86 +535,95 @@ class TDAmeritradeAPI {
           : 'BUY_TO_COVER',
       },
     ]);
+  };
   /**
    * Buy Equtity / Stock Convenience Method
-   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
-   * @param {TickerSymbol} symbol - Ticker Symbol
-   * @param {number} quantity - Quantity of Shares / Option Contracts
-   * @param {number} price - Price
+   * @param {OrderRequest} orderRequest - Order Request
+   * @param {TDAmeritradeAccountID} orderRequest.accountId - TD Ameritrade Account ID
+   * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
+   * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
+   * @param {number} orderRequest.price - Price
    * @returns {Promise<any>}
    */
-  buyStock = async (accountId, symbol, quantity = 1, price) =>
-    await this.openOrder(accountId, symbol, quantity, price, false, false);
+  buyStock = async (orderRequest) =>
+    await this.openOrder(orderRequest, false, false);
   /**
    * Sell Equtity / Stock Convenience Method
-   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
-   * @param {TickerSymbol} symbol - Ticker Symbol
-   * @param {number} quantity - Quantity of Shares / Option Contracts
-   * @param {number} price - Price
+   * @param {OrderRequest} orderRequest - Order Request
+   * @param {TDAmeritradeAccountID} orderRequest.accountId - TD Ameritrade Account ID
+   * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
+   * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
+   * @param {number} orderRequest.price - Price
    * @returns {Promise<any>}
    */
-  sellStock = async (accountId, symbol, quantity = 1, price) =>
-    await this.closeOrder(accountId, symbol, quantity, price, false, false);
+  sellStock = async (orderRequest) =>
+    await this.closeOrder(orderRequest, false, false);
   /**
    * Short Equtity / Stock Convenience Method
-   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
-   * @param {TickerSymbol} symbol - Ticker Symbol
-   * @param {number} quantity - Quantity of Shares / Option Contracts
-   * @param {number} price - Price
+   * @param {OrderRequest} orderRequest - Order Request
+   * @param {TDAmeritradeAccountID} orderRequest.accountId - TD Ameritrade Account ID
+   * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
+   * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
+   * @param {number} orderRequest.price - Price
    * @returns {Promise<any>}
    */
-  shortStock = async (accountId, symbol, quantity = 1, price) =>
-    await this.openOrder(accountId, symbol, quantity, price, false, true);
+  shortStock = async (orderRequest) =>
+    await this.openOrder(orderRequest, false, true);
   /**
    * Cover Short Equtity / Stock Convenience Method
-   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
-   * @param {TickerSymbol} symbol - Ticker Symbol
-   * @param {number} quantity - Quantity of Shares / Option Contracts
-   * @param {number} price - Price
+   * @param {OrderRequest} orderRequest - Order Request
+   * @param {TDAmeritradeAccountID} orderRequest.accountId - TD Ameritrade Account ID
+   * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
+   * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
+   * @param {number} orderRequest.price - Price
    * @returns {Promise<any>}
    */
-  coverStock = async (accountId, symbol, quantity = 1, price) =>
-    await this.closeOrder(accountId, symbol, quantity, price, false, true);
+  coverStock = async (orderRequest) =>
+    await this.closeOrder(orderRequest, false, true);
   /**
    * Buy Option Convenience Method
-   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
-   * @param {TickerSymbol} symbol - Ticker Symbol
-   * @param {number} quantity - Quantity of Shares / Option Contracts
-   * @param {number} price - Price
+   * @param {OrderRequest} orderRequest - Order Request
+   * @param {TDAmeritradeAccountID} orderRequest.accountId - TD Ameritrade Account ID
+   * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
+   * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
+   * @param {number} orderRequest.price - Price
    * @returns {Promise<any>}
    */
-  buyOption = async (accountId, symbol, quantity = 1, price) =>
-    await this.openOrder(accountId, symbol, quantity, price, true, false);
+  buyOption = async (orderRequest) =>
+    await this.openOrder(orderRequest, true, false);
   /**
    * Sell Option Convenience Method
-   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
-   * @param {TickerSymbol} symbol - Ticker Symbol
-   * @param {number} quantity - Quantity of Shares / Option Contracts
-   * @param {number} price - Price
+   * @param {OrderRequest} orderRequest - Order Request
+   * @param {TDAmeritradeAccountID} orderRequest.accountId - TD Ameritrade Account ID
+   * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
+   * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
+   * @param {number} orderRequest.price - Price
    * @returns {Promise<any>}
    */
-  sellOption = async (accountId, symbol, quantity = 1, price) =>
-    await this.closeOrder(accountId, symbol, quantity, price, true, false);
+  sellOption = async (orderRequest) =>
+    await this.closeOrder(orderRequest, true, false);
   /**
    * Write Option Convenience Method
-   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
-   * @param {TickerSymbol} symbol - Ticker Symbol
-   * @param {number} quantity - Quantity of Shares / Option Contracts
-   * @param {number} price - Price
+   * @param {OrderRequest} orderRequest - Order Request
+   * @param {TDAmeritradeAccountID} orderRequest.accountId - TD Ameritrade Account ID
+   * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
+   * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
+   * @param {number} orderRequest.price - Price
    * @returns {Promise<any>}
    */
-  writeOption = async (accountId, symbol, quantity = 1, price) =>
-    await this.openOrder(accountId, symbol, quantity, price, true, true);
+  writeOption = async (orderRequest) =>
+    await this.openOrder(orderRequest, true, true);
   /**
    * Close Option Convenience Method
-   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
-   * @param {TickerSymbol} symbol - Ticker Symbol
-   * @param {number} quantity - Quantity of Shares / Option Contracts
-   * @param {number} price - Price
+   * @param {OrderRequest} orderRequest - Order Request
+   * @param {TDAmeritradeAccountID} orderRequest.accountId - TD Ameritrade Account ID
+   * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
+   * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
+   * @param {number} orderRequest.price - Price
    * @returns {Promise<any>}
    */
-  closeOption = async (accountId, symbol, quantity = 1, price) =>
-    await this.closeOrder(accountId, symbol, quantity, price, true, true);
+  closeOption = async (orderRequest) =>
+    await this.closeOrder(orderRequest, true, true);
 }
 exports.TDAmeritradeAPI = TDAmeritradeAPI;
 exports.default = new TDAmeritradeAPI();

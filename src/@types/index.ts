@@ -69,6 +69,38 @@ export type OptionContractRange =
  */
 export type OptionContractType = 'S' | 'NS' | 'ALL';
 
+/**
+ * TD Ameritrade API Authentication Response
+ */
+export type AuthenticationResponse = {
+  /** Access Token */
+  access_token: string;
+  /** Refresh Token */
+  refresh_token: string;
+  /** OAuth2 Scope */
+  scope: string;
+  /** Token Type */
+  token_type: string;
+  /** Access Token Expires in (seconds) */
+  expires_in: number;
+  /** Refresh Token Expires in (seconds) */
+  refresh_token_expires_in: number;
+};
+
+/**
+ * TD Ameritrade API Refresh Token Response
+ */
+export type RefreshTokenResponse = {
+  /** Access Token */
+  access_token: string;
+  /** OAuth2 Scope */
+  scope: string;
+  /** Token Type */
+  token_type: string;
+  /** Access Token Expires in (seconds) */
+  expires_in: number;
+};
+
 /** Represents multiple watchlists. */
 export type TDAmeritradeAccounts = TDAmeritradeAccount[];
 
@@ -924,3 +956,27 @@ export type TransactionData = {
   /** Detailed information about the transaction item. */
   transactionItem: TransactionItem;
 };
+
+/** Represents Market Mover Trending Equity data. */
+export type TrendingEquity = {
+  /** The change in stock status. Negative values indicate a decrease. */
+  change: number;
+  /** The description of the stock status. */
+  description: string;
+  /** The direction of the change (e.g., "up" or "down"). */
+  direction: string;
+  /** The last traded price of the stock. */
+  last: number;
+  /** The stock symbol. */
+  symbol: string;
+  /** The total trading volume for the stock. */
+  totalVolume: number;
+};
+
+/** Represents Market Movers - Current Trending Equities of $SPX.X, $COMPX, $DJI */
+export type MarketMovers = {
+  /** Equities Trending up */
+  up?: TrendingEquity[];
+  /** Equities Trending down */
+  down?: TrendingEquity[];
+}

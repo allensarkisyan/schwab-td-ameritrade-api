@@ -12,6 +12,26 @@
 /** @typedef {TDAmeritradeAccount[]} TDAmeritradeAccounts */
 
 /**
+ * TD Ameritrade API Authentication Response
+ * @typedef {Object} AuthenticationResponse
+ * @property {string} access_token - Access Token
+ * @property {string} refresh_token - Refresh Token
+ * @property {string} scope - OAuth2 Scope
+ * @property {string} token_type - Token Type
+ * @property {number} expires_in - Access Token Expires in (seconds)
+ * @property {number} refresh_token_expires_in - Refresh Token Expires in (seconds)
+ */
+
+/**
+ * TD Ameritrade API Refresh Token Response
+ * @typedef {Object} RefreshTokenResponse
+ * @property {string} access_token - Access Token
+ * @property {string} scope - OAuth2 Scope
+ * @property {string} token_type - Token Type
+ * @property {number} expires_in - Access Token Expires in (seconds)
+ */
+
+/**
  * Represents a TD Ameritrade account.
  * @typedef {Object} TDAmeritradeAccount
  * @property {Object} securitiesAccount - Information about the securities account.
@@ -522,4 +542,40 @@
  * @property {OrderDescription} description - A description of the transaction.
  * @property {TradeTransactionFees} fees - Object containing various fee information related to the transaction.
  * @property {TransactionItem} transactionItem - Detailed information about the transaction item.
+ */
+
+/**
+ * Order Request
+ * @typedef {Object} OrderRequest
+ * @property {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
+ * @property {TickerSymbol} symbol - Ticker Symbol
+ * @property {number} quantity - Quantity of Shares / Option Contracts
+ * @property {number} price - Price
+ */
+
+/**
+ * @typedef {Object} TDAmeritradeOrderLeg
+ * @property {BuyOrder | SellOrder} instruction - Instruction
+ * @property {number} quantity - Quantity of Shares / Option Contracts
+ * @property {Object} instrument - Instrument
+ * @property {TickerSymbol} instrument.symbol - Ticker Symbol
+ * @property {AssetType} instrument.assetType - Asset Type
+ */
+
+/**
+ * Represents Market Mover Trending Equity data.
+ * @typedef {Object} TrendingEquity
+ * @property {number} change - The change in stock status. Negative values indicate a decrease.
+ * @property {string} description - The description of the stock status.
+ * @property {string} direction - The direction of the change (e.g., "up" or "down").
+ * @property {number} last - The last traded price of the stock.
+ * @property {string} symbol - The stock symbol.
+ * @property {number} totalVolume - The total trading volume for the stock.
+ */
+
+/**
+ * Represents Market Movers - Current Trending Equities of $SPX.X, $COMPX, $DJI
+ * @typedef {Object} MarketMovers
+ * @property {TrendingEquity[]} up - Equities Trending up
+ * @property {TrendingEquity[]} down - Equities Trending down
  */

@@ -60,6 +60,36 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api/@types' {
    * ALL: All contracts
    */
   export type OptionContractType = 'S' | 'NS' | 'ALL';
+  /**
+   * TD Ameritrade API Authentication Response
+   */
+  export type AuthenticationResponse = {
+    /** Access Token */
+    access_token: string;
+    /** Refresh Token */
+    refresh_token: string;
+    /** OAuth2 Scope */
+    scope: string;
+    /** Token Type */
+    token_type: string;
+    /** Access Token Expires in (seconds) */
+    expires_in: number;
+    /** Refresh Token Expires in (seconds) */
+    refresh_token_expires_in: number;
+  };
+  /**
+   * TD Ameritrade API Refresh Token Response
+   */
+  export type RefreshTokenResponse = {
+    /** Access Token */
+    access_token: string;
+    /** OAuth2 Scope */
+    scope: string;
+    /** Token Type */
+    token_type: string;
+    /** Access Token Expires in (seconds) */
+    expires_in: number;
+  };
   /** Represents multiple watchlists. */
   export type TDAmeritradeAccounts = TDAmeritradeAccount[];
   export type TDAmeritradeOrderLeg = {
@@ -885,9 +915,34 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api/@types' {
     /** Detailed information about the transaction item. */
     transactionItem: TransactionItem;
   };
+  /** Represents Market Mover Trending Equity data. */
+  export type TrendingEquity = {
+    /** The change in stock status. Negative values indicate a decrease. */
+    change: number;
+    /** The description of the stock status. */
+    description: string;
+    /** The direction of the change (e.g., "up" or "down"). */
+    direction: string;
+    /** The last traded price of the stock. */
+    last: number;
+    /** The stock symbol. */
+    symbol: string;
+    /** The total trading volume for the stock. */
+    totalVolume: number;
+  };
+  /** Represents Market Movers - Current Trending Equities of $SPX.X, $COMPX, $DJI */
+  export type MarketMovers = {
+    /** Equities Trending up */
+    up?: TrendingEquity[];
+    /** Equities Trending down */
+    down?: TrendingEquity[];
+  };
 }
 declare module '@allensarkisyan/schwab-td-ameritrade-api' {
+  import { z } from 'zod';
   import type {
+    AuthenticationResponse,
+    RefreshTokenResponse,
     TickerSymbol,
     CUSIP,
     TDAmeritradeAccountID,
@@ -907,7 +962,25 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
     TransactionData,
     DateLikeNullable,
     GetTransactionsType,
+    MarketMovers,
+    TrendingEquity,
   } from '@allensarkisyan/schwab-td-ameritrade-api/@types';
+  const OrderRequestSchema: z.ZodType<
+    {
+      accountId: TDAmeritradeAccountID;
+      symbol: TickerSymbol;
+      quantity: number;
+      price: number;
+    },
+    z.ZodTypeDef,
+    {
+      accountId: TDAmeritradeAccountID;
+      symbol: TickerSymbol;
+      quantity: number;
+      price: number;
+    }
+  >;
+  type OrderRequest = z.infer<typeof OrderRequestSchema>;
   /**
    * Represents the TDAmeritradeAPI class for handling requests.
    * @module TDAmeritradeAPI
@@ -917,17 +990,37 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
     #private;
     /**
      * Creates an instance of TDAmeritradeAPI.
+     * @param {string} clientId - TD Amertitrade Client ID - defaults to TD_AMERITRADE_CLIENT_ID environment variable.
      * @param {function | null} [handleRequest=null] - An optional request handler function.
      */
-    constructor(handleRequest?: Function | null);
+    constructor(clientId?: string | undefined, handleRequest?: Function | null);
+    /**
+     * Set User Access Token / Refresh Token
+     * @param {string} accessToken - Access Token
+     * @param {boolean} isNewToken - Is New Access Token
+     * @param {string} [refreshToken] - Refresh Token
+     * @param {string} [refreshTokenExpiresIn] - Refresh Token Expires in
+     */
     setUserAccessToken: (
       accessToken: string,
       isNewToken?: boolean,
       refreshToken?: string | null,
       refreshTokenExpiresIn?: Date | number | any,
     ) => void;
-    authenticate: (code: string) => Promise<any>;
-    refreshAccessToken: (refresh_token: string) => Promise<any>;
+    /**
+     * Authenticate with the TD Ameritrade OAuth2 Authorization endpoint
+     * @param {string} code - Authorization Resonse Code from TD Ameritrade Authentication API
+     * @returns {AuthenticationResponse | null}
+     */
+    authenticate: (code: string) => Promise<AuthenticationResponse | null>;
+    /**
+     * Refresh Access Token with Refresh Token
+     * @param {string} refresh_token - Refresh Token
+     * @returns {RefreshTokenResponse | null}
+     */
+    refreshAccessToken: (
+      refresh_token: string,
+    ) => Promise<RefreshTokenResponse | null>;
     /**
      * Get Accounts
      * @returns {Promise<TDAmeritradeAccounts>}
@@ -981,11 +1074,18 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
     getFundamentals: (
       symbol: TickerSymbol,
     ) => Promise<Record<string, FundamentalData>>;
+    /**
+     * Get Market Directional Mover (e.g. '$SPX.X', 'up', 'percent')
+     * @param {'$SPX.X' | '$DJI' | '$COMPX'} market - Market
+     * @param {'up' | 'down'} direction - Direction
+     * @param {'percent' | 'value'} change - Change Type
+     * @returns {Promise<TrendingEquity[]>}
+     */
     getMarketDirectionalMover: (
       market: string,
       direction: string,
       change?: string,
-    ) => Promise<any>;
+    ) => Promise<TrendingEquity[]>;
     /**
      * Get Intraday Price History for Ticker Symbol
      * @param {TickerSymbol} symbol - Ticker Symbol
@@ -1038,12 +1138,13 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
       endDate?: DateLikeNullable,
       extHours?: boolean,
     ) => Promise<PriceHistory>;
-    getMarketMovers: () => Promise<{
-      up: any[];
-      down: any[];
-    } | null>;
     /**
-     *
+     * Get Market Movers - Current Trending Equities of $SPX.X, $COMPX, $DJI
+     * @returns {Promise<MarketMovers>}
+     */
+    getMarketMovers: () => Promise<MarketMovers | null>;
+    /**
+     * Get Option Chain
      * @param {TickerSymbol} symbol - Ticker Symbol
      * @param {OptionContractRange} range - Option Contract Range - (ITM, OTM, NTM, etc..)
      * @param {OptionContractType} optionType - Option Contract Type - (Standard, Non Standard, All)
@@ -1093,152 +1194,116 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
     ) => Promise<any>;
     /**
      * Opening Order
-     * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
-     * @param {TickerSymbol} symbol - Ticker Symbol
-     * @param {number} quantity - Quantity of Shares / Option Contracts
-     * @param {number} price - Price
+     * @param {OrderRequest} orderRequest - Order Request
+     * @param {TDAmeritradeAccountID} orderRequest.accountId - TD Ameritrade Account ID
+     * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
+     * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
+     * @param {number} orderRequest.price - Price
      * @param {boolean} isOption - Is Option Order
      * @param {boolean} isShort - Is Short Position
      * @returns {Promise<any>}
      */
     openOrder: (
-      accountId: TDAmeritradeAccountID,
-      symbol: TickerSymbol,
-      quantity: number | undefined,
-      price: number,
+      orderRequest: OrderRequest,
       isOption?: boolean,
       isShort?: boolean,
     ) => Promise<any>;
     /**
      * Closing Order
-     * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
-     * @param {TickerSymbol} symbol - Ticker Symbol
-     * @param {number} quantity - Quantity of Shares / Option Contracts
-     * @param {number} price - Price
+     * @param {OrderRequest} orderRequest - Order Request
+     * @param {TDAmeritradeAccountID} orderRequest.accountId - TD Ameritrade Account ID
+     * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
+     * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
+     * @param {number} orderRequest.price - Price
      * @param {boolean} isOption - Is Option Order
      * @param {boolean} isShort - Is Short Position
      * @returns {Promise<any>}
      */
     closeOrder: (
-      accountId: TDAmeritradeAccountID,
-      symbol: TickerSymbol,
-      quantity: number | undefined,
-      price: number,
+      orderRequest: OrderRequest,
       isOption?: boolean,
       isShort?: boolean,
-    ) => Promise<any>;
+    ) => Promise<void>;
     /**
      * Buy Equtity / Stock Convenience Method
-     * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
-     * @param {TickerSymbol} symbol - Ticker Symbol
-     * @param {number} quantity - Quantity of Shares / Option Contracts
-     * @param {number} price - Price
+     * @param {OrderRequest} orderRequest - Order Request
+     * @param {TDAmeritradeAccountID} orderRequest.accountId - TD Ameritrade Account ID
+     * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
+     * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
+     * @param {number} orderRequest.price - Price
      * @returns {Promise<any>}
      */
-    buyStock: (
-      accountId: TDAmeritradeAccountID,
-      symbol: TickerSymbol,
-      quantity: number | undefined,
-      price: number,
-    ) => Promise<any>;
+    buyStock: (orderRequest: OrderRequest) => Promise<any>;
     /**
      * Sell Equtity / Stock Convenience Method
-     * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
-     * @param {TickerSymbol} symbol - Ticker Symbol
-     * @param {number} quantity - Quantity of Shares / Option Contracts
-     * @param {number} price - Price
+     * @param {OrderRequest} orderRequest - Order Request
+     * @param {TDAmeritradeAccountID} orderRequest.accountId - TD Ameritrade Account ID
+     * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
+     * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
+     * @param {number} orderRequest.price - Price
      * @returns {Promise<any>}
      */
-    sellStock: (
-      accountId: TDAmeritradeAccountID,
-      symbol: TickerSymbol,
-      quantity: number | undefined,
-      price: number,
-    ) => Promise<any>;
+    sellStock: (orderRequest: OrderRequest) => Promise<void>;
     /**
      * Short Equtity / Stock Convenience Method
-     * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
-     * @param {TickerSymbol} symbol - Ticker Symbol
-     * @param {number} quantity - Quantity of Shares / Option Contracts
-     * @param {number} price - Price
+     * @param {OrderRequest} orderRequest - Order Request
+     * @param {TDAmeritradeAccountID} orderRequest.accountId - TD Ameritrade Account ID
+     * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
+     * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
+     * @param {number} orderRequest.price - Price
      * @returns {Promise<any>}
      */
-    shortStock: (
-      accountId: TDAmeritradeAccountID,
-      symbol: TickerSymbol,
-      quantity: number | undefined,
-      price: number,
-    ) => Promise<any>;
+    shortStock: (orderRequest: OrderRequest) => Promise<any>;
     /**
      * Cover Short Equtity / Stock Convenience Method
-     * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
-     * @param {TickerSymbol} symbol - Ticker Symbol
-     * @param {number} quantity - Quantity of Shares / Option Contracts
-     * @param {number} price - Price
+     * @param {OrderRequest} orderRequest - Order Request
+     * @param {TDAmeritradeAccountID} orderRequest.accountId - TD Ameritrade Account ID
+     * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
+     * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
+     * @param {number} orderRequest.price - Price
      * @returns {Promise<any>}
      */
-    coverStock: (
-      accountId: TDAmeritradeAccountID,
-      symbol: TickerSymbol,
-      quantity: number | undefined,
-      price: number,
-    ) => Promise<any>;
+    coverStock: (orderRequest: OrderRequest) => Promise<void>;
     /**
      * Buy Option Convenience Method
-     * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
-     * @param {TickerSymbol} symbol - Ticker Symbol
-     * @param {number} quantity - Quantity of Shares / Option Contracts
-     * @param {number} price - Price
+     * @param {OrderRequest} orderRequest - Order Request
+     * @param {TDAmeritradeAccountID} orderRequest.accountId - TD Ameritrade Account ID
+     * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
+     * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
+     * @param {number} orderRequest.price - Price
      * @returns {Promise<any>}
      */
-    buyOption: (
-      accountId: TDAmeritradeAccountID,
-      symbol: TickerSymbol,
-      quantity: number | undefined,
-      price: number,
-    ) => Promise<any>;
+    buyOption: (orderRequest: OrderRequest) => Promise<any>;
     /**
      * Sell Option Convenience Method
-     * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
-     * @param {TickerSymbol} symbol - Ticker Symbol
-     * @param {number} quantity - Quantity of Shares / Option Contracts
-     * @param {number} price - Price
+     * @param {OrderRequest} orderRequest - Order Request
+     * @param {TDAmeritradeAccountID} orderRequest.accountId - TD Ameritrade Account ID
+     * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
+     * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
+     * @param {number} orderRequest.price - Price
      * @returns {Promise<any>}
      */
-    sellOption: (
-      accountId: TDAmeritradeAccountID,
-      symbol: TickerSymbol,
-      quantity: number | undefined,
-      price: number,
-    ) => Promise<any>;
+    sellOption: (orderRequest: OrderRequest) => Promise<void>;
     /**
      * Write Option Convenience Method
-     * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
-     * @param {TickerSymbol} symbol - Ticker Symbol
-     * @param {number} quantity - Quantity of Shares / Option Contracts
-     * @param {number} price - Price
+     * @param {OrderRequest} orderRequest - Order Request
+     * @param {TDAmeritradeAccountID} orderRequest.accountId - TD Ameritrade Account ID
+     * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
+     * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
+     * @param {number} orderRequest.price - Price
      * @returns {Promise<any>}
      */
-    writeOption: (
-      accountId: TDAmeritradeAccountID,
-      symbol: TickerSymbol,
-      quantity: number | undefined,
-      price: number,
-    ) => Promise<any>;
+    writeOption: (orderRequest: OrderRequest) => Promise<any>;
     /**
      * Close Option Convenience Method
-     * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
-     * @param {TickerSymbol} symbol - Ticker Symbol
-     * @param {number} quantity - Quantity of Shares / Option Contracts
-     * @param {number} price - Price
+     * @param {OrderRequest} orderRequest - Order Request
+     * @param {TDAmeritradeAccountID} orderRequest.accountId - TD Ameritrade Account ID
+     * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
+     * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
+     * @param {number} orderRequest.price - Price
      * @returns {Promise<any>}
      */
-    closeOption: (
-      accountId: TDAmeritradeAccountID,
-      symbol: TickerSymbol,
-      quantity: number | undefined,
-      price: number,
-    ) => Promise<any>;
+    closeOption: (orderRequest: OrderRequest) => Promise<void>;
   }
   const _default: TDAmeritradeAPI;
   export default _default;
