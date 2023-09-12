@@ -9,7 +9,7 @@ import type {
 } from './@types/index.js';
 
 /**
- * Filter Buy Trades
+ * [td-utils.js] - Filter Buy Trades
  * @param {TransactionData[]} trades - TRADE Transactions
  * @returns {TransactionData[]}
  */
@@ -18,7 +18,7 @@ export function filterBuyTrades(trades: TransactionData[]) {
 }
 
 /**
- * Filter Sell Trades
+ * [td-utils.js] - Filter Sell Trades
  * @param {TransactionData[]} trades - TRADE Transactions
  * @returns {TransactionData[]}
  */
@@ -27,7 +27,7 @@ export function filterSellTrades(trades: TransactionData[]) {
 }
 
 /**
- * Filter Opening Trades
+ * [td-utils.js] - Filter Opening Trades
  * @param {TransactionData[]} trades - TRADE Transactions
  * @returns {TransactionData[]}
  */
@@ -36,7 +36,7 @@ export function filterOpeningTrades(trades: TransactionData[]) {
 }
 
 /**
- * Filter Closing Trades
+ * [td-utils.js] - Filter Closing Trades
  * @param {TransactionData[]} trades - TRADE Transactions
  * @returns {TransactionData[]}
  */
@@ -45,7 +45,7 @@ export function filterClosingTrades(trades: TransactionData[]) {
 }
 
 /**
- * Filter Open Short Sale Trades
+ * [td-utils.js] - Filter Open Short Sale Trades
  * @param {TransactionData[]} trades - TRADE Transactions
  * @returns {TransactionData[]}
  */
@@ -54,7 +54,7 @@ export function filterOpeningShortSales(trades: TransactionData[]) {
 }
 
 /**
- * Filter Closing Short Sale Trades
+ * [td-utils.js] - Filter Closing Short Sale Trades
  * @param {TransactionData[]} trades - TRADE Transactions
  * @returns {TransactionData[]}
  */
@@ -63,7 +63,7 @@ export function filterClosingShortSales(trades: TransactionData[]) {
 }
 
 /**
- * Filter Option Trades
+ * [td-utils.js] - Filter Option Trades
  * @param {TransactionData[]} trades - TRADE Transactions
  * @returns {TransactionData[]}
  */
@@ -72,7 +72,7 @@ export function filterOptionTrades(trades: TransactionData[]) {
 }
 
 /**
- * Filter Equity Trades
+ * [td-utils.js] - Filter Equity Trades
  * @param {TransactionData[]} trades - TRADE Transactions
  * @returns {TransactionData[]}
  */
@@ -81,7 +81,7 @@ export function filterEquityTrades(trades: TransactionData[]) {
 }
 
 /**
- * Group Trades by Order ID
+ * [td-utils.js] - Group Trades by Order ID
  * @param {TransactionData[]} trades - TRADE Transactions
  * @returns {TransactionData[]}
  */
@@ -93,7 +93,7 @@ export function groupByOrderId(trades: TransactionData[]) {
 }
 
 /**
- * Group Trades by Instrument
+ * [td-utils.js] - Group Trades by Instrument
  * @param {TransactionData[]} trades - TRADE Transactions
  * @returns {TransactionData[]}
  */
@@ -120,7 +120,7 @@ export function groupByInstrument(trades: TransactionData[]) {
 }
 
 /**
- * Group Trades by Instrument Symbol
+ * [td-utils.js] - Group Trades by Instrument Symbol
  * @param {TransactionData[]} trades - TRADE Transactions
  * @returns {TransactionData[]}
  */
@@ -139,7 +139,7 @@ export function groupByInstrumentSymbol(trades: TransactionData[]) {
 }
 
 /**
- * Group Trades by Instrument Underlying Symbol
+ * [td-utils.js] - Group Trades by Instrument Underlying Symbol
  * @param {TransactionData[]} trades - TRADE Transactions
  * @returns {TransactionData[]}
  */
@@ -158,7 +158,7 @@ export function groupByInstrumentUnderlyingSymbol(trades: TransactionData[]) {
 }
 
 /**
- * Group Trades by Instrument CUSIP
+ * [td-utils.js] - Group Trades by Instrument CUSIP
  * @param {TransactionData[]} trades - TRADE Transactions
  * @returns {TransactionData[]}
  */
@@ -177,7 +177,7 @@ export function groupByInstrumentCUSIP(trades: TransactionData[]) {
 }
 
 /**
- * Group Trades by Asset Type
+ * [td-utils.js] - Group Trades by Asset Type
  * @param {TransactionData[]} trades - TRADE Transactions
  * @returns {TransactionData[]}
  */

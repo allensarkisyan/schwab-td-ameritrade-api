@@ -21,7 +21,7 @@ exports.groupByAssetType =
   exports.filterBuyTrades =
     void 0;
 /**
- * Filter Buy Trades
+ * [td-utils.js] - Filter Buy Trades
  * @param {TransactionData[]} trades - TRADE Transactions
  * @returns {TransactionData[]}
  */
@@ -30,7 +30,7 @@ function filterBuyTrades(trades) {
 }
 exports.filterBuyTrades = filterBuyTrades;
 /**
- * Filter Sell Trades
+ * [td-utils.js] - Filter Sell Trades
  * @param {TransactionData[]} trades - TRADE Transactions
  * @returns {TransactionData[]}
  */
@@ -39,7 +39,7 @@ function filterSellTrades(trades) {
 }
 exports.filterSellTrades = filterSellTrades;
 /**
- * Filter Opening Trades
+ * [td-utils.js] - Filter Opening Trades
  * @param {TransactionData[]} trades - TRADE Transactions
  * @returns {TransactionData[]}
  */
@@ -48,7 +48,7 @@ function filterOpeningTrades(trades) {
 }
 exports.filterOpeningTrades = filterOpeningTrades;
 /**
- * Filter Closing Trades
+ * [td-utils.js] - Filter Closing Trades
  * @param {TransactionData[]} trades - TRADE Transactions
  * @returns {TransactionData[]}
  */
@@ -57,7 +57,7 @@ function filterClosingTrades(trades) {
 }
 exports.filterClosingTrades = filterClosingTrades;
 /**
- * Filter Open Short Sale Trades
+ * [td-utils.js] - Filter Open Short Sale Trades
  * @param {TransactionData[]} trades - TRADE Transactions
  * @returns {TransactionData[]}
  */
@@ -66,7 +66,7 @@ function filterOpeningShortSales(trades) {
 }
 exports.filterOpeningShortSales = filterOpeningShortSales;
 /**
- * Filter Closing Short Sale Trades
+ * [td-utils.js] - Filter Closing Short Sale Trades
  * @param {TransactionData[]} trades - TRADE Transactions
  * @returns {TransactionData[]}
  */
@@ -77,7 +77,7 @@ function filterClosingShortSales(trades) {
 }
 exports.filterClosingShortSales = filterClosingShortSales;
 /**
- * Filter Option Trades
+ * [td-utils.js] - Filter Option Trades
  * @param {TransactionData[]} trades - TRADE Transactions
  * @returns {TransactionData[]}
  */
@@ -89,7 +89,7 @@ function filterOptionTrades(trades) {
 }
 exports.filterOptionTrades = filterOptionTrades;
 /**
- * Filter Equity Trades
+ * [td-utils.js] - Filter Equity Trades
  * @param {TransactionData[]} trades - TRADE Transactions
  * @returns {TransactionData[]}
  */
@@ -101,7 +101,7 @@ function filterEquityTrades(trades) {
 }
 exports.filterEquityTrades = filterEquityTrades;
 /**
- * Group Trades by Order ID
+ * [td-utils.js] - Group Trades by Order ID
  * @param {TransactionData[]} trades - TRADE Transactions
  * @returns {TransactionData[]}
  */
@@ -113,7 +113,7 @@ function groupByOrderId(trades) {
 }
 exports.groupByOrderId = groupByOrderId;
 /**
- * Group Trades by Instrument
+ * [td-utils.js] - Group Trades by Instrument
  * @param {TransactionData[]} trades - TRADE Transactions
  * @returns {TransactionData[]}
  */
@@ -138,7 +138,7 @@ function groupByInstrument(trades) {
 }
 exports.groupByInstrument = groupByInstrument;
 /**
- * Group Trades by Instrument Symbol
+ * [td-utils.js] - Group Trades by Instrument Symbol
  * @param {TransactionData[]} trades - TRADE Transactions
  * @returns {TransactionData[]}
  */
@@ -156,7 +156,7 @@ function groupByInstrumentSymbol(trades) {
 }
 exports.groupByInstrumentSymbol = groupByInstrumentSymbol;
 /**
- * Group Trades by Instrument Underlying Symbol
+ * [td-utils.js] - Group Trades by Instrument Underlying Symbol
  * @param {TransactionData[]} trades - TRADE Transactions
  * @returns {TransactionData[]}
  */
@@ -174,7 +174,7 @@ function groupByInstrumentUnderlyingSymbol(trades) {
 }
 exports.groupByInstrumentUnderlyingSymbol = groupByInstrumentUnderlyingSymbol;
 /**
- * Group Trades by Instrument CUSIP
+ * [td-utils.js] - Group Trades by Instrument CUSIP
  * @param {TransactionData[]} trades - TRADE Transactions
  * @returns {TransactionData[]}
  */
@@ -192,7 +192,7 @@ function groupByInstrumentCUSIP(trades) {
 }
 exports.groupByInstrumentCUSIP = groupByInstrumentCUSIP;
 /**
- * Group Trades by Asset Type
+ * [td-utils.js] - Group Trades by Asset Type
  * @param {TransactionData[]} trades - TRADE Transactions
  * @returns {TransactionData[]}
  */

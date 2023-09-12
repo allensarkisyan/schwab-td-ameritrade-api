@@ -8,47 +8,50 @@
 ## Functions
 
 <dl>
+<dt><a href="#createTDAmeritradeAPIClient">createTDAmeritradeAPIClient(config)</a> ⇒ <code><a href="#TDAmeritradeAPI">TDAmeritradeAPI</a></code></dt>
+<dd><p>Creates a new instance of the TD Ameritrade API</p>
+</dd>
 <dt><a href="#filterBuyTrades">filterBuyTrades(trades)</a> ⇒ <code><a href="#TransactionData">Array.&lt;TransactionData&gt;</a></code></dt>
-<dd><p>Filter Buy Trades</p>
+<dd><p>[td-utils.js] - Filter Buy Trades</p>
 </dd>
 <dt><a href="#filterSellTrades">filterSellTrades(trades)</a> ⇒ <code><a href="#TransactionData">Array.&lt;TransactionData&gt;</a></code></dt>
-<dd><p>Filter Sell Trades</p>
+<dd><p>[td-utils.js] - Filter Sell Trades</p>
 </dd>
 <dt><a href="#filterOpeningTrades">filterOpeningTrades(trades)</a> ⇒ <code><a href="#TransactionData">Array.&lt;TransactionData&gt;</a></code></dt>
-<dd><p>Filter Opening Trades</p>
+<dd><p>[td-utils.js] - Filter Opening Trades</p>
 </dd>
 <dt><a href="#filterClosingTrades">filterClosingTrades(trades)</a> ⇒ <code><a href="#TransactionData">Array.&lt;TransactionData&gt;</a></code></dt>
-<dd><p>Filter Closing Trades</p>
+<dd><p>[td-utils.js] - Filter Closing Trades</p>
 </dd>
 <dt><a href="#filterOpeningShortSales">filterOpeningShortSales(trades)</a> ⇒ <code><a href="#TransactionData">Array.&lt;TransactionData&gt;</a></code></dt>
-<dd><p>Filter Open Short Sale Trades</p>
+<dd><p>[td-utils.js] - Filter Open Short Sale Trades</p>
 </dd>
 <dt><a href="#filterClosingShortSales">filterClosingShortSales(trades)</a> ⇒ <code><a href="#TransactionData">Array.&lt;TransactionData&gt;</a></code></dt>
-<dd><p>Filter Closing Short Sale Trades</p>
+<dd><p>[td-utils.js] - Filter Closing Short Sale Trades</p>
 </dd>
 <dt><a href="#filterOptionTrades">filterOptionTrades(trades)</a> ⇒ <code><a href="#TransactionData">Array.&lt;TransactionData&gt;</a></code></dt>
-<dd><p>Filter Option Trades</p>
+<dd><p>[td-utils.js] - Filter Option Trades</p>
 </dd>
 <dt><a href="#filterEquityTrades">filterEquityTrades(trades)</a> ⇒ <code><a href="#TransactionData">Array.&lt;TransactionData&gt;</a></code></dt>
-<dd><p>Filter Equity Trades</p>
+<dd><p>[td-utils.js] - Filter Equity Trades</p>
 </dd>
 <dt><a href="#groupByOrderId">groupByOrderId(trades)</a> ⇒ <code><a href="#TransactionData">Array.&lt;TransactionData&gt;</a></code></dt>
-<dd><p>Group Trades by Order ID</p>
+<dd><p>[td-utils.js] - Group Trades by Order ID</p>
 </dd>
 <dt><a href="#groupByInstrument">groupByInstrument(trades)</a> ⇒ <code><a href="#TransactionData">Array.&lt;TransactionData&gt;</a></code></dt>
-<dd><p>Group Trades by Instrument</p>
+<dd><p>[td-utils.js] - Group Trades by Instrument</p>
 </dd>
 <dt><a href="#groupByInstrumentSymbol">groupByInstrumentSymbol(trades)</a> ⇒ <code><a href="#TransactionData">Array.&lt;TransactionData&gt;</a></code></dt>
-<dd><p>Group Trades by Instrument Symbol</p>
+<dd><p>[td-utils.js] - Group Trades by Instrument Symbol</p>
 </dd>
 <dt><a href="#groupByInstrumentUnderlyingSymbol">groupByInstrumentUnderlyingSymbol(trades)</a> ⇒ <code><a href="#TransactionData">Array.&lt;TransactionData&gt;</a></code></dt>
-<dd><p>Group Trades by Instrument Underlying Symbol</p>
+<dd><p>[td-utils.js] - Group Trades by Instrument Underlying Symbol</p>
 </dd>
 <dt><a href="#groupByInstrumentCUSIP">groupByInstrumentCUSIP(trades)</a> ⇒ <code><a href="#TransactionData">Array.&lt;TransactionData&gt;</a></code></dt>
-<dd><p>Group Trades by Instrument CUSIP</p>
+<dd><p>[td-utils.js] - Group Trades by Instrument CUSIP</p>
 </dd>
 <dt><a href="#groupByAssetType">groupByAssetType(trades)</a> ⇒ <code><a href="#TransactionData">Array.&lt;TransactionData&gt;</a></code></dt>
-<dd><p>Group Trades by Asset Type</p>
+<dd><p>[td-utils.js] - Group Trades by Asset Type</p>
 </dd>
 </dl>
 
@@ -79,6 +82,12 @@
 <dd></dd>
 <dt><a href="#TDAmeritradeAccounts">TDAmeritradeAccounts</a> : <code><a href="#TDAmeritradeAccount">Array.&lt;TDAmeritradeAccount&gt;</a></code></dt>
 <dd></dd>
+<dt><a href="#AuthenticationResponse">AuthenticationResponse</a> : <code>Object</code></dt>
+<dd><p>TD Ameritrade API Authentication Response</p>
+</dd>
+<dt><a href="#RefreshTokenResponse">RefreshTokenResponse</a> : <code>Object</code></dt>
+<dd><p>TD Ameritrade API Refresh Token Response</p>
+</dd>
 <dt><a href="#TDAmeritradeAccount">TDAmeritradeAccount</a> : <code>Object</code></dt>
 <dd><p>Represents a TD Ameritrade account.</p>
 </dd>
@@ -163,6 +172,17 @@
 <dt><a href="#TransactionData">TransactionData</a> : <code>Object</code></dt>
 <dd><p>Represents a trade transaction.</p>
 </dd>
+<dt><a href="#OrderRequest">OrderRequest</a> : <code>Object</code></dt>
+<dd><p>Order Request</p>
+</dd>
+<dt><a href="#TDAmeritradeOrderLeg">TDAmeritradeOrderLeg</a> : <code>Object</code></dt>
+<dd></dd>
+<dt><a href="#TrendingEquity">TrendingEquity</a> : <code>Object</code></dt>
+<dd><p>Represents Market Mover Trending Equity data.</p>
+</dd>
+<dt><a href="#MarketMovers">MarketMovers</a> : <code>Object</code></dt>
+<dd><p>Represents Market Movers - Current Trending Equities of $SPX.X, $COMPX, $DJI</p>
+</dd>
 </dl>
 
 <a name="TDAmeritradeAPI"></a>
@@ -173,7 +193,10 @@
 * [TDAmeritradeAPI](#TDAmeritradeAPI)
     * [new TDAmeritradeAPI()](#new_TDAmeritradeAPI_new)
     * [.TDAmeritradeAPI](#TDAmeritradeAPI+TDAmeritradeAPI)
-        * [new exports.TDAmeritradeAPI([handleRequest])](#new_TDAmeritradeAPI+TDAmeritradeAPI_new)
+        * [new exports.TDAmeritradeAPI([config])](#new_TDAmeritradeAPI+TDAmeritradeAPI_new)
+    * [.setUserAccessToken](#TDAmeritradeAPI+setUserAccessToken)
+    * [.authenticate](#TDAmeritradeAPI+authenticate) ⇒ [<code>AuthenticationResponse</code>](#AuthenticationResponse) \| <code>null</code>
+    * [.refreshAccessToken](#TDAmeritradeAPI+refreshAccessToken) ⇒ [<code>RefreshTokenResponse</code>](#RefreshTokenResponse) \| <code>null</code>
     * [.getAccounts](#TDAmeritradeAPI+getAccounts) ⇒ [<code>Promise.&lt;TDAmeritradeAccounts&gt;</code>](#TDAmeritradeAccounts)
     * [.getAccount](#TDAmeritradeAPI+getAccount) ⇒ [<code>Promise.&lt;TDAmeritradeAccount&gt;</code>](#TDAmeritradeAccount)
     * [.getUserPrincipals](#TDAmeritradeAPI+getUserPrincipals) ⇒ [<code>Promise.&lt;UserPrincipalsData&gt;</code>](#UserPrincipalsData)
@@ -181,10 +204,12 @@
     * [.getQuotes](#TDAmeritradeAPI+getQuotes) ⇒ <code>Promise.&lt;Record.&lt;string, QuoteData&gt;&gt;</code>
     * [.getInstrument](#TDAmeritradeAPI+getInstrument) ⇒ <code>Promise.&lt;Array.&lt;InstrumentData&gt;&gt;</code>
     * [.getFundamentals](#TDAmeritradeAPI+getFundamentals) ⇒ <code>Promise.&lt;Record.&lt;string, FundamentalData&gt;&gt;</code>
+    * [.getMarketDirectionalMover](#TDAmeritradeAPI+getMarketDirectionalMover) ⇒ <code>Promise.&lt;Array.&lt;TrendingEquity&gt;&gt;</code>
     * [.getPriceHistory](#TDAmeritradeAPI+getPriceHistory) ⇒ [<code>Promise.&lt;PriceHistory&gt;</code>](#PriceHistory)
     * [.getDailyPriceHistory](#TDAmeritradeAPI+getDailyPriceHistory) ⇒ [<code>Promise.&lt;PriceHistory&gt;</code>](#PriceHistory)
     * [.getWeeklyPriceHistory](#TDAmeritradeAPI+getWeeklyPriceHistory) ⇒ [<code>Promise.&lt;PriceHistory&gt;</code>](#PriceHistory)
     * [.getPeriodicPriceHistory](#TDAmeritradeAPI+getPeriodicPriceHistory) ⇒ [<code>Promise.&lt;PriceHistory&gt;</code>](#PriceHistory)
+    * [.getMarketMovers](#TDAmeritradeAPI+getMarketMovers) ⇒ [<code>Promise.&lt;MarketMovers&gt;</code>](#MarketMovers)
     * [.getOptionChain](#TDAmeritradeAPI+getOptionChain) ⇒ [<code>Promise.&lt;OptionChainData&gt;</code>](#OptionChainData)
     * [.getWatchlists](#TDAmeritradeAPI+getWatchlists) ⇒ [<code>Promise.&lt;Watchlists&gt;</code>](#Watchlists)
     * [.getWatchlist](#TDAmeritradeAPI+getWatchlist) ⇒ [<code>Promise.&lt;Watchlist&gt;</code>](#Watchlist)
@@ -212,13 +237,52 @@ Represents the TDAmeritradeAPI class for handling requests.
 **Kind**: instance class of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
 <a name="new_TDAmeritradeAPI+TDAmeritradeAPI_new"></a>
 
-#### new exports.TDAmeritradeAPI([handleRequest])
+#### new exports.TDAmeritradeAPI([config])
 Creates an instance of TDAmeritradeAPI.
 
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
-| [handleRequest] | <code>function</code> \| <code>null</code> | <code></code> | An optional request handler function. |
+| [config] | <code>Object</code> |  | API Client Configuration |
+| [config.clientId] | <code>string</code> |  | TD Amertitrade Client ID - defaults to TD_AMERITRADE_CLIENT_ID environment variable. |
+| [config.callbackUrl] | <code>string</code> |  | Callback URL - defaults to TD_AMERITRADE_CALLBACK_URL environment variable. |
+| [config.handleRequest] | <code>function</code> \| <code>null</code> | <code></code> | An optional request handler function. |
+
+<a name="TDAmeritradeAPI+setUserAccessToken"></a>
+
+### tdAmeritradeAPI.setUserAccessToken
+Set User Access Token / Refresh Token
+
+**Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| accessToken | <code>string</code> | Access Token |
+| isNewToken | <code>boolean</code> | Is New Access Token |
+| [refreshToken] | <code>string</code> | Refresh Token |
+| [refreshTokenExpiresIn] | <code>number</code> \| <code>null</code> | Refresh Token Expires in |
+
+<a name="TDAmeritradeAPI+authenticate"></a>
+
+### tdAmeritradeAPI.authenticate ⇒ [<code>AuthenticationResponse</code>](#AuthenticationResponse) \| <code>null</code>
+Authenticate with the TD Ameritrade OAuth2 Authorization endpoint
+
+**Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| code | <code>string</code> | Authorization Resonse Code from TD Ameritrade Authentication API |
+
+<a name="TDAmeritradeAPI+refreshAccessToken"></a>
+
+### tdAmeritradeAPI.refreshAccessToken ⇒ [<code>RefreshTokenResponse</code>](#RefreshTokenResponse) \| <code>null</code>
+Refresh Access Token with Refresh Token
+
+**Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| refresh_token | <code>string</code> | Refresh Token |
 
 <a name="TDAmeritradeAPI+getAccounts"></a>
 
@@ -290,6 +354,19 @@ Get Fundamental Data for Ticker Symbol
 | --- | --- | --- |
 | symbol | [<code>TickerSymbol</code>](#TickerSymbol) | Ticker Symbol |
 
+<a name="TDAmeritradeAPI+getMarketDirectionalMover"></a>
+
+### tdAmeritradeAPI.getMarketDirectionalMover ⇒ <code>Promise.&lt;Array.&lt;TrendingEquity&gt;&gt;</code>
+Get Market Directional Mover (e.g. '$SPX.X', 'up', 'percent')
+
+**Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| market | <code>&#x27;$SPX.X&#x27;</code> \| <code>&#x27;$DJI&#x27;</code> \| <code>&#x27;$COMPX&#x27;</code> | Market |
+| direction | <code>&#x27;up&#x27;</code> \| <code>&#x27;down&#x27;</code> | Direction |
+| change | <code>&#x27;percent&#x27;</code> \| <code>&#x27;value&#x27;</code> | Change Type |
+
 <a name="TDAmeritradeAPI+getPriceHistory"></a>
 
 ### tdAmeritradeAPI.getPriceHistory ⇒ [<code>Promise.&lt;PriceHistory&gt;</code>](#PriceHistory)
@@ -344,9 +421,17 @@ Get Periodic Price History for Ticker Symbol
 | endDate | [<code>DateLikeNullable</code>](#DateLikeNullable) | End Date |
 | extHours | <code>boolean</code> | Extended Hours Data |
 
+<a name="TDAmeritradeAPI+getMarketMovers"></a>
+
+### tdAmeritradeAPI.getMarketMovers ⇒ [<code>Promise.&lt;MarketMovers&gt;</code>](#MarketMovers)
+Get Market Movers - Current Trending Equities of $SPX.X, $COMPX, $DJI
+
+**Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
 <a name="TDAmeritradeAPI+getOptionChain"></a>
 
 ### tdAmeritradeAPI.getOptionChain ⇒ [<code>Promise.&lt;OptionChainData&gt;</code>](#OptionChainData)
+Get Option Chain
+
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
 
 | Param | Type | Description |
@@ -388,7 +473,7 @@ Place an Order
 | --- | --- | --- |
 | accountId | [<code>TDAmeritradeAccountID</code>](#TDAmeritradeAccountID) | TD Ameritrade Account ID |
 | price | <code>number</code> | Price |
-| orderLegCollection | <code>Array.&lt;TDAmeritradeOrderLeg&gt;</code> | Order Leg Collection |
+| orderLegCollection | [<code>Array.&lt;TDAmeritradeOrderLeg&gt;</code>](#TDAmeritradeOrderLeg) | Order Leg Collection |
 
 <a name="TDAmeritradeAPI+cancelOrder"></a>
 
@@ -411,10 +496,11 @@ Opening Order
 
 | Param | Type | Description |
 | --- | --- | --- |
-| accountId | [<code>TDAmeritradeAccountID</code>](#TDAmeritradeAccountID) | TD Ameritrade Account ID |
-| symbol | [<code>TickerSymbol</code>](#TickerSymbol) | Ticker Symbol |
-| quantity | <code>number</code> | Quantity of Shares / Option Contracts |
-| price | <code>number</code> | Price |
+| orderRequest | [<code>OrderRequest</code>](#OrderRequest) | Order Request |
+| orderRequest.accountId | [<code>TDAmeritradeAccountID</code>](#TDAmeritradeAccountID) | TD Ameritrade Account ID |
+| orderRequest.symbol | [<code>TickerSymbol</code>](#TickerSymbol) | Ticker Symbol |
+| orderRequest.quantity | <code>number</code> | Quantity of Shares / Option Contracts |
+| orderRequest.price | <code>number</code> | Price |
 | isOption | <code>boolean</code> | Is Option Order |
 | isShort | <code>boolean</code> | Is Short Position |
 
@@ -427,10 +513,11 @@ Closing Order
 
 | Param | Type | Description |
 | --- | --- | --- |
-| accountId | [<code>TDAmeritradeAccountID</code>](#TDAmeritradeAccountID) | TD Ameritrade Account ID |
-| symbol | [<code>TickerSymbol</code>](#TickerSymbol) | Ticker Symbol |
-| quantity | <code>number</code> | Quantity of Shares / Option Contracts |
-| price | <code>number</code> | Price |
+| orderRequest | [<code>OrderRequest</code>](#OrderRequest) | Order Request |
+| orderRequest.accountId | [<code>TDAmeritradeAccountID</code>](#TDAmeritradeAccountID) | TD Ameritrade Account ID |
+| orderRequest.symbol | [<code>TickerSymbol</code>](#TickerSymbol) | Ticker Symbol |
+| orderRequest.quantity | <code>number</code> | Quantity of Shares / Option Contracts |
+| orderRequest.price | <code>number</code> | Price |
 | isOption | <code>boolean</code> | Is Option Order |
 | isShort | <code>boolean</code> | Is Short Position |
 
@@ -443,10 +530,11 @@ Buy Equtity / Stock Convenience Method
 
 | Param | Type | Description |
 | --- | --- | --- |
-| accountId | [<code>TDAmeritradeAccountID</code>](#TDAmeritradeAccountID) | TD Ameritrade Account ID |
-| symbol | [<code>TickerSymbol</code>](#TickerSymbol) | Ticker Symbol |
-| quantity | <code>number</code> | Quantity of Shares / Option Contracts |
-| price | <code>number</code> | Price |
+| orderRequest | [<code>OrderRequest</code>](#OrderRequest) | Order Request |
+| orderRequest.accountId | [<code>TDAmeritradeAccountID</code>](#TDAmeritradeAccountID) | TD Ameritrade Account ID |
+| orderRequest.symbol | [<code>TickerSymbol</code>](#TickerSymbol) | Ticker Symbol |
+| orderRequest.quantity | <code>number</code> | Quantity of Shares / Option Contracts |
+| orderRequest.price | <code>number</code> | Price |
 
 <a name="TDAmeritradeAPI+sellStock"></a>
 
@@ -457,10 +545,11 @@ Sell Equtity / Stock Convenience Method
 
 | Param | Type | Description |
 | --- | --- | --- |
-| accountId | [<code>TDAmeritradeAccountID</code>](#TDAmeritradeAccountID) | TD Ameritrade Account ID |
-| symbol | [<code>TickerSymbol</code>](#TickerSymbol) | Ticker Symbol |
-| quantity | <code>number</code> | Quantity of Shares / Option Contracts |
-| price | <code>number</code> | Price |
+| orderRequest | [<code>OrderRequest</code>](#OrderRequest) | Order Request |
+| orderRequest.accountId | [<code>TDAmeritradeAccountID</code>](#TDAmeritradeAccountID) | TD Ameritrade Account ID |
+| orderRequest.symbol | [<code>TickerSymbol</code>](#TickerSymbol) | Ticker Symbol |
+| orderRequest.quantity | <code>number</code> | Quantity of Shares / Option Contracts |
+| orderRequest.price | <code>number</code> | Price |
 
 <a name="TDAmeritradeAPI+shortStock"></a>
 
@@ -471,10 +560,11 @@ Short Equtity / Stock Convenience Method
 
 | Param | Type | Description |
 | --- | --- | --- |
-| accountId | [<code>TDAmeritradeAccountID</code>](#TDAmeritradeAccountID) | TD Ameritrade Account ID |
-| symbol | [<code>TickerSymbol</code>](#TickerSymbol) | Ticker Symbol |
-| quantity | <code>number</code> | Quantity of Shares / Option Contracts |
-| price | <code>number</code> | Price |
+| orderRequest | [<code>OrderRequest</code>](#OrderRequest) | Order Request |
+| orderRequest.accountId | [<code>TDAmeritradeAccountID</code>](#TDAmeritradeAccountID) | TD Ameritrade Account ID |
+| orderRequest.symbol | [<code>TickerSymbol</code>](#TickerSymbol) | Ticker Symbol |
+| orderRequest.quantity | <code>number</code> | Quantity of Shares / Option Contracts |
+| orderRequest.price | <code>number</code> | Price |
 
 <a name="TDAmeritradeAPI+coverStock"></a>
 
@@ -485,10 +575,11 @@ Cover Short Equtity / Stock Convenience Method
 
 | Param | Type | Description |
 | --- | --- | --- |
-| accountId | [<code>TDAmeritradeAccountID</code>](#TDAmeritradeAccountID) | TD Ameritrade Account ID |
-| symbol | [<code>TickerSymbol</code>](#TickerSymbol) | Ticker Symbol |
-| quantity | <code>number</code> | Quantity of Shares / Option Contracts |
-| price | <code>number</code> | Price |
+| orderRequest | [<code>OrderRequest</code>](#OrderRequest) | Order Request |
+| orderRequest.accountId | [<code>TDAmeritradeAccountID</code>](#TDAmeritradeAccountID) | TD Ameritrade Account ID |
+| orderRequest.symbol | [<code>TickerSymbol</code>](#TickerSymbol) | Ticker Symbol |
+| orderRequest.quantity | <code>number</code> | Quantity of Shares / Option Contracts |
+| orderRequest.price | <code>number</code> | Price |
 
 <a name="TDAmeritradeAPI+buyOption"></a>
 
@@ -499,10 +590,11 @@ Buy Option Convenience Method
 
 | Param | Type | Description |
 | --- | --- | --- |
-| accountId | [<code>TDAmeritradeAccountID</code>](#TDAmeritradeAccountID) | TD Ameritrade Account ID |
-| symbol | [<code>TickerSymbol</code>](#TickerSymbol) | Ticker Symbol |
-| quantity | <code>number</code> | Quantity of Shares / Option Contracts |
-| price | <code>number</code> | Price |
+| orderRequest | [<code>OrderRequest</code>](#OrderRequest) | Order Request |
+| orderRequest.accountId | [<code>TDAmeritradeAccountID</code>](#TDAmeritradeAccountID) | TD Ameritrade Account ID |
+| orderRequest.symbol | [<code>TickerSymbol</code>](#TickerSymbol) | Ticker Symbol |
+| orderRequest.quantity | <code>number</code> | Quantity of Shares / Option Contracts |
+| orderRequest.price | <code>number</code> | Price |
 
 <a name="TDAmeritradeAPI+sellOption"></a>
 
@@ -513,10 +605,11 @@ Sell Option Convenience Method
 
 | Param | Type | Description |
 | --- | --- | --- |
-| accountId | [<code>TDAmeritradeAccountID</code>](#TDAmeritradeAccountID) | TD Ameritrade Account ID |
-| symbol | [<code>TickerSymbol</code>](#TickerSymbol) | Ticker Symbol |
-| quantity | <code>number</code> | Quantity of Shares / Option Contracts |
-| price | <code>number</code> | Price |
+| orderRequest | [<code>OrderRequest</code>](#OrderRequest) | Order Request |
+| orderRequest.accountId | [<code>TDAmeritradeAccountID</code>](#TDAmeritradeAccountID) | TD Ameritrade Account ID |
+| orderRequest.symbol | [<code>TickerSymbol</code>](#TickerSymbol) | Ticker Symbol |
+| orderRequest.quantity | <code>number</code> | Quantity of Shares / Option Contracts |
+| orderRequest.price | <code>number</code> | Price |
 
 <a name="TDAmeritradeAPI+writeOption"></a>
 
@@ -527,10 +620,11 @@ Write Option Convenience Method
 
 | Param | Type | Description |
 | --- | --- | --- |
-| accountId | [<code>TDAmeritradeAccountID</code>](#TDAmeritradeAccountID) | TD Ameritrade Account ID |
-| symbol | [<code>TickerSymbol</code>](#TickerSymbol) | Ticker Symbol |
-| quantity | <code>number</code> | Quantity of Shares / Option Contracts |
-| price | <code>number</code> | Price |
+| orderRequest | [<code>OrderRequest</code>](#OrderRequest) | Order Request |
+| orderRequest.accountId | [<code>TDAmeritradeAccountID</code>](#TDAmeritradeAccountID) | TD Ameritrade Account ID |
+| orderRequest.symbol | [<code>TickerSymbol</code>](#TickerSymbol) | Ticker Symbol |
+| orderRequest.quantity | <code>number</code> | Quantity of Shares / Option Contracts |
+| orderRequest.price | <code>number</code> | Price |
 
 <a name="TDAmeritradeAPI+closeOption"></a>
 
@@ -541,15 +635,27 @@ Close Option Convenience Method
 
 | Param | Type | Description |
 | --- | --- | --- |
-| accountId | [<code>TDAmeritradeAccountID</code>](#TDAmeritradeAccountID) | TD Ameritrade Account ID |
-| symbol | [<code>TickerSymbol</code>](#TickerSymbol) | Ticker Symbol |
-| quantity | <code>number</code> | Quantity of Shares / Option Contracts |
-| price | <code>number</code> | Price |
+| orderRequest | [<code>OrderRequest</code>](#OrderRequest) | Order Request |
+| orderRequest.accountId | [<code>TDAmeritradeAccountID</code>](#TDAmeritradeAccountID) | TD Ameritrade Account ID |
+| orderRequest.symbol | [<code>TickerSymbol</code>](#TickerSymbol) | Ticker Symbol |
+| orderRequest.quantity | <code>number</code> | Quantity of Shares / Option Contracts |
+| orderRequest.price | <code>number</code> | Price |
+
+<a name="createTDAmeritradeAPIClient"></a>
+
+## createTDAmeritradeAPIClient(config) ⇒ [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)
+Creates a new instance of the TD Ameritrade API
+
+**Kind**: global function  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| config | <code>APIClientConfig</code> | API Client Configuration |
 
 <a name="filterBuyTrades"></a>
 
 ## filterBuyTrades(trades) ⇒ [<code>Array.&lt;TransactionData&gt;</code>](#TransactionData)
-Filter Buy Trades
+[td-utils.js] - Filter Buy Trades
 
 **Kind**: global function  
 
@@ -560,7 +666,7 @@ Filter Buy Trades
 <a name="filterSellTrades"></a>
 
 ## filterSellTrades(trades) ⇒ [<code>Array.&lt;TransactionData&gt;</code>](#TransactionData)
-Filter Sell Trades
+[td-utils.js] - Filter Sell Trades
 
 **Kind**: global function  
 
@@ -571,7 +677,7 @@ Filter Sell Trades
 <a name="filterOpeningTrades"></a>
 
 ## filterOpeningTrades(trades) ⇒ [<code>Array.&lt;TransactionData&gt;</code>](#TransactionData)
-Filter Opening Trades
+[td-utils.js] - Filter Opening Trades
 
 **Kind**: global function  
 
@@ -582,7 +688,7 @@ Filter Opening Trades
 <a name="filterClosingTrades"></a>
 
 ## filterClosingTrades(trades) ⇒ [<code>Array.&lt;TransactionData&gt;</code>](#TransactionData)
-Filter Closing Trades
+[td-utils.js] - Filter Closing Trades
 
 **Kind**: global function  
 
@@ -593,7 +699,7 @@ Filter Closing Trades
 <a name="filterOpeningShortSales"></a>
 
 ## filterOpeningShortSales(trades) ⇒ [<code>Array.&lt;TransactionData&gt;</code>](#TransactionData)
-Filter Open Short Sale Trades
+[td-utils.js] - Filter Open Short Sale Trades
 
 **Kind**: global function  
 
@@ -604,7 +710,7 @@ Filter Open Short Sale Trades
 <a name="filterClosingShortSales"></a>
 
 ## filterClosingShortSales(trades) ⇒ [<code>Array.&lt;TransactionData&gt;</code>](#TransactionData)
-Filter Closing Short Sale Trades
+[td-utils.js] - Filter Closing Short Sale Trades
 
 **Kind**: global function  
 
@@ -615,7 +721,7 @@ Filter Closing Short Sale Trades
 <a name="filterOptionTrades"></a>
 
 ## filterOptionTrades(trades) ⇒ [<code>Array.&lt;TransactionData&gt;</code>](#TransactionData)
-Filter Option Trades
+[td-utils.js] - Filter Option Trades
 
 **Kind**: global function  
 
@@ -626,7 +732,7 @@ Filter Option Trades
 <a name="filterEquityTrades"></a>
 
 ## filterEquityTrades(trades) ⇒ [<code>Array.&lt;TransactionData&gt;</code>](#TransactionData)
-Filter Equity Trades
+[td-utils.js] - Filter Equity Trades
 
 **Kind**: global function  
 
@@ -637,7 +743,7 @@ Filter Equity Trades
 <a name="groupByOrderId"></a>
 
 ## groupByOrderId(trades) ⇒ [<code>Array.&lt;TransactionData&gt;</code>](#TransactionData)
-Group Trades by Order ID
+[td-utils.js] - Group Trades by Order ID
 
 **Kind**: global function  
 
@@ -648,7 +754,7 @@ Group Trades by Order ID
 <a name="groupByInstrument"></a>
 
 ## groupByInstrument(trades) ⇒ [<code>Array.&lt;TransactionData&gt;</code>](#TransactionData)
-Group Trades by Instrument
+[td-utils.js] - Group Trades by Instrument
 
 **Kind**: global function  
 
@@ -659,7 +765,7 @@ Group Trades by Instrument
 <a name="groupByInstrumentSymbol"></a>
 
 ## groupByInstrumentSymbol(trades) ⇒ [<code>Array.&lt;TransactionData&gt;</code>](#TransactionData)
-Group Trades by Instrument Symbol
+[td-utils.js] - Group Trades by Instrument Symbol
 
 **Kind**: global function  
 
@@ -670,7 +776,7 @@ Group Trades by Instrument Symbol
 <a name="groupByInstrumentUnderlyingSymbol"></a>
 
 ## groupByInstrumentUnderlyingSymbol(trades) ⇒ [<code>Array.&lt;TransactionData&gt;</code>](#TransactionData)
-Group Trades by Instrument Underlying Symbol
+[td-utils.js] - Group Trades by Instrument Underlying Symbol
 
 **Kind**: global function  
 
@@ -681,7 +787,7 @@ Group Trades by Instrument Underlying Symbol
 <a name="groupByInstrumentCUSIP"></a>
 
 ## groupByInstrumentCUSIP(trades) ⇒ [<code>Array.&lt;TransactionData&gt;</code>](#TransactionData)
-Group Trades by Instrument CUSIP
+[td-utils.js] - Group Trades by Instrument CUSIP
 
 **Kind**: global function  
 
@@ -692,7 +798,7 @@ Group Trades by Instrument CUSIP
 <a name="groupByAssetType"></a>
 
 ## groupByAssetType(trades) ⇒ [<code>Array.&lt;TransactionData&gt;</code>](#TransactionData)
-Group Trades by Asset Type
+[td-utils.js] - Group Trades by Asset Type
 
 **Kind**: global function  
 
@@ -748,6 +854,38 @@ Group Trades by Asset Type
 
 ## TDAmeritradeAccounts : [<code>Array.&lt;TDAmeritradeAccount&gt;</code>](#TDAmeritradeAccount)
 **Kind**: global typedef  
+<a name="AuthenticationResponse"></a>
+
+## AuthenticationResponse : <code>Object</code>
+TD Ameritrade API Authentication Response
+
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| access_token | <code>string</code> | Access Token |
+| refresh_token | <code>string</code> | Refresh Token |
+| scope | <code>string</code> | OAuth2 Scope |
+| token_type | <code>string</code> | Token Type |
+| expires_in | <code>number</code> | Access Token Expires in (seconds) |
+| refresh_token_expires_in | <code>number</code> | Refresh Token Expires in (seconds) |
+
+<a name="RefreshTokenResponse"></a>
+
+## RefreshTokenResponse : <code>Object</code>
+TD Ameritrade API Refresh Token Response
+
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| access_token | <code>string</code> | Access Token |
+| scope | <code>string</code> | OAuth2 Scope |
+| token_type | <code>string</code> | Token Type |
+| expires_in | <code>number</code> | Access Token Expires in (seconds) |
+
 <a name="TDAmeritradeAccount"></a>
 
 ## TDAmeritradeAccount : <code>Object</code>
@@ -1423,4 +1561,63 @@ Represents a trade transaction.
 | description | [<code>OrderDescription</code>](#OrderDescription) | A description of the transaction. |
 | fees | [<code>TradeTransactionFees</code>](#TradeTransactionFees) | Object containing various fee information related to the transaction. |
 | transactionItem | [<code>TransactionItem</code>](#TransactionItem) | Detailed information about the transaction item. |
+
+<a name="OrderRequest"></a>
+
+## OrderRequest : <code>Object</code>
+Order Request
+
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| accountId | [<code>TDAmeritradeAccountID</code>](#TDAmeritradeAccountID) | TD Ameritrade Account ID |
+| symbol | [<code>TickerSymbol</code>](#TickerSymbol) | Ticker Symbol |
+| quantity | <code>number</code> | Quantity of Shares / Option Contracts |
+| price | <code>number</code> | Price |
+
+<a name="TDAmeritradeOrderLeg"></a>
+
+## TDAmeritradeOrderLeg : <code>Object</code>
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| instruction | [<code>BuyOrder</code>](#BuyOrder) \| [<code>SellOrder</code>](#SellOrder) | Instruction |
+| quantity | <code>number</code> | Quantity of Shares / Option Contracts |
+| instrument | <code>Object</code> | Instrument |
+| instrument.symbol | [<code>TickerSymbol</code>](#TickerSymbol) | Ticker Symbol |
+| instrument.assetType | [<code>AssetType</code>](#AssetType) | Asset Type |
+
+<a name="TrendingEquity"></a>
+
+## TrendingEquity : <code>Object</code>
+Represents Market Mover Trending Equity data.
+
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| change | <code>number</code> | The change in stock status. Negative values indicate a decrease. |
+| description | <code>string</code> | The description of the stock status. |
+| direction | <code>string</code> | The direction of the change (e.g., "up" or "down"). |
+| last | <code>number</code> | The last traded price of the stock. |
+| symbol | <code>string</code> | The stock symbol. |
+| totalVolume | <code>number</code> | The total trading volume for the stock. |
+
+<a name="MarketMovers"></a>
+
+## MarketMovers : <code>Object</code>
+Represents Market Movers - Current Trending Equities of $SPX.X, $COMPX, $DJI
+
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| up | [<code>Array.&lt;TrendingEquity&gt;</code>](#TrendingEquity) | Equities Trending up |
+| down | [<code>Array.&lt;TrendingEquity&gt;</code>](#TrendingEquity) | Equities Trending down |
 

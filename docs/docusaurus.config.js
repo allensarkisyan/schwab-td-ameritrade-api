@@ -75,6 +75,10 @@ const config = {
             title: 'Documentation',
             items: [
               {
+                label: 'README',
+                to: '/docs',
+              },
+              {
                 label: 'TD Ameritrade API',
                 to: '/docs/td-api',
               },
