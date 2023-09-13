@@ -4,8 +4,6 @@
  * @license MIT Open Source License
  */
 
-import { z } from 'zod';
-
 import type {
   APIClientConfig,
   APIRequestConfig,
@@ -34,7 +32,13 @@ import type {
   GetTransactionsType,
   MarketMovers,
   TrendingEquity,
+  OrderRequest,
+  OrderData,
 } from './@types/index.js';
+
+import {
+  OrderRequestSchema
+} from './schemas/index.js';
 
 const jsonToQueryString = <TObj extends object>(json: TObj): string => {
   const queryParams: string[] = [];
@@ -61,20 +65,6 @@ const LIMIT_ORDER_TEMPLATE = {
   duration: 'GOOD_TILL_CANCEL',
   orderStrategyType: 'SINGLE'
 };
-
-const OrderRequestSchema = <z.ZodSchema<{
-  accountId: TDAmeritradeAccountID,
-  symbol: TickerSymbol,
-  quantity: number,
-  price: number
-}>>z.object({
-  accountId: z.string(),
-  symbol: z.string().toUpperCase(),
-  quantity: z.number().min(1).default(1),
-  price: z.number().min(0.01)
-});
-
-type OrderRequest = z.infer<typeof OrderRequestSchema>;
 
 /**
  * Represents the TDAmeritradeAPI class for handling requests.
@@ -138,10 +128,14 @@ export class TDAmeritradeAPI {
   /**
    * Internal Request Handler
    * @private
+   * @template T - The type of the data in the API Response
    * @param {APIRequestConfig} config - API Request Configuration
-   * @returns {Promise<APIResponse<any>>}
+   * @returns {Promise<APIResponse<T>>}
    */
   #handleRequest = async <T>(config: APIRequestConfig): Promise<APIResponse<T>> => {
+    let data = null;
+    let error = null;
+
     try {
       if (this.#externalRequestHandler) {
         return await this.#externalRequestHandler(config);
@@ -177,14 +171,11 @@ export class TDAmeritradeAPI {
         throw new Error(`TDAmeritradeAPI#handleRequest Failed with Status Code: ${response.status}`);
       }
 
-      const data = await response.json();
-
-      return { error: null, data };
+      data = await response.json();
     } catch (e: any) {
-      return {
-        error: e?.message || 'AN UNKNOWN ERROR HAS OCCURRED.',
-        data: null
-      };
+      error = e?.message || 'AN UNKNOWN ERROR HAS OCCURRED.';
+    } finally {
+      return { error, data };
     }
   }
 
@@ -367,7 +358,12 @@ export class TDAmeritradeAPI {
     }
   });
 
-  getOrders = async (accountId: TDAmeritradeAccountID) => await this.#handleRequest({
+  /**
+   * Get Order's for Account ID
+   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
+   * @returns {Promise<APIResponse<OrderData[]>>}
+   */
+  getOrders = async (accountId: TDAmeritradeAccountID): Promise<APIResponse<OrderData[]>> => await this.#handleRequest({
     url: '/v1/orders',
     params: { accountId }
   });
@@ -375,9 +371,9 @@ export class TDAmeritradeAPI {
   /**
    * Get Quote Data for Ticker Symbol(s)
    * @param {TickerSymbol} symbol - Ticker Symbol
-   * @returns {Promise<APIResponse<Record<string, QuoteData>>>}
+   * @returns {Promise<APIResponse<Object.<string, QuoteData>>>}
    */
-  getQuotes = async (symbol: TickerSymbol): Promise<APIResponse<Record<string, QuoteData>>> => await this.#handleRequest({
+  getQuotes = async (symbol: TickerSymbol): Promise<APIResponse<{ [symbol: string]: QuoteData }>> => await this.#handleRequest({
     url: '/v1/marketdata/quotes',
     params: { symbol }
   });
@@ -394,9 +390,9 @@ export class TDAmeritradeAPI {
   /**
    * Get Fundamental Data for Ticker Symbol
    * @param {TickerSymbol} symbol - Ticker Symbol
-   * @returns {Promise<APIResponse<Record<string, FundamentalData>>>}
+   * @returns {Promise<APIResponse<Object.<string, FundamentalData>>>}
    */
-  getFundamentals = async (symbol: TickerSymbol): Promise<APIResponse<Record<string, FundamentalData>>> => await this.#handleRequest({
+  getFundamentals = async (symbol: TickerSymbol): Promise<APIResponse<{ [symbol: string]: FundamentalData }>> => await this.#handleRequest({
     url: '/v1/instruments',
     params: { symbol, projection: 'fundamental' }
   });
@@ -837,4 +833,4 @@ export function createTDAmeritradeAPIClient(config?: APIClientConfig) {
   return new TDAmeritradeAPI(config);
 }
 
-export default new TDAmeritradeAPI();
+export default TDAmeritradeAPI;

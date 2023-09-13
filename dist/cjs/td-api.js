@@ -6,7 +6,7 @@
  */
 Object.defineProperty(exports, '__esModule', { value: true });
 exports.createTDAmeritradeAPIClient = exports.TDAmeritradeAPI = void 0;
-const zod_1 = require('zod');
+const index_js_1 = require('./schemas/index.js');
 const jsonToQueryString = (json) => {
   const queryParams = [];
   for (const [k, v] of Object.entries(json)) {
@@ -28,12 +28,6 @@ const LIMIT_ORDER_TEMPLATE = {
   duration: 'GOOD_TILL_CANCEL',
   orderStrategyType: 'SINGLE',
 };
-const OrderRequestSchema = zod_1.z.object({
-  accountId: zod_1.z.string(),
-  symbol: zod_1.z.string().toUpperCase(),
-  quantity: zod_1.z.number().min(1).default(1),
-  price: zod_1.z.number().min(0.01),
-});
 /**
  * Represents the TDAmeritradeAPI class for handling requests.
  * @module TDAmeritradeAPI
@@ -88,10 +82,13 @@ class TDAmeritradeAPI {
   /**
    * Internal Request Handler
    * @private
+   * @template T - The type of the data in the API Response
    * @param {APIRequestConfig} config - API Request Configuration
-   * @returns {Promise<APIResponse<any>>}
+   * @returns {Promise<APIResponse<T>>}
    */
   #handleRequest = async (config) => {
+    let data = null;
+    let error = null;
     try {
       if (this.#externalRequestHandler) {
         return await this.#externalRequestHandler(config);
@@ -127,13 +124,11 @@ class TDAmeritradeAPI {
           `TDAmeritradeAPI#handleRequest Failed with Status Code: ${response.status}`,
         );
       }
-      const data = await response.json();
-      return { error: null, data };
+      data = await response.json();
     } catch (e) {
-      return {
-        error: e?.message || 'AN UNKNOWN ERROR HAS OCCURRED.',
-        data: null,
-      };
+      error = e?.message || 'AN UNKNOWN ERROR HAS OCCURRED.';
+    } finally {
+      return { error, data };
     }
   };
   /**
@@ -304,6 +299,11 @@ class TDAmeritradeAPI {
         endDate,
       },
     });
+  /**
+   * Get Order's for Account ID
+   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
+   * @returns {Promise<APIResponse<OrderData[]>>}
+   */
   getOrders = async (accountId) =>
     await this.#handleRequest({
       url: '/v1/orders',
@@ -312,7 +312,7 @@ class TDAmeritradeAPI {
   /**
    * Get Quote Data for Ticker Symbol(s)
    * @param {TickerSymbol} symbol - Ticker Symbol
-   * @returns {Promise<APIResponse<Record<string, QuoteData>>>}
+   * @returns {Promise<APIResponse<Object.<string, QuoteData>>>}
    */
   getQuotes = async (symbol) =>
     await this.#handleRequest({
@@ -331,7 +331,7 @@ class TDAmeritradeAPI {
   /**
    * Get Fundamental Data for Ticker Symbol
    * @param {TickerSymbol} symbol - Ticker Symbol
-   * @returns {Promise<APIResponse<Record<string, FundamentalData>>>}
+   * @returns {Promise<APIResponse<Object.<string, FundamentalData>>>}
    */
   getFundamentals = async (symbol) =>
     await this.#handleRequest({
@@ -549,7 +549,7 @@ class TDAmeritradeAPI {
    * @returns {Promise<APIResponse<any>>}
    */
   openOrder = async (orderRequest, isOption = false, isShort = false) => {
-    const { success } = OrderRequestSchema.safeParse(orderRequest);
+    const { success } = index_js_1.OrderRequestSchema.safeParse(orderRequest);
     if (!success) {
       throw new Error('Invalid Order Request');
     }
@@ -582,7 +582,7 @@ class TDAmeritradeAPI {
    * @returns {Promise<APIResponse<any>>}
    */
   closeOrder = async (orderRequest, isOption = false, isShort = false) => {
-    const { success } = OrderRequestSchema.safeParse(orderRequest);
+    const { success } = index_js_1.OrderRequestSchema.safeParse(orderRequest);
     if (!success) {
       throw new Error('Invalid Order Request');
     }
@@ -702,4 +702,4 @@ function createTDAmeritradeAPIClient(config) {
   return new TDAmeritradeAPI(config);
 }
 exports.createTDAmeritradeAPIClient = createTDAmeritradeAPIClient;
-exports.default = new TDAmeritradeAPI();
+exports.default = TDAmeritradeAPI;

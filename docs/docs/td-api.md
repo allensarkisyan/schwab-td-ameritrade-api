@@ -82,6 +82,15 @@
 <dd></dd>
 <dt><a href="#TDAmeritradeAccounts">TDAmeritradeAccounts</a> : <code><a href="#TDAmeritradeAccount">Array.&lt;TDAmeritradeAccount&gt;</a></code></dt>
 <dd></dd>
+<dt><a href="#APIClientConfig">APIClientConfig</a> : <code>Object</code></dt>
+<dd><p>Represents the configuration for the API client.</p>
+</dd>
+<dt><a href="#APIRequestConfig">APIRequestConfig</a> : <code>Object</code></dt>
+<dd><p>Represents the configuration for making an API request.</p>
+</dd>
+<dt><a href="#APIResponse">APIResponse</a> : <code>Object</code></dt>
+<dd><p>Represents an API response.</p>
+</dd>
 <dt><a href="#AuthenticationResponse">AuthenticationResponse</a> : <code>Object</code></dt>
 <dd><p>TD Ameritrade API Authentication Response</p>
 </dd>
@@ -120,6 +129,9 @@
 </dd>
 <dt><a href="#UnderlyingAsset">UnderlyingAsset</a> : <code>Object</code></dt>
 <dd><p>Represents information about the underlying asset.</p>
+</dd>
+<dt><a href="#OptionContractDateMap">OptionContractDateMap</a> : <code>Object.&lt;string, Array.&lt;OptionContractData&gt;&gt;</code></dt>
+<dd><p>Represents a mapping of option contract data by expiration date.</p>
 </dd>
 <dt><a href="#OptionChainData">OptionChainData</a> : <code>Object</code></dt>
 <dd><p>Represents option chain data.</p>
@@ -177,6 +189,12 @@
 </dd>
 <dt><a href="#TDAmeritradeOrderLeg">TDAmeritradeOrderLeg</a> : <code>Object</code></dt>
 <dd></dd>
+<dt><a href="#OrderData">OrderData</a> : <code>Object</code></dt>
+<dd><p>Represents an order object.</p>
+</dd>
+<dt><a href="#OrderLeg">OrderLeg</a> : <code>Object</code></dt>
+<dd><p>Represents an order leg within an order.</p>
+</dd>
 <dt><a href="#TrendingEquity">TrendingEquity</a> : <code>Object</code></dt>
 <dd><p>Represents Market Mover Trending Equity data.</p>
 </dd>
@@ -195,36 +213,37 @@
     * [.TDAmeritradeAPI](#TDAmeritradeAPI+TDAmeritradeAPI)
         * [new exports.TDAmeritradeAPI([config])](#new_TDAmeritradeAPI+TDAmeritradeAPI_new)
     * [.setUserAccessToken](#TDAmeritradeAPI+setUserAccessToken)
-    * [.authenticate](#TDAmeritradeAPI+authenticate) ⇒ [<code>AuthenticationResponse</code>](#AuthenticationResponse) \| <code>null</code>
-    * [.refreshAccessToken](#TDAmeritradeAPI+refreshAccessToken) ⇒ [<code>RefreshTokenResponse</code>](#RefreshTokenResponse) \| <code>null</code>
-    * [.getAccounts](#TDAmeritradeAPI+getAccounts) ⇒ [<code>Promise.&lt;TDAmeritradeAccounts&gt;</code>](#TDAmeritradeAccounts)
-    * [.getAccount](#TDAmeritradeAPI+getAccount) ⇒ [<code>Promise.&lt;TDAmeritradeAccount&gt;</code>](#TDAmeritradeAccount)
-    * [.getUserPrincipals](#TDAmeritradeAPI+getUserPrincipals) ⇒ [<code>Promise.&lt;UserPrincipalsData&gt;</code>](#UserPrincipalsData)
-    * [.getTransactions](#TDAmeritradeAPI+getTransactions) ⇒ <code>Promise.&lt;Array.&lt;TransactionData&gt;&gt;</code>
-    * [.getQuotes](#TDAmeritradeAPI+getQuotes) ⇒ <code>Promise.&lt;Record.&lt;string, QuoteData&gt;&gt;</code>
-    * [.getInstrument](#TDAmeritradeAPI+getInstrument) ⇒ <code>Promise.&lt;Array.&lt;InstrumentData&gt;&gt;</code>
-    * [.getFundamentals](#TDAmeritradeAPI+getFundamentals) ⇒ <code>Promise.&lt;Record.&lt;string, FundamentalData&gt;&gt;</code>
-    * [.getMarketDirectionalMover](#TDAmeritradeAPI+getMarketDirectionalMover) ⇒ <code>Promise.&lt;Array.&lt;TrendingEquity&gt;&gt;</code>
-    * [.getPriceHistory](#TDAmeritradeAPI+getPriceHistory) ⇒ [<code>Promise.&lt;PriceHistory&gt;</code>](#PriceHistory)
-    * [.getDailyPriceHistory](#TDAmeritradeAPI+getDailyPriceHistory) ⇒ [<code>Promise.&lt;PriceHistory&gt;</code>](#PriceHistory)
-    * [.getWeeklyPriceHistory](#TDAmeritradeAPI+getWeeklyPriceHistory) ⇒ [<code>Promise.&lt;PriceHistory&gt;</code>](#PriceHistory)
-    * [.getPeriodicPriceHistory](#TDAmeritradeAPI+getPeriodicPriceHistory) ⇒ [<code>Promise.&lt;PriceHistory&gt;</code>](#PriceHistory)
-    * [.getMarketMovers](#TDAmeritradeAPI+getMarketMovers) ⇒ [<code>Promise.&lt;MarketMovers&gt;</code>](#MarketMovers)
-    * [.getOptionChain](#TDAmeritradeAPI+getOptionChain) ⇒ [<code>Promise.&lt;OptionChainData&gt;</code>](#OptionChainData)
-    * [.getWatchlists](#TDAmeritradeAPI+getWatchlists) ⇒ [<code>Promise.&lt;Watchlists&gt;</code>](#Watchlists)
-    * [.getWatchlist](#TDAmeritradeAPI+getWatchlist) ⇒ [<code>Promise.&lt;Watchlist&gt;</code>](#Watchlist)
-    * [.placeOrder](#TDAmeritradeAPI+placeOrder) ⇒ <code>Promise.&lt;any&gt;</code>
-    * [.cancelOrder](#TDAmeritradeAPI+cancelOrder) ⇒ <code>Promise.&lt;any&gt;</code>
-    * [.openOrder](#TDAmeritradeAPI+openOrder) ⇒ <code>Promise.&lt;any&gt;</code>
-    * [.closeOrder](#TDAmeritradeAPI+closeOrder) ⇒ <code>Promise.&lt;any&gt;</code>
-    * [.buyStock](#TDAmeritradeAPI+buyStock) ⇒ <code>Promise.&lt;any&gt;</code>
-    * [.sellStock](#TDAmeritradeAPI+sellStock) ⇒ <code>Promise.&lt;any&gt;</code>
-    * [.shortStock](#TDAmeritradeAPI+shortStock) ⇒ <code>Promise.&lt;any&gt;</code>
-    * [.coverStock](#TDAmeritradeAPI+coverStock) ⇒ <code>Promise.&lt;any&gt;</code>
-    * [.buyOption](#TDAmeritradeAPI+buyOption) ⇒ <code>Promise.&lt;any&gt;</code>
-    * [.sellOption](#TDAmeritradeAPI+sellOption) ⇒ <code>Promise.&lt;any&gt;</code>
-    * [.writeOption](#TDAmeritradeAPI+writeOption) ⇒ <code>Promise.&lt;any&gt;</code>
-    * [.closeOption](#TDAmeritradeAPI+closeOption) ⇒ <code>Promise.&lt;any&gt;</code>
+    * [.authenticate](#TDAmeritradeAPI+authenticate) ⇒ <code>Promise.&lt;(AuthenticationResponse\|null)&gt;</code>
+    * [.refreshAccessToken](#TDAmeritradeAPI+refreshAccessToken) ⇒ <code>Promise.&lt;(RefreshTokenResponse\|null)&gt;</code>
+    * [.getAccounts](#TDAmeritradeAPI+getAccounts) ⇒ <code>Promise.&lt;APIResponse.&lt;TDAmeritradeAccounts&gt;&gt;</code>
+    * [.getAccount](#TDAmeritradeAPI+getAccount) ⇒ <code>Promise.&lt;APIResponse.&lt;TDAmeritradeAccount&gt;&gt;</code>
+    * [.getUserPrincipals](#TDAmeritradeAPI+getUserPrincipals) ⇒ <code>Promise.&lt;APIResponse.&lt;UserPrincipalsData&gt;&gt;</code>
+    * [.getTransactions](#TDAmeritradeAPI+getTransactions) ⇒ <code>Promise.&lt;APIResponse.&lt;Array.&lt;TransactionData&gt;&gt;&gt;</code>
+    * [.getOrders](#TDAmeritradeAPI+getOrders) ⇒ <code>Promise.&lt;APIResponse.&lt;Array.&lt;OrderData&gt;&gt;&gt;</code>
+    * [.getQuotes](#TDAmeritradeAPI+getQuotes) ⇒ <code>Promise.&lt;APIResponse.&lt;Object.&lt;string, QuoteData&gt;&gt;&gt;</code>
+    * [.getInstrument](#TDAmeritradeAPI+getInstrument) ⇒ <code>Promise.&lt;APIResponse.&lt;Array.&lt;InstrumentData&gt;&gt;&gt;</code>
+    * [.getFundamentals](#TDAmeritradeAPI+getFundamentals) ⇒ <code>Promise.&lt;APIResponse.&lt;Object.&lt;string, FundamentalData&gt;&gt;&gt;</code>
+    * [.getMarketDirectionalMover](#TDAmeritradeAPI+getMarketDirectionalMover) ⇒ <code>Promise.&lt;APIResponse.&lt;Array.&lt;TrendingEquity&gt;&gt;&gt;</code>
+    * [.getPriceHistory](#TDAmeritradeAPI+getPriceHistory) ⇒ <code>Promise.&lt;APIResponse.&lt;PriceHistory&gt;&gt;</code>
+    * [.getDailyPriceHistory](#TDAmeritradeAPI+getDailyPriceHistory) ⇒ <code>Promise.&lt;APIResponse.&lt;PriceHistory&gt;&gt;</code>
+    * [.getWeeklyPriceHistory](#TDAmeritradeAPI+getWeeklyPriceHistory) ⇒ <code>Promise.&lt;APIResponse.&lt;PriceHistory&gt;&gt;</code>
+    * [.getPeriodicPriceHistory](#TDAmeritradeAPI+getPeriodicPriceHistory) ⇒ <code>Promise.&lt;APIResponse.&lt;PriceHistory&gt;&gt;</code>
+    * [.getMarketMovers](#TDAmeritradeAPI+getMarketMovers) ⇒ <code>Promise.&lt;APIResponse.&lt;MarketMovers&gt;&gt;</code>
+    * [.getOptionChain](#TDAmeritradeAPI+getOptionChain) ⇒ <code>Promise.&lt;APIResponse.&lt;OptionChainData&gt;&gt;</code>
+    * [.getWatchlists](#TDAmeritradeAPI+getWatchlists) ⇒ <code>Promise.&lt;APIResponse.&lt;Watchlists&gt;&gt;</code>
+    * [.getWatchlist](#TDAmeritradeAPI+getWatchlist) ⇒ <code>Promise.&lt;APIResponse.&lt;Watchlist&gt;&gt;</code>
+    * [.placeOrder](#TDAmeritradeAPI+placeOrder) ⇒ <code>Promise.&lt;APIResponse.&lt;any&gt;&gt;</code>
+    * [.cancelOrder](#TDAmeritradeAPI+cancelOrder) ⇒ <code>Promise.&lt;APIResponse.&lt;any&gt;&gt;</code>
+    * [.openOrder](#TDAmeritradeAPI+openOrder) ⇒ <code>Promise.&lt;APIResponse.&lt;any&gt;&gt;</code>
+    * [.closeOrder](#TDAmeritradeAPI+closeOrder) ⇒ <code>Promise.&lt;APIResponse.&lt;any&gt;&gt;</code>
+    * [.buyStock](#TDAmeritradeAPI+buyStock) ⇒ <code>Promise.&lt;APIResponse.&lt;any&gt;&gt;</code>
+    * [.sellStock](#TDAmeritradeAPI+sellStock) ⇒ <code>Promise.&lt;APIResponse.&lt;any&gt;&gt;</code>
+    * [.shortStock](#TDAmeritradeAPI+shortStock) ⇒ <code>Promise.&lt;APIResponse.&lt;any&gt;&gt;</code>
+    * [.coverStock](#TDAmeritradeAPI+coverStock) ⇒ <code>Promise.&lt;APIResponse.&lt;any&gt;&gt;</code>
+    * [.buyOption](#TDAmeritradeAPI+buyOption) ⇒ <code>Promise.&lt;APIResponse.&lt;any&gt;&gt;</code>
+    * [.sellOption](#TDAmeritradeAPI+sellOption) ⇒ <code>Promise.&lt;APIResponse.&lt;any&gt;&gt;</code>
+    * [.writeOption](#TDAmeritradeAPI+writeOption) ⇒ <code>Promise.&lt;APIResponse.&lt;any&gt;&gt;</code>
+    * [.closeOption](#TDAmeritradeAPI+closeOption) ⇒ <code>Promise.&lt;APIResponse.&lt;any&gt;&gt;</code>
 
 <a name="new_TDAmeritradeAPI_new"></a>
 
@@ -264,7 +283,7 @@ Set User Access Token / Refresh Token
 
 <a name="TDAmeritradeAPI+authenticate"></a>
 
-### tdAmeritradeAPI.authenticate ⇒ [<code>AuthenticationResponse</code>](#AuthenticationResponse) \| <code>null</code>
+### tdAmeritradeAPI.authenticate ⇒ <code>Promise.&lt;(AuthenticationResponse\|null)&gt;</code>
 Authenticate with the TD Ameritrade OAuth2 Authorization endpoint
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
@@ -275,7 +294,7 @@ Authenticate with the TD Ameritrade OAuth2 Authorization endpoint
 
 <a name="TDAmeritradeAPI+refreshAccessToken"></a>
 
-### tdAmeritradeAPI.refreshAccessToken ⇒ [<code>RefreshTokenResponse</code>](#RefreshTokenResponse) \| <code>null</code>
+### tdAmeritradeAPI.refreshAccessToken ⇒ <code>Promise.&lt;(RefreshTokenResponse\|null)&gt;</code>
 Refresh Access Token with Refresh Token
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
@@ -286,13 +305,13 @@ Refresh Access Token with Refresh Token
 
 <a name="TDAmeritradeAPI+getAccounts"></a>
 
-### tdAmeritradeAPI.getAccounts ⇒ [<code>Promise.&lt;TDAmeritradeAccounts&gt;</code>](#TDAmeritradeAccounts)
+### tdAmeritradeAPI.getAccounts ⇒ <code>Promise.&lt;APIResponse.&lt;TDAmeritradeAccounts&gt;&gt;</code>
 Get Accounts
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
 <a name="TDAmeritradeAPI+getAccount"></a>
 
-### tdAmeritradeAPI.getAccount ⇒ [<code>Promise.&lt;TDAmeritradeAccount&gt;</code>](#TDAmeritradeAccount)
+### tdAmeritradeAPI.getAccount ⇒ <code>Promise.&lt;APIResponse.&lt;TDAmeritradeAccount&gt;&gt;</code>
 Get Account
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
@@ -303,13 +322,13 @@ Get Account
 
 <a name="TDAmeritradeAPI+getUserPrincipals"></a>
 
-### tdAmeritradeAPI.getUserPrincipals ⇒ [<code>Promise.&lt;UserPrincipalsData&gt;</code>](#UserPrincipalsData)
+### tdAmeritradeAPI.getUserPrincipals ⇒ <code>Promise.&lt;APIResponse.&lt;UserPrincipalsData&gt;&gt;</code>
 Get User Principals Data - for use with `schwab-td-ameritrade-streamer`
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
 <a name="TDAmeritradeAPI+getTransactions"></a>
 
-### tdAmeritradeAPI.getTransactions ⇒ <code>Promise.&lt;Array.&lt;TransactionData&gt;&gt;</code>
+### tdAmeritradeAPI.getTransactions ⇒ <code>Promise.&lt;APIResponse.&lt;Array.&lt;TransactionData&gt;&gt;&gt;</code>
 Get Transactions
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
@@ -321,9 +340,20 @@ Get Transactions
 | startDate | [<code>DateLikeNullable</code>](#DateLikeNullable) | Start Date |
 | endDate | [<code>DateLikeNullable</code>](#DateLikeNullable) | End Date |
 
+<a name="TDAmeritradeAPI+getOrders"></a>
+
+### tdAmeritradeAPI.getOrders ⇒ <code>Promise.&lt;APIResponse.&lt;Array.&lt;OrderData&gt;&gt;&gt;</code>
+Get Order's for Account ID
+
+**Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| accountId | [<code>TDAmeritradeAccountID</code>](#TDAmeritradeAccountID) | TD Ameritrade Account ID |
+
 <a name="TDAmeritradeAPI+getQuotes"></a>
 
-### tdAmeritradeAPI.getQuotes ⇒ <code>Promise.&lt;Record.&lt;string, QuoteData&gt;&gt;</code>
+### tdAmeritradeAPI.getQuotes ⇒ <code>Promise.&lt;APIResponse.&lt;Object.&lt;string, QuoteData&gt;&gt;&gt;</code>
 Get Quote Data for Ticker Symbol(s)
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
@@ -334,7 +364,7 @@ Get Quote Data for Ticker Symbol(s)
 
 <a name="TDAmeritradeAPI+getInstrument"></a>
 
-### tdAmeritradeAPI.getInstrument ⇒ <code>Promise.&lt;Array.&lt;InstrumentData&gt;&gt;</code>
+### tdAmeritradeAPI.getInstrument ⇒ <code>Promise.&lt;APIResponse.&lt;Array.&lt;InstrumentData&gt;&gt;&gt;</code>
 Get Instrument Data for CUSIP
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
@@ -345,7 +375,7 @@ Get Instrument Data for CUSIP
 
 <a name="TDAmeritradeAPI+getFundamentals"></a>
 
-### tdAmeritradeAPI.getFundamentals ⇒ <code>Promise.&lt;Record.&lt;string, FundamentalData&gt;&gt;</code>
+### tdAmeritradeAPI.getFundamentals ⇒ <code>Promise.&lt;APIResponse.&lt;Object.&lt;string, FundamentalData&gt;&gt;&gt;</code>
 Get Fundamental Data for Ticker Symbol
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
@@ -356,7 +386,7 @@ Get Fundamental Data for Ticker Symbol
 
 <a name="TDAmeritradeAPI+getMarketDirectionalMover"></a>
 
-### tdAmeritradeAPI.getMarketDirectionalMover ⇒ <code>Promise.&lt;Array.&lt;TrendingEquity&gt;&gt;</code>
+### tdAmeritradeAPI.getMarketDirectionalMover ⇒ <code>Promise.&lt;APIResponse.&lt;Array.&lt;TrendingEquity&gt;&gt;&gt;</code>
 Get Market Directional Mover (e.g. '$SPX.X', 'up', 'percent')
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
@@ -369,7 +399,7 @@ Get Market Directional Mover (e.g. '$SPX.X', 'up', 'percent')
 
 <a name="TDAmeritradeAPI+getPriceHistory"></a>
 
-### tdAmeritradeAPI.getPriceHistory ⇒ [<code>Promise.&lt;PriceHistory&gt;</code>](#PriceHistory)
+### tdAmeritradeAPI.getPriceHistory ⇒ <code>Promise.&lt;APIResponse.&lt;PriceHistory&gt;&gt;</code>
 Get Intraday Price History for Ticker Symbol
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
@@ -384,7 +414,7 @@ Get Intraday Price History for Ticker Symbol
 
 <a name="TDAmeritradeAPI+getDailyPriceHistory"></a>
 
-### tdAmeritradeAPI.getDailyPriceHistory ⇒ [<code>Promise.&lt;PriceHistory&gt;</code>](#PriceHistory)
+### tdAmeritradeAPI.getDailyPriceHistory ⇒ <code>Promise.&lt;APIResponse.&lt;PriceHistory&gt;&gt;</code>
 Get Daily Price History for Ticker Symbol
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
@@ -397,7 +427,7 @@ Get Daily Price History for Ticker Symbol
 
 <a name="TDAmeritradeAPI+getWeeklyPriceHistory"></a>
 
-### tdAmeritradeAPI.getWeeklyPriceHistory ⇒ [<code>Promise.&lt;PriceHistory&gt;</code>](#PriceHistory)
+### tdAmeritradeAPI.getWeeklyPriceHistory ⇒ <code>Promise.&lt;APIResponse.&lt;PriceHistory&gt;&gt;</code>
 Get Weekly Price History for Ticker Symbol
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
@@ -409,7 +439,7 @@ Get Weekly Price History for Ticker Symbol
 
 <a name="TDAmeritradeAPI+getPeriodicPriceHistory"></a>
 
-### tdAmeritradeAPI.getPeriodicPriceHistory ⇒ [<code>Promise.&lt;PriceHistory&gt;</code>](#PriceHistory)
+### tdAmeritradeAPI.getPeriodicPriceHistory ⇒ <code>Promise.&lt;APIResponse.&lt;PriceHistory&gt;&gt;</code>
 Get Periodic Price History for Ticker Symbol
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
@@ -423,13 +453,13 @@ Get Periodic Price History for Ticker Symbol
 
 <a name="TDAmeritradeAPI+getMarketMovers"></a>
 
-### tdAmeritradeAPI.getMarketMovers ⇒ [<code>Promise.&lt;MarketMovers&gt;</code>](#MarketMovers)
+### tdAmeritradeAPI.getMarketMovers ⇒ <code>Promise.&lt;APIResponse.&lt;MarketMovers&gt;&gt;</code>
 Get Market Movers - Current Trending Equities of $SPX.X, $COMPX, $DJI
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
 <a name="TDAmeritradeAPI+getOptionChain"></a>
 
-### tdAmeritradeAPI.getOptionChain ⇒ [<code>Promise.&lt;OptionChainData&gt;</code>](#OptionChainData)
+### tdAmeritradeAPI.getOptionChain ⇒ <code>Promise.&lt;APIResponse.&lt;OptionChainData&gt;&gt;</code>
 Get Option Chain
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
@@ -442,7 +472,7 @@ Get Option Chain
 
 <a name="TDAmeritradeAPI+getWatchlists"></a>
 
-### tdAmeritradeAPI.getWatchlists ⇒ [<code>Promise.&lt;Watchlists&gt;</code>](#Watchlists)
+### tdAmeritradeAPI.getWatchlists ⇒ <code>Promise.&lt;APIResponse.&lt;Watchlists&gt;&gt;</code>
 Get Watchlists
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
@@ -453,7 +483,7 @@ Get Watchlists
 
 <a name="TDAmeritradeAPI+getWatchlist"></a>
 
-### tdAmeritradeAPI.getWatchlist ⇒ [<code>Promise.&lt;Watchlist&gt;</code>](#Watchlist)
+### tdAmeritradeAPI.getWatchlist ⇒ <code>Promise.&lt;APIResponse.&lt;Watchlist&gt;&gt;</code>
 Get Watchlist by ID
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
@@ -464,7 +494,7 @@ Get Watchlist by ID
 
 <a name="TDAmeritradeAPI+placeOrder"></a>
 
-### tdAmeritradeAPI.placeOrder ⇒ <code>Promise.&lt;any&gt;</code>
+### tdAmeritradeAPI.placeOrder ⇒ <code>Promise.&lt;APIResponse.&lt;any&gt;&gt;</code>
 Place an Order
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
@@ -477,7 +507,7 @@ Place an Order
 
 <a name="TDAmeritradeAPI+cancelOrder"></a>
 
-### tdAmeritradeAPI.cancelOrder ⇒ <code>Promise.&lt;any&gt;</code>
+### tdAmeritradeAPI.cancelOrder ⇒ <code>Promise.&lt;APIResponse.&lt;any&gt;&gt;</code>
 Cancel an Order
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
@@ -489,7 +519,7 @@ Cancel an Order
 
 <a name="TDAmeritradeAPI+openOrder"></a>
 
-### tdAmeritradeAPI.openOrder ⇒ <code>Promise.&lt;any&gt;</code>
+### tdAmeritradeAPI.openOrder ⇒ <code>Promise.&lt;APIResponse.&lt;any&gt;&gt;</code>
 Opening Order
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
@@ -506,7 +536,7 @@ Opening Order
 
 <a name="TDAmeritradeAPI+closeOrder"></a>
 
-### tdAmeritradeAPI.closeOrder ⇒ <code>Promise.&lt;any&gt;</code>
+### tdAmeritradeAPI.closeOrder ⇒ <code>Promise.&lt;APIResponse.&lt;any&gt;&gt;</code>
 Closing Order
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
@@ -523,7 +553,7 @@ Closing Order
 
 <a name="TDAmeritradeAPI+buyStock"></a>
 
-### tdAmeritradeAPI.buyStock ⇒ <code>Promise.&lt;any&gt;</code>
+### tdAmeritradeAPI.buyStock ⇒ <code>Promise.&lt;APIResponse.&lt;any&gt;&gt;</code>
 Buy Equtity / Stock Convenience Method
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
@@ -538,7 +568,7 @@ Buy Equtity / Stock Convenience Method
 
 <a name="TDAmeritradeAPI+sellStock"></a>
 
-### tdAmeritradeAPI.sellStock ⇒ <code>Promise.&lt;any&gt;</code>
+### tdAmeritradeAPI.sellStock ⇒ <code>Promise.&lt;APIResponse.&lt;any&gt;&gt;</code>
 Sell Equtity / Stock Convenience Method
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
@@ -553,7 +583,7 @@ Sell Equtity / Stock Convenience Method
 
 <a name="TDAmeritradeAPI+shortStock"></a>
 
-### tdAmeritradeAPI.shortStock ⇒ <code>Promise.&lt;any&gt;</code>
+### tdAmeritradeAPI.shortStock ⇒ <code>Promise.&lt;APIResponse.&lt;any&gt;&gt;</code>
 Short Equtity / Stock Convenience Method
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
@@ -568,7 +598,7 @@ Short Equtity / Stock Convenience Method
 
 <a name="TDAmeritradeAPI+coverStock"></a>
 
-### tdAmeritradeAPI.coverStock ⇒ <code>Promise.&lt;any&gt;</code>
+### tdAmeritradeAPI.coverStock ⇒ <code>Promise.&lt;APIResponse.&lt;any&gt;&gt;</code>
 Cover Short Equtity / Stock Convenience Method
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
@@ -583,7 +613,7 @@ Cover Short Equtity / Stock Convenience Method
 
 <a name="TDAmeritradeAPI+buyOption"></a>
 
-### tdAmeritradeAPI.buyOption ⇒ <code>Promise.&lt;any&gt;</code>
+### tdAmeritradeAPI.buyOption ⇒ <code>Promise.&lt;APIResponse.&lt;any&gt;&gt;</code>
 Buy Option Convenience Method
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
@@ -598,7 +628,7 @@ Buy Option Convenience Method
 
 <a name="TDAmeritradeAPI+sellOption"></a>
 
-### tdAmeritradeAPI.sellOption ⇒ <code>Promise.&lt;any&gt;</code>
+### tdAmeritradeAPI.sellOption ⇒ <code>Promise.&lt;APIResponse.&lt;any&gt;&gt;</code>
 Sell Option Convenience Method
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
@@ -613,7 +643,7 @@ Sell Option Convenience Method
 
 <a name="TDAmeritradeAPI+writeOption"></a>
 
-### tdAmeritradeAPI.writeOption ⇒ <code>Promise.&lt;any&gt;</code>
+### tdAmeritradeAPI.writeOption ⇒ <code>Promise.&lt;APIResponse.&lt;any&gt;&gt;</code>
 Write Option Convenience Method
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
@@ -628,7 +658,7 @@ Write Option Convenience Method
 
 <a name="TDAmeritradeAPI+closeOption"></a>
 
-### tdAmeritradeAPI.closeOption ⇒ <code>Promise.&lt;any&gt;</code>
+### tdAmeritradeAPI.closeOption ⇒ <code>Promise.&lt;APIResponse.&lt;any&gt;&gt;</code>
 Close Option Convenience Method
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
@@ -650,7 +680,7 @@ Creates a new instance of the TD Ameritrade API
 
 | Param | Type | Description |
 | --- | --- | --- |
-| config | <code>APIClientConfig</code> | API Client Configuration |
+| config | [<code>APIClientConfig</code>](#APIClientConfig) | API Client Configuration |
 
 <a name="filterBuyTrades"></a>
 
@@ -854,6 +884,49 @@ Creates a new instance of the TD Ameritrade API
 
 ## TDAmeritradeAccounts : [<code>Array.&lt;TDAmeritradeAccount&gt;</code>](#TDAmeritradeAccount)
 **Kind**: global typedef  
+<a name="APIClientConfig"></a>
+
+## APIClientConfig : <code>Object</code>
+Represents the configuration for the API client.
+
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| [clientId] | <code>string</code> | The client ID for authentication (optional). |
+| [callbackUrl] | <code>string</code> | The callback URL for authentication (optional). |
+| [handleRequest] | <code>function</code> | A custom request handler function (optional). |
+
+<a name="APIRequestConfig"></a>
+
+## APIRequestConfig : <code>Object</code>
+Represents the configuration for making an API request.
+
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| url | <code>string</code> | The URL of the API endpoint. |
+| [method] | <code>string</code> | The HTTP method for the request (default is 'GET'). |
+| [params] | <code>Object.&lt;string, string&gt;</code> | Optional query parameters for the request. |
+| [headers] | <code>Object.&lt;string, string&gt;</code> | Optional HTTP headers for the request. |
+| [data] | <code>Object</code> \| <code>Array.&lt;Object&gt;</code> \| <code>string</code> \| <code>Array.&lt;string&gt;</code> \| <code>number</code> \| <code>Array.&lt;number&gt;</code> | Optional request payload data. |
+
+<a name="APIResponse"></a>
+
+## APIResponse : <code>Object</code>
+Represents an API response.
+
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| error | <code>string</code> \| <code>null</code> \| <code>undefined</code> | An error message (nullable and optional). |
+| data | <code>T</code> \| <code>null</code> \| <code>undefined</code> | The response data (nullable and optional). |
+
 <a name="AuthenticationResponse"></a>
 
 ## AuthenticationResponse : <code>Object</code>
@@ -1213,6 +1286,12 @@ Represents information about the underlying asset.
 | fiftyTwoWeekLow | <code>number</code> | The fifty-two week low price of the underlying asset. |
 | delayed | <code>boolean</code> | Indicates if the data is delayed for the underlying asset. |
 
+<a name="OptionContractDateMap"></a>
+
+## OptionContractDateMap : <code>Object.&lt;string, Array.&lt;OptionContractData&gt;&gt;</code>
+Represents a mapping of option contract data by expiration date.
+
+**Kind**: global typedef  
 <a name="OptionChainData"></a>
 
 ## OptionChainData : <code>Object</code>
@@ -1235,8 +1314,8 @@ Represents option chain data.
 | volatility | <code>number</code> | The volatility. |
 | daysToExpiration | <code>number</code> | The number of days to expiration. |
 | numberOfContracts | <code>number</code> | The number of contracts. |
-| putExpDateMap | <code>Object.&lt;string, Object.&lt;string, Array.&lt;OptionContractData&gt;&gt;&gt;</code> | Map of put expiration dates and their data. |
-| callExpDateMap | <code>Object.&lt;string, Object.&lt;string, Array.&lt;OptionContractData&gt;&gt;&gt;</code> | Map of call expiration dates and their data. |
+| putExpDateMap | [<code>OptionContractDateMap</code>](#OptionContractDateMap) | Map of put expiration dates and their data. |
+| callExpDateMap | [<code>OptionContractDateMap</code>](#OptionContractDateMap) | Map of call expiration dates and their data. |
 
 <a name="WatchlistItemInstrument"></a>
 
@@ -1590,6 +1669,53 @@ Order Request
 | instrument | <code>Object</code> | Instrument |
 | instrument.symbol | [<code>TickerSymbol</code>](#TickerSymbol) | Ticker Symbol |
 | instrument.assetType | [<code>AssetType</code>](#AssetType) | Asset Type |
+
+<a name="OrderData"></a>
+
+## OrderData : <code>Object</code>
+Represents an order object.
+
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| session | <code>string</code> | The trading session for the order (e.g., "SEAMLESS"). |
+| duration | <code>string</code> | The duration of the order (e.g., "GOOD_TILL_CANCEL"). |
+| orderType | <code>string</code> | The type of the order (e.g., "LIMIT"). |
+| complexOrderStrategyType | <code>string</code> | The strategy type for complex orders (e.g., "NONE"). |
+| quantity | <code>number</code> | The total quantity of the order. |
+| filledQuantity | <code>number</code> | The quantity of the order that has been filled. |
+| remainingQuantity | <code>number</code> | The remaining quantity of the order. |
+| requestedDestination | <code>string</code> | The requested destination for the order (e.g., "AUTO"). |
+| destinationLinkName | <code>string</code> | The link name for the destination (e.g., "AutoRoute"). |
+| price | <code>number</code> | The price per unit of the order. |
+| orderLegCollection | [<code>Array.&lt;OrderLeg&gt;</code>](#OrderLeg) | An array of order legs. |
+| orderStrategyType | <code>string</code> | The strategy type for the order (e.g., "SINGLE"). |
+| orderId | <code>number</code> | The unique identifier for the order. |
+| cancelable | <code>boolean</code> | Indicates whether the order is cancelable. |
+| editable | <code>boolean</code> | Indicates whether the order is editable. |
+| status | <code>string</code> | The status of the order (e.g., "WORKING"). |
+| enteredTime | [<code>DateLikeNullable</code>](#DateLikeNullable) | The timestamp when the order was entered in ISO 8601 format. |
+| tag | <code>string</code> | A tag associated with the order (e.g., "tIP"). |
+| accountId | [<code>TDAmeritradeAccountID</code>](#TDAmeritradeAccountID) | The ID of the account associated with the order. |
+
+<a name="OrderLeg"></a>
+
+## OrderLeg : <code>Object</code>
+Represents an order leg within an order.
+
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| orderLegType | <code>string</code> | The type of the order leg (e.g., "EQUITY"). |
+| legId | <code>number</code> | The unique identifier for the order leg. |
+| instrument | [<code>InstrumentData</code>](#InstrumentData) | Information about the financial instrument. |
+| instruction | [<code>BuyOrder</code>](#BuyOrder) \| [<code>SellOrder</code>](#SellOrder) | The instruction for the order leg (e.g., "BUY"). |
+| positionEffect | [<code>PositionEffect</code>](#PositionEffect) | The position effect of the order leg (e.g., "OPENING"). |
+| quantity | <code>number</code> | The quantity of the order leg. |
 
 <a name="TrendingEquity"></a>
 

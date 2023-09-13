@@ -3,6 +3,8 @@
  * @copyright 2019 - 2023 XT-TX
  * @license MIT Open Source License
  */
+import { z } from 'zod';
+import { OrderRequestSchema } from '../schemas/index.js';
 
 export type DateLikeNullable = Date | number | string | null;
 
@@ -566,6 +568,12 @@ export type UnderlyingAsset = {
   delayed: boolean;
 };
 
+/** Represents a mapping of option contract data by expiration date. */
+export type OptionContractDateMap = {
+  /** Expiry date and it's data */
+  [expirationDate: string]: OptionContractData[];
+};
+
 /** Represents option chain data. */
 export type OptionChainData = {
   /** The symbol. */
@@ -593,9 +601,9 @@ export type OptionChainData = {
   /** The number of contracts. */
   numberOfContracts: number;
   /** Map of put expiration dates and their data. */
-  putExpDateMap: Record<string, Record<string, OptionContractData[]>>;
+  putExpDateMap: OptionContractDateMap;
   /** Map of call expiration dates and their data. */
-  callExpDateMap: Record<string, Record<string, OptionContractData[]>>;
+  callExpDateMap: OptionContractDateMap;
 };
 
 /** Represents an instrument. */
@@ -1016,3 +1024,63 @@ export type MarketMovers = {
   /** Equities Trending down */
   down?: TrendingEquity[];
 }
+
+export type OrderRequest = z.infer<typeof OrderRequestSchema>;
+
+/** Represents an order object. */
+export type OrderData = {
+  /** The trading session for the order (e.g., "SEAMLESS"). */
+  session: string;
+  /** The duration of the order (e.g., "GOOD_TILL_CANCEL"). */
+  duration: string;
+  /** The type of the order (e.g., "LIMIT"). */
+  orderType: string;
+  /** The strategy type for complex orders (e.g., "NONE"). */
+  complexOrderStrategyType: string;
+  /** The total quantity of the order. */
+  quantity: number;
+  /** The quantity of the order that has been filled. */
+  filledQuantity: number;
+  /** The remaining quantity of the order. */
+  remainingQuantity: number;
+  /** The requested destination for the order (e.g., "AUTO"). */
+  requestedDestination: string;
+  /** The link name for the destination (e.g., "AutoRoute"). */
+  destinationLinkName: string;
+  /** The price per unit of the order. */
+  price: number;
+  /** An array of order legs. */
+  orderLegCollection: OrderLeg[];
+  /** The strategy type for the order (e.g., "SINGLE"). */
+  orderStrategyType: string;
+  /** The unique identifier for the order. */
+  orderId: number;
+  /** Indicates whether the order is cancelable. */
+  cancelable: boolean;
+  /** Indicates whether the order is editable. */
+  editable: boolean;
+  /** The status of the order (e.g., "WORKING"). */
+  status: string;
+  /** The timestamp when the order was entered in ISO 8601 format. */
+  enteredTime: DateLikeNullable;
+  /** A tag associated with the order (e.g., "tIP"). */
+  tag: string;
+  /** The ID of the account associated with the order. */
+  accountId: TDAmeritradeAccountID;
+};
+
+/** Represents an order leg within an order. */
+export type OrderLeg = {
+  /** The type of the order leg (e.g., "EQUITY"). */
+  orderLegType: string;
+  /** The unique identifier for the order leg. */
+  legId: number;
+  /** Information about the financial instrument. */
+  instrument: InstrumentData;
+  /** The instruction for the order leg (e.g., "BUY"). */
+  instruction: BuyOrder | SellOrder;
+  /** The position effect of the order leg (e.g., "OPENING"). */
+  positionEffect: PositionEffect;
+  /** The quantity of the order leg. */
+  quantity: number;
+};

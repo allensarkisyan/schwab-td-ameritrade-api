@@ -1,9 +1,35 @@
+declare module '@allensarkisyan/schwab-td-ameritrade-api/schemas' {
+  /**
+   * @author Allen Sarkisyan
+   * @copyright 2019 - 2023 XT-TX
+   * @license MIT Open Source License
+   */
+  import { z } from 'zod';
+  import type { TickerSymbol, TDAmeritradeAccountID } from '@allensarkisyan/schwab-td-ameritrade-api/@types';
+  export const OrderRequestSchema: z.ZodType<
+    {
+      accountId: TDAmeritradeAccountID;
+      symbol: TickerSymbol;
+      quantity: number;
+      price: number;
+    },
+    z.ZodTypeDef,
+    {
+      accountId: TDAmeritradeAccountID;
+      symbol: TickerSymbol;
+      quantity: number;
+      price: number;
+    }
+  >;
+}
 declare module '@allensarkisyan/schwab-td-ameritrade-api/@types' {
   /**
    * @author Allen Sarkisyan
    * @copyright 2019 - 2023 XT-TX
    * @license MIT Open Source License
    */
+  import { z } from 'zod';
+  import { OrderRequestSchema } from '@allensarkisyan/schwab-td-ameritrade-api/schemas';
   export type DateLikeNullable = Date | number | string | null;
   export type QueryParameters =
     | string
@@ -556,6 +582,11 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api/@types' {
     /** Indicates if the data is delayed for the underlying asset. */
     delayed: boolean;
   };
+  /** Represents a mapping of option contract data by expiration date. */
+  export type OptionContractDateMap = {
+    /** Expiry date and it's data */
+    [expirationDate: string]: OptionContractData[];
+  };
   /** Represents option chain data. */
   export type OptionChainData = {
     /** The symbol. */
@@ -583,9 +614,9 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api/@types' {
     /** The number of contracts. */
     numberOfContracts: number;
     /** Map of put expiration dates and their data. */
-    putExpDateMap: Record<string, Record<string, OptionContractData[]>>;
+    putExpDateMap: OptionContractDateMap;
     /** Map of call expiration dates and their data. */
-    callExpDateMap: Record<string, Record<string, OptionContractData[]>>;
+    callExpDateMap: OptionContractDateMap;
   };
   /** Represents an instrument. */
   export type WatchlistItemInstrument = {
@@ -987,6 +1018,63 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api/@types' {
     /** Equities Trending down */
     down?: TrendingEquity[];
   };
+  export type OrderRequest = z.infer<typeof OrderRequestSchema>;
+  /** Represents an order object. */
+  export type OrderData = {
+    /** The trading session for the order (e.g., "SEAMLESS"). */
+    session: string;
+    /** The duration of the order (e.g., "GOOD_TILL_CANCEL"). */
+    duration: string;
+    /** The type of the order (e.g., "LIMIT"). */
+    orderType: string;
+    /** The strategy type for complex orders (e.g., "NONE"). */
+    complexOrderStrategyType: string;
+    /** The total quantity of the order. */
+    quantity: number;
+    /** The quantity of the order that has been filled. */
+    filledQuantity: number;
+    /** The remaining quantity of the order. */
+    remainingQuantity: number;
+    /** The requested destination for the order (e.g., "AUTO"). */
+    requestedDestination: string;
+    /** The link name for the destination (e.g., "AutoRoute"). */
+    destinationLinkName: string;
+    /** The price per unit of the order. */
+    price: number;
+    /** An array of order legs. */
+    orderLegCollection: OrderLeg[];
+    /** The strategy type for the order (e.g., "SINGLE"). */
+    orderStrategyType: string;
+    /** The unique identifier for the order. */
+    orderId: number;
+    /** Indicates whether the order is cancelable. */
+    cancelable: boolean;
+    /** Indicates whether the order is editable. */
+    editable: boolean;
+    /** The status of the order (e.g., "WORKING"). */
+    status: string;
+    /** The timestamp when the order was entered in ISO 8601 format. */
+    enteredTime: DateLikeNullable;
+    /** A tag associated with the order (e.g., "tIP"). */
+    tag: string;
+    /** The ID of the account associated with the order. */
+    accountId: TDAmeritradeAccountID;
+  };
+  /** Represents an order leg within an order. */
+  export type OrderLeg = {
+    /** The type of the order leg (e.g., "EQUITY"). */
+    orderLegType: string;
+    /** The unique identifier for the order leg. */
+    legId: number;
+    /** Information about the financial instrument. */
+    instrument: InstrumentData;
+    /** The instruction for the order leg (e.g., "BUY"). */
+    instruction: BuyOrder | SellOrder;
+    /** The position effect of the order leg (e.g., "OPENING"). */
+    positionEffect: PositionEffect;
+    /** The quantity of the order leg. */
+    quantity: number;
+  };
 }
 declare module '@allensarkisyan/schwab-td-ameritrade-api' {
   /**
@@ -994,7 +1082,6 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
    * @copyright 2019 - 2023 XT-TX
    * @license MIT Open Source License
    */
-  import { z } from 'zod';
   import type {
     APIClientConfig,
     APIResponse,
@@ -1021,23 +1108,9 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
     GetTransactionsType,
     MarketMovers,
     TrendingEquity,
+    OrderRequest,
+    OrderData,
   } from '@allensarkisyan/schwab-td-ameritrade-api/@types';
-  const OrderRequestSchema: z.ZodType<
-    {
-      accountId: TDAmeritradeAccountID;
-      symbol: TickerSymbol;
-      quantity: number;
-      price: number;
-    },
-    z.ZodTypeDef,
-    {
-      accountId: TDAmeritradeAccountID;
-      symbol: TickerSymbol;
-      quantity: number;
-      price: number;
-    }
-  >;
-  type OrderRequest = z.infer<typeof OrderRequestSchema>;
   /**
    * Represents the TDAmeritradeAPI class for handling requests.
    * @module TDAmeritradeAPI
@@ -1112,17 +1185,24 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
       startDate?: DateLikeNullable,
       endDate?: DateLikeNullable,
     ) => Promise<APIResponse<TransactionData[]>>;
+    /**
+     * Get Order's for Account ID
+     * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
+     * @returns {Promise<APIResponse<OrderData[]>>}
+     */
     getOrders: (
       accountId: TDAmeritradeAccountID,
-    ) => Promise<APIResponse<unknown>>;
+    ) => Promise<APIResponse<OrderData[]>>;
     /**
      * Get Quote Data for Ticker Symbol(s)
      * @param {TickerSymbol} symbol - Ticker Symbol
-     * @returns {Promise<APIResponse<Record<string, QuoteData>>>}
+     * @returns {Promise<APIResponse<Object.<string, QuoteData>>>}
      */
-    getQuotes: (
-      symbol: TickerSymbol,
-    ) => Promise<APIResponse<Record<string, QuoteData>>>;
+    getQuotes: (symbol: TickerSymbol) => Promise<
+      APIResponse<{
+        [symbol: string]: QuoteData;
+      }>
+    >;
     /**
      * Get Instrument Data for CUSIP
      * @param {CUSIP} cusip - CUSIP
@@ -1132,11 +1212,13 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
     /**
      * Get Fundamental Data for Ticker Symbol
      * @param {TickerSymbol} symbol - Ticker Symbol
-     * @returns {Promise<APIResponse<Record<string, FundamentalData>>>}
+     * @returns {Promise<APIResponse<Object.<string, FundamentalData>>>}
      */
-    getFundamentals: (
-      symbol: TickerSymbol,
-    ) => Promise<APIResponse<Record<string, FundamentalData>>>;
+    getFundamentals: (symbol: TickerSymbol) => Promise<
+      APIResponse<{
+        [symbol: string]: FundamentalData;
+      }>
+    >;
     /**
      * Get Market Directional Mover (e.g. '$SPX.X', 'up', 'percent')
      * @param {'$SPX.X' | '$DJI' | '$COMPX'} market - Market
@@ -1378,8 +1460,7 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
   export function createTDAmeritradeAPIClient(
     config?: APIClientConfig,
   ): TDAmeritradeAPI;
-  const _default: TDAmeritradeAPI;
-  export default _default;
+  export default TDAmeritradeAPI;
 }
 declare module '@allensarkisyan/schwab-td-ameritrade-api/td-utils' {
   /**

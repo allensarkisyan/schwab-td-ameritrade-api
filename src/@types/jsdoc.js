@@ -24,9 +24,9 @@
  * @typedef {Object} APIRequestConfig
  * @property {string} url - The URL of the API endpoint.
  * @property {string} [method] - The HTTP method for the request (default is 'GET').
- * @property {Record<string, any>} [params] - Optional query parameters for the request.
- * @property {any} [headers] - Optional HTTP headers for the request.
- * @property {Record<string, any> | Record<string, any>[] | string | string[] | number | number[]} [data] - Optional request payload data.
+ * @property {Object.<string, string>} [params] - Optional query parameters for the request.
+ * @property {Object.<string, string>} [headers] - Optional HTTP headers for the request.
+ * @property {Object | Object[] | string | string[] | number | number[]} [data] - Optional request payload data.
  */
 
 /**
@@ -319,6 +319,11 @@
  */
 
 /**
+ * Represents a mapping of option contract data by expiration date.
+ * @typedef {Object.<string, OptionContractData[]>} OptionContractDateMap
+ */
+
+/**
  * Represents option chain data.
  * @typedef {Object} OptionChainData
  * @property {TickerSymbol} symbol - The symbol.
@@ -333,8 +338,8 @@
  * @property {number} volatility - The volatility.
  * @property {number} daysToExpiration - The number of days to expiration.
  * @property {number} numberOfContracts - The number of contracts.
- * @property {Object.<string, Object.<string, OptionContractData[]>>} putExpDateMap - Map of put expiration dates and their data.
- * @property {Object.<string, Object.<string, OptionContractData[]>>} callExpDateMap - Map of call expiration dates and their data.
+ * @property {OptionContractDateMap} putExpDateMap - Map of put expiration dates and their data.
+ * @property {OptionContractDateMap} callExpDateMap - Map of call expiration dates and their data.
  */
 
 /**
@@ -586,6 +591,41 @@
  * @property {Object} instrument - Instrument
  * @property {TickerSymbol} instrument.symbol - Ticker Symbol
  * @property {AssetType} instrument.assetType - Asset Type
+ */
+
+/**
+ * Represents an order object.
+ * @typedef {Object} OrderData
+ * @property {string} session - The trading session for the order (e.g., "SEAMLESS").
+ * @property {string} duration - The duration of the order (e.g., "GOOD_TILL_CANCEL").
+ * @property {string} orderType - The type of the order (e.g., "LIMIT").
+ * @property {string} complexOrderStrategyType - The strategy type for complex orders (e.g., "NONE").
+ * @property {number} quantity - The total quantity of the order.
+ * @property {number} filledQuantity - The quantity of the order that has been filled.
+ * @property {number} remainingQuantity - The remaining quantity of the order.
+ * @property {string} requestedDestination - The requested destination for the order (e.g., "AUTO").
+ * @property {string} destinationLinkName - The link name for the destination (e.g., "AutoRoute").
+ * @property {number} price - The price per unit of the order.
+ * @property {OrderLeg[]} orderLegCollection - An array of order legs.
+ * @property {string} orderStrategyType - The strategy type for the order (e.g., "SINGLE").
+ * @property {number} orderId - The unique identifier for the order.
+ * @property {boolean} cancelable - Indicates whether the order is cancelable.
+ * @property {boolean} editable - Indicates whether the order is editable.
+ * @property {string} status - The status of the order (e.g., "WORKING").
+ * @property {DateLikeNullable} enteredTime - The timestamp when the order was entered in ISO 8601 format.
+ * @property {string} tag - A tag associated with the order (e.g., "tIP").
+ * @property {TDAmeritradeAccountID} accountId - The ID of the account associated with the order.
+ */
+
+/**
+ * Represents an order leg within an order.
+ * @typedef {Object} OrderLeg
+ * @property {string} orderLegType - The type of the order leg (e.g., "EQUITY").
+ * @property {number} legId - The unique identifier for the order leg.
+ * @property {InstrumentData} instrument - Information about the financial instrument.
+ * @property {BuyOrder | SellOrder} instruction - The instruction for the order leg (e.g., "BUY").
+ * @property {PositionEffect} positionEffect - The position effect of the order leg (e.g., "OPENING").
+ * @property {number} quantity - The quantity of the order leg.
  */
 
 /**

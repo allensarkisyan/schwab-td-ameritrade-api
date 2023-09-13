@@ -3,7 +3,7 @@
  * @copyright 2019 - 2023 XT-TX
  * @license MIT Open Source License
  */
-import { z } from 'zod';
+import { OrderRequestSchema } from './schemas/index.js';
 const jsonToQueryString = (json) => {
   const queryParams = [];
   for (const [k, v] of Object.entries(json)) {
@@ -25,12 +25,6 @@ const LIMIT_ORDER_TEMPLATE = {
   duration: 'GOOD_TILL_CANCEL',
   orderStrategyType: 'SINGLE',
 };
-const OrderRequestSchema = z.object({
-  accountId: z.string(),
-  symbol: z.string().toUpperCase(),
-  quantity: z.number().min(1).default(1),
-  price: z.number().min(0.01),
-});
 /**
  * Represents the TDAmeritradeAPI class for handling requests.
  * @module TDAmeritradeAPI
@@ -85,10 +79,13 @@ export class TDAmeritradeAPI {
   /**
    * Internal Request Handler
    * @private
+   * @template T - The type of the data in the API Response
    * @param {APIRequestConfig} config - API Request Configuration
-   * @returns {Promise<APIResponse<any>>}
+   * @returns {Promise<APIResponse<T>>}
    */
   #handleRequest = async (config) => {
+    let data = null;
+    let error = null;
     try {
       if (this.#externalRequestHandler) {
         return await this.#externalRequestHandler(config);
@@ -124,13 +121,11 @@ export class TDAmeritradeAPI {
           `TDAmeritradeAPI#handleRequest Failed with Status Code: ${response.status}`,
         );
       }
-      const data = await response.json();
-      return { error: null, data };
+      data = await response.json();
     } catch (e) {
-      return {
-        error: e?.message || 'AN UNKNOWN ERROR HAS OCCURRED.',
-        data: null,
-      };
+      error = e?.message || 'AN UNKNOWN ERROR HAS OCCURRED.';
+    } finally {
+      return { error, data };
     }
   };
   /**
@@ -301,6 +296,11 @@ export class TDAmeritradeAPI {
         endDate,
       },
     });
+  /**
+   * Get Order's for Account ID
+   * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
+   * @returns {Promise<APIResponse<OrderData[]>>}
+   */
   getOrders = async (accountId) =>
     await this.#handleRequest({
       url: '/v1/orders',
@@ -309,7 +309,7 @@ export class TDAmeritradeAPI {
   /**
    * Get Quote Data for Ticker Symbol(s)
    * @param {TickerSymbol} symbol - Ticker Symbol
-   * @returns {Promise<APIResponse<Record<string, QuoteData>>>}
+   * @returns {Promise<APIResponse<Object.<string, QuoteData>>>}
    */
   getQuotes = async (symbol) =>
     await this.#handleRequest({
@@ -328,7 +328,7 @@ export class TDAmeritradeAPI {
   /**
    * Get Fundamental Data for Ticker Symbol
    * @param {TickerSymbol} symbol - Ticker Symbol
-   * @returns {Promise<APIResponse<Record<string, FundamentalData>>>}
+   * @returns {Promise<APIResponse<Object.<string, FundamentalData>>>}
    */
   getFundamentals = async (symbol) =>
     await this.#handleRequest({
@@ -697,4 +697,4 @@ export class TDAmeritradeAPI {
 export function createTDAmeritradeAPIClient(config) {
   return new TDAmeritradeAPI(config);
 }
-export default new TDAmeritradeAPI();
+export default TDAmeritradeAPI;
