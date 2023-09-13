@@ -25,7 +25,9 @@ export function filterSellTrades(trades) {
  * @returns {TransactionData[]}
  */
 export function filterOpeningTrades(trades) {
-  return trades?.filter((i) => i.transactionItem.positionEffect === 'OPENING');
+  return trades?.filter(
+    ({ transactionItem }) => transactionItem?.positionEffect === 'OPENING',
+  );
 }
 /**
  * [td-utils.js] - Filter Closing Trades
@@ -33,7 +35,9 @@ export function filterOpeningTrades(trades) {
  * @returns {TransactionData[]}
  */
 export function filterClosingTrades(trades) {
-  return trades?.filter((i) => i.transactionItem.positionEffect === 'CLOSING');
+  return trades?.filter(
+    ({ transactionItem }) => transactionItem?.positionEffect === 'CLOSING',
+  );
 }
 /**
  * [td-utils.js] - Filter Open Short Sale Trades

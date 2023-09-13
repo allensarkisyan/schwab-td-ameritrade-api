@@ -44,7 +44,9 @@ exports.filterSellTrades = filterSellTrades;
  * @returns {TransactionData[]}
  */
 function filterOpeningTrades(trades) {
-  return trades?.filter((i) => i.transactionItem.positionEffect === 'OPENING');
+  return trades?.filter(
+    ({ transactionItem }) => transactionItem?.positionEffect === 'OPENING',
+  );
 }
 exports.filterOpeningTrades = filterOpeningTrades;
 /**
@@ -53,7 +55,9 @@ exports.filterOpeningTrades = filterOpeningTrades;
  * @returns {TransactionData[]}
  */
 function filterClosingTrades(trades) {
-  return trades?.filter((i) => i.transactionItem.positionEffect === 'CLOSING');
+  return trades?.filter(
+    ({ transactionItem }) => transactionItem?.positionEffect === 'CLOSING',
+  );
 }
 exports.filterClosingTrades = filterClosingTrades;
 /**

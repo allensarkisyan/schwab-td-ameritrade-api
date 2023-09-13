@@ -32,7 +32,7 @@ export function filterSellTrades(trades: TransactionData[]) {
  * @returns {TransactionData[]}
  */
 export function filterOpeningTrades(trades: TransactionData[]) {
-  return trades?.filter(i => i.transactionItem.positionEffect === 'OPENING');
+  return trades?.filter(({ transactionItem }) => transactionItem?.positionEffect === 'OPENING');
 }
 
 /**
@@ -41,7 +41,7 @@ export function filterOpeningTrades(trades: TransactionData[]) {
  * @returns {TransactionData[]}
  */
 export function filterClosingTrades(trades: TransactionData[]) {
-  return trades?.filter(i => i.transactionItem.positionEffect === 'CLOSING');
+  return trades?.filter(({ transactionItem }) => transactionItem?.positionEffect === 'CLOSING');
 }
 
 /**
