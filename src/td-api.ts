@@ -7,6 +7,9 @@
 import { z } from 'zod';
 
 import type {
+  APIClientConfig,
+  APIRequestConfig,
+  APIResponse,
   AuthenticationResponse,
   RefreshTokenResponse,
   TickerSymbol,
@@ -73,20 +76,6 @@ const OrderRequestSchema = <z.ZodSchema<{
 
 type OrderRequest = z.infer<typeof OrderRequestSchema>;
 
-type APIRequestConfig = {
-  url: string;
-  method?: string;
-  params?: Record<string, any>;
-  headers?: any;
-  data?: Record<string, any> | Record<string, any>[] | string | string[] | number | number[];
-};
-
-type APIClientConfig = {
-  clientId?: string | undefined;
-  callbackUrl?: string | undefined;
-  handleRequest?: Function | undefined;
-};
-
 /**
  * Represents the TDAmeritradeAPI class for handling requests.
  * @module TDAmeritradeAPI
@@ -150,9 +139,9 @@ export class TDAmeritradeAPI {
    * Internal Request Handler
    * @private
    * @param {APIRequestConfig} config - API Request Configuration
-   * @returns {Promise<any>}
+   * @returns {Promise<APIResponse<any>>}
    */
-  #handleRequest = async (config: APIRequestConfig): Promise<any> => {
+  #handleRequest = async <T>(config: APIRequestConfig): Promise<APIResponse<T>> => {
     try {
       if (this.#externalRequestHandler) {
         return await this.#externalRequestHandler(config);
@@ -185,14 +174,17 @@ export class TDAmeritradeAPI {
       const response = await fetch(url, requestConfig);
 
       if (!response.ok) {
-        throw new Error();
+        throw new Error(`TDAmeritradeAPI#handleRequest Failed with Status Code: ${response.status}`);
       }
 
       const data = await response.json();
 
-      return data;
-    } catch (e) {
-      return Promise.reject(e);
+      return { error: null, data };
+    } catch (e: any) {
+      return {
+        error: e?.message || 'AN UNKNOWN ERROR HAS OCCURRED.',
+        data: null
+      };
     }
   }
 
@@ -241,7 +233,7 @@ export class TDAmeritradeAPI {
   /**
    * Authenticate with the TD Ameritrade OAuth2 Authorization endpoint
    * @param {string} code - Authorization Resonse Code from TD Ameritrade Authentication API
-   * @returns {AuthenticationResponse | null}
+   * @returns {Promise<AuthenticationResponse | null>}
    */
   authenticate = async (code: string): Promise<AuthenticationResponse | null> => {
     try {
@@ -249,7 +241,7 @@ export class TDAmeritradeAPI {
         throw new Error('Missing TD Ameritrade API Client ID / Client Callback URL');
       }
 
-      const authResponse: AuthenticationResponse = await this.#handleRequest({
+      const { error, data } = await this.#handleRequest<AuthenticationResponse>({
         method: 'POST',
         url: '/v1/oauth2/token',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -262,14 +254,22 @@ export class TDAmeritradeAPI {
         })
       });
 
+      if (error) {
+        throw new Error(error);
+      }
+
+      if (!data || !data.access_token) {
+        throw new Error('ACCESS TOKEN NOT AVAILABLE');
+      }
+
       this.setUserAccessToken(
-        authResponse.access_token,
+        data.access_token,
         true,
-        authResponse.refresh_token,
-        authResponse.refresh_token_expires_in,
+        data.refresh_token,
+        data.refresh_token_expires_in,
       );
 
-      return authResponse;
+      return data;
     } catch (e) {
       console.log('TDAmeritradeAPI authenticate Error', e);
       return null;
@@ -279,7 +279,7 @@ export class TDAmeritradeAPI {
   /**
    * Refresh Access Token with Refresh Token
    * @param {string} refresh_token - Refresh Token
-   * @returns {RefreshTokenResponse | null}
+   * @returns {Promise<RefreshTokenResponse | null>}
    */
   refreshAccessToken = async (refresh_token: string): Promise<RefreshTokenResponse | null> => {
     try {
@@ -287,7 +287,7 @@ export class TDAmeritradeAPI {
         throw new Error('Missing TD Ameritrade API Client ID / Client Callback URL');
       }
 
-      const refreshTokenResponse: RefreshTokenResponse = await this.#handleRequest({
+      const { error, data } = await this.#handleRequest<RefreshTokenResponse>({
         method: 'POST',
         url: '/v1/oauth2/token',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -298,9 +298,17 @@ export class TDAmeritradeAPI {
         })
       });
 
-      this.setUserAccessToken(refreshTokenResponse.access_token);
+      if (error) {
+        throw new Error(error);
+      }
 
-      return refreshTokenResponse;
+      if (!data || !data.access_token) {
+        throw new Error('ACCESS TOKEN NOT AVAILABLE');
+      }
+
+      this.setUserAccessToken(data?.access_token);
+
+      return data;
     } catch (e) {
       console.log('TDAmeritradeAPI refreshAccessToken Error', e);
       return null;
@@ -309,9 +317,9 @@ export class TDAmeritradeAPI {
 
   /**
    * Get Accounts
-   * @returns {Promise<TDAmeritradeAccounts>}
+   * @returns {Promise<APIResponse<TDAmeritradeAccounts>>}
    */
-  getAccounts = async (): Promise<TDAmeritradeAccounts> => await this.#handleRequest({
+  getAccounts = async (): Promise<APIResponse<TDAmeritradeAccounts>> => await this.#handleRequest({
     url: '/v1/accounts',
     params: { fields: 'positions,orders' }
   });
@@ -319,20 +327,20 @@ export class TDAmeritradeAPI {
   /**
    * Get Account
    * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
-   * @returns {Promise<TDAmeritradeAccount>}
+   * @returns {Promise<APIResponse<TDAmeritradeAccount>>}
    */
   getAccount = async (
     accountId: TDAmeritradeAccountID
-  ): Promise<TDAmeritradeAccount> => await this.#handleRequest({
+  ): Promise<APIResponse<TDAmeritradeAccount>> => await this.#handleRequest({
     url: `/v1/accounts/${accountId}`,
     params: { fields: 'positions,orders' }
   });
 
   /**
    * Get User Principals Data - for use with `schwab-td-ameritrade-streamer`
-   * @returns {Promise<UserPrincipalsData>}
+   * @returns {Promise<APIResponse<UserPrincipalsData>>}
    */
-  getUserPrincipals = async (): Promise<UserPrincipalsData> => await this.#handleRequest({
+  getUserPrincipals = async (): Promise<APIResponse<UserPrincipalsData>> => await this.#handleRequest({
     url: '/v1/userprincipals',
     params: { fields: 'streamerSubscriptionKeys,streamerConnectionInfo,preferences,surrogateIds' }
   });
@@ -343,14 +351,14 @@ export class TDAmeritradeAPI {
    * @param {GetTransactionsType} transactionsType - Transactions Type - Default 'TRADE'
    * @param {DateLikeNullable} startDate - Start Date
    * @param {DateLikeNullable} endDate - End Date
-   * @returns {Promise<TransactionData[]>}
+   * @returns {Promise<APIResponse<TransactionData[]>>}
    */
   getTransactions = async (
     accountId: TDAmeritradeAccountID,
     transactionsType: GetTransactionsType = 'TRADE',
     startDate: DateLikeNullable = null,
     endDate: DateLikeNullable = null
-  ): Promise<TransactionData[]> => await this.#handleRequest({
+  ): Promise<APIResponse<TransactionData[]>> => await this.#handleRequest({
     url: `/v1/accounts/${accountId}/transactions`,
     params: {
       type: transactionsType,
@@ -367,9 +375,9 @@ export class TDAmeritradeAPI {
   /**
    * Get Quote Data for Ticker Symbol(s)
    * @param {TickerSymbol} symbol - Ticker Symbol
-   * @returns {Promise<Record<string, QuoteData>>}
+   * @returns {Promise<APIResponse<Record<string, QuoteData>>>}
    */
-  getQuotes = async (symbol: TickerSymbol): Promise<Record<string, QuoteData>> => await this.#handleRequest({
+  getQuotes = async (symbol: TickerSymbol): Promise<APIResponse<Record<string, QuoteData>>> => await this.#handleRequest({
     url: '/v1/marketdata/quotes',
     params: { symbol }
   });
@@ -377,18 +385,18 @@ export class TDAmeritradeAPI {
   /**
    * Get Instrument Data for CUSIP
    * @param {CUSIP} cusip - CUSIP
-   * @returns {Promise<InstrumentData[]>}
+   * @returns {Promise<APIResponse<InstrumentData[]>>}
    */
-  getInstrument = async (cusip: CUSIP): Promise<InstrumentData[]> => await this.#handleRequest({
+  getInstrument = async (cusip: CUSIP): Promise<APIResponse<InstrumentData[]>> => await this.#handleRequest({
     url: `/v1/instruments/${cusip}`
   });
 
   /**
    * Get Fundamental Data for Ticker Symbol
    * @param {TickerSymbol} symbol - Ticker Symbol
-   * @returns {Promise<Record<string, FundamentalData>>}
+   * @returns {Promise<APIResponse<Record<string, FundamentalData>>>}
    */
-  getFundamentals = async (symbol: TickerSymbol): Promise<Record<string, FundamentalData>> => await this.#handleRequest({
+  getFundamentals = async (symbol: TickerSymbol): Promise<APIResponse<Record<string, FundamentalData>>> => await this.#handleRequest({
     url: '/v1/instruments',
     params: { symbol, projection: 'fundamental' }
   });
@@ -398,13 +406,13 @@ export class TDAmeritradeAPI {
    * @param {'$SPX.X' | '$DJI' | '$COMPX'} market - Market
    * @param {'up' | 'down'} direction - Direction
    * @param {'percent' | 'value'} change - Change Type
-   * @returns {Promise<TrendingEquity[]>}
+   * @returns {Promise<APIResponse<TrendingEquity[]>>}
    */
   getMarketDirectionalMover = async (
     market: string,
     direction: string,
     change: string = 'percent'
-  ): Promise<TrendingEquity[]> => await this.#handleRequest({
+  ): Promise<APIResponse<TrendingEquity[]>> => await this.#handleRequest({
     url: `/v1/marketdata/${market}/movers`,
     params: { direction, change }
   });
@@ -416,7 +424,7 @@ export class TDAmeritradeAPI {
    * @param {number} minutes - Minutes
    * @param {boolean} extHours - Extended Hours Data
    * @param {Date|number} endDate - End Date
-   * @returns {Promise<PriceHistory>}
+   * @returns {Promise<APIResponse<PriceHistory>>}
    */
   getPriceHistory = async (
     symbol: TickerSymbol,
@@ -424,7 +432,7 @@ export class TDAmeritradeAPI {
     minutes: number = 5,
     extHours: boolean = true,
     endDate: Date|number = (new Date()).getTime()
-  ): Promise<PriceHistory> => await this.#handleRequest({
+  ): Promise<APIResponse<PriceHistory>> => await this.#handleRequest({
     url: `/v1/marketdata/${symbol}/pricehistory`,
     params: {
       periodType: 'day',
@@ -441,13 +449,13 @@ export class TDAmeritradeAPI {
    * @param {TickerSymbol} symbol - Ticker Symbol
    * @param {number} years - Number of Years
    * @param {number} days - Number of Days
-   * @returns {Promise<PriceHistory>}
+   * @returns {Promise<APIResponse<PriceHistory>>}
    */
   getDailyPriceHistory = async (
     symbol: TickerSymbol,
     years: number = 10,
     days: number = 1,
-  ): Promise<PriceHistory> => await this.#handleRequest({
+  ): Promise<APIResponse<PriceHistory>> => await this.#handleRequest({
     url: `/v1/marketdata/${symbol}/pricehistory`,
     params: {
       periodType: 'year',
@@ -462,12 +470,12 @@ export class TDAmeritradeAPI {
    * Get Weekly Price History for Ticker Symbol
    * @param {TickerSymbol} symbol - Ticker Symbol
    * @param {number} years - Number of Years
-   * @returns {Promise<PriceHistory>}
+   * @returns {Promise<APIResponse<PriceHistory>>}
    */
   getWeeklyPriceHistory = async (
     symbol: TickerSymbol,
     years: number = 20
-  ): Promise<PriceHistory> => await this.#handleRequest({
+  ): Promise<APIResponse<PriceHistory>> => await this.#handleRequest({
     url: `/v1/marketdata/${symbol}/pricehistory`,
     params: {
       periodType: 'year',
@@ -484,14 +492,14 @@ export class TDAmeritradeAPI {
    * @param {DateLikeNullable} startDate - Start Date
    * @param {DateLikeNullable} endDate - End Date
    * @param {boolean} extHours - Extended Hours Data
-   * @returns {Promise<PriceHistory>}
+   * @returns {Promise<APIResponse<PriceHistory>>}
    */
   getPeriodicPriceHistory = async (
     symbol: TickerSymbol,
     startDate: DateLikeNullable,
     endDate: DateLikeNullable = (new Date()).getTime(),
     extHours: boolean = true,
-  ): Promise<PriceHistory> => await this.#handleRequest({
+  ): Promise<APIResponse<PriceHistory>> => await this.#handleRequest({
     url: `/v1/marketdata/${symbol}/pricehistory`,
     params: {
       periodType: 'day',
@@ -505,9 +513,9 @@ export class TDAmeritradeAPI {
 
   /**
    * Get Market Movers - Current Trending Equities of $SPX.X, $COMPX, $DJI
-   * @returns {Promise<MarketMovers>}
+   * @returns {Promise<APIResponse<MarketMovers>>}
    */
-  getMarketMovers = async (): Promise<MarketMovers | null> => {
+  getMarketMovers = async (): Promise<APIResponse<MarketMovers>> => {
     try {
       const MARKETS = [
         '$SPX.X',
@@ -516,25 +524,28 @@ export class TDAmeritradeAPI {
       ];
 
       const marketMovers = await Promise.all(MARKETS.map(async i => {
-        const up = await this.getMarketDirectionalMover(i, 'up');
-        const down = await this.getMarketDirectionalMover(i, 'down');
+        const { data: up } = await this.getMarketDirectionalMover(i, 'up');
+        const { data: down } = await this.getMarketDirectionalMover(i, 'down');
         return { [i]: { up, down } };
       }));
 
       const flat = marketMovers.reduce((a, b) => ({ ...a, ...b }), {});
-      const upFlat = [...Object.keys(flat).map(k => flat[k].up)]
+      const upFlat = [...Object.keys(flat).map(k => (flat[k].up || []))]
         .flat()
         .sort((a, b) => a.change > b.change ? -1 : 1);
-      const downFlat = [...Object.keys(flat).map(k => flat[k].down)]
+      const downFlat = [...Object.keys(flat).map(k => (flat[k].down || []))]
         .flat()
         .sort((a, b) => a.change > b.change ? 1 : -1);
 
       const up = getDistinctArray(upFlat, 'symbol');
       const down = getDistinctArray(downFlat, 'symbol');
 
-      return { up, down };
-    } catch (e) {
-      return null;
+      return { error: null,  data: { up, down } as MarketMovers };
+    } catch (e: any) {
+      return {
+        error: e.message,
+        data: null,
+      };
     }
   };
 
@@ -543,13 +554,13 @@ export class TDAmeritradeAPI {
    * @param {TickerSymbol} symbol - Ticker Symbol
    * @param {OptionContractRange} range - Option Contract Range - (ITM, OTM, NTM, etc..)
    * @param {OptionContractType} optionType - Option Contract Type - (Standard, Non Standard, All)
-   * @returns {Promise<OptionChainData>}
+   * @returns {Promise<APIResponse<OptionChainData>>}
    */
   getOptionChain = async (
     symbol: TickerSymbol,
     range: OptionContractRange = 'ALL',
     optionType: OptionContractType = 'S',
-  ): Promise<OptionChainData> => await this.#handleRequest({
+  ): Promise<APIResponse<OptionChainData>> => await this.#handleRequest({
     url: '/v1/marketdata/chains',
     params: {
       symbol,
@@ -564,23 +575,23 @@ export class TDAmeritradeAPI {
   /**
    * Get Watchlists
    * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
-   * @returns {Promise<Watchlists>}
+   * @returns {Promise<APIResponse<Watchlists>>}
    */
   getWatchlists = async (
     accountId: TDAmeritradeAccountID
-  ): Promise<Watchlists> => await this.#handleRequest({
+  ): Promise<APIResponse<Watchlists>> => await this.#handleRequest({
     url: `/v1/accounts/${accountId}/watchlists`
   });
 
   /**
    * Get Watchlist by ID
    * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
-   * @returns {Promise<Watchlist>}
+   * @returns {Promise<APIResponse<Watchlist>>}
    */
   getWatchlist = async (
     accountId: TDAmeritradeAccountID,
     watchlistId: string,
-  ): Promise<Watchlist> => await this.#handleRequest({
+  ): Promise<APIResponse<Watchlist>> => await this.#handleRequest({
     url: `/v1/accounts/${accountId}/watchlists/${watchlistId}`
   });
 
@@ -590,13 +601,13 @@ export class TDAmeritradeAPI {
    * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
    * @param {number} price - Price
    * @param {TDAmeritradeOrderLeg[]} orderLegCollection - Order Leg Collection
-   * @returns {Promise<any>}
+   * @returns {Promise<APIResponse<any>>}
    */
   placeOrder = async (
     accountId: TDAmeritradeAccountID,
     price: number,
     orderLegCollection: TDAmeritradeOrderLeg[]
-  ): Promise<any> => await this.#handleRequest({
+  ): Promise<APIResponse<any>> => await this.#handleRequest({
     method: 'POST',
     url: `/v1/accounts/${accountId}/orders`,
     data: {
@@ -610,12 +621,12 @@ export class TDAmeritradeAPI {
    * Cancel an Order
    * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
    * @param {string} orderId - Order ID
-   * @returns {Promise<any>}
+   * @returns {Promise<APIResponse<any>>}
    */
   cancelOrder = async (
     accountId: TDAmeritradeAccountID,
     orderId: string
-  ): Promise<any> => await this.#handleRequest({
+  ): Promise<APIResponse<any>> => await this.#handleRequest({
     method: 'DELETE',
     url: `/v1/accounts/${accountId}/orders/${orderId}`
   });
@@ -629,7 +640,7 @@ export class TDAmeritradeAPI {
    * @param {number} orderRequest.price - Price
    * @param {boolean} isOption - Is Option Order 
    * @param {boolean} isShort - Is Short Position 
-   * @returns {Promise<any>}
+   * @returns {Promise<APIResponse<any>>}
    */
   openOrder = async (
     orderRequest: OrderRequest,
@@ -667,7 +678,7 @@ export class TDAmeritradeAPI {
    * @param {number} orderRequest.price - Price
    * @param {boolean} isOption - Is Option Order 
    * @param {boolean} isShort - Is Short Position 
-   * @returns {Promise<any>}
+   * @returns {Promise<APIResponse<any>>}
    */
   closeOrder = async (
     orderRequest: OrderRequest,
@@ -680,7 +691,7 @@ export class TDAmeritradeAPI {
       throw new Error('Invalid Order Request');
     }
 
-    await this.placeOrder(orderRequest.accountId, orderRequest.price, [
+    return await this.placeOrder(orderRequest.accountId, orderRequest.price, [
       {
         quantity: orderRequest.quantity,
         instrument: {
@@ -703,7 +714,7 @@ export class TDAmeritradeAPI {
    * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
    * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
    * @param {number} orderRequest.price - Price
-   * @returns {Promise<any>}
+   * @returns {Promise<APIResponse<any>>}
    */
   buyStock = async (orderRequest: OrderRequest) => await this.openOrder(
     orderRequest,
@@ -718,7 +729,7 @@ export class TDAmeritradeAPI {
    * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
    * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
    * @param {number} orderRequest.price - Price
-   * @returns {Promise<any>}
+   * @returns {Promise<APIResponse<any>>}
    */
   sellStock = async (orderRequest: OrderRequest) => await this.closeOrder(
     orderRequest,
@@ -733,7 +744,7 @@ export class TDAmeritradeAPI {
    * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
    * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
    * @param {number} orderRequest.price - Price
-   * @returns {Promise<any>}
+   * @returns {Promise<APIResponse<any>>}
    */
   shortStock = async (orderRequest: OrderRequest) => await this.openOrder(
     orderRequest,
@@ -748,7 +759,7 @@ export class TDAmeritradeAPI {
    * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
    * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
    * @param {number} orderRequest.price - Price
-   * @returns {Promise<any>}
+   * @returns {Promise<APIResponse<any>>}
    */
   coverStock = async (orderRequest: OrderRequest) => await this.closeOrder(
     orderRequest,
@@ -763,7 +774,7 @@ export class TDAmeritradeAPI {
    * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
    * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
    * @param {number} orderRequest.price - Price
-   * @returns {Promise<any>}
+   * @returns {Promise<APIResponse<any>>}
    */
   buyOption = async (orderRequest: OrderRequest) => await this.openOrder(
     orderRequest,
@@ -778,7 +789,7 @@ export class TDAmeritradeAPI {
    * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
    * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
    * @param {number} orderRequest.price - Price
-   * @returns {Promise<any>}
+   * @returns {Promise<APIResponse<any>>}
    */
   sellOption = async (orderRequest: OrderRequest) => await this.closeOrder(
     orderRequest,
@@ -793,7 +804,7 @@ export class TDAmeritradeAPI {
    * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
    * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
    * @param {number} orderRequest.price - Price
-   * @returns {Promise<any>}
+   * @returns {Promise<APIResponse<any>>}
    */
   writeOption = async (orderRequest: OrderRequest) => await this.openOrder(
     orderRequest,
@@ -808,7 +819,7 @@ export class TDAmeritradeAPI {
    * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
    * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
    * @param {number} orderRequest.price - Price
-   * @returns {Promise<any>}
+   * @returns {Promise<APIResponse<any>>}
    */
   closeOption = async (orderRequest: OrderRequest) => await this.closeOrder(
     orderRequest,

@@ -75,6 +75,41 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api/@types' {
    * ALL: All contracts
    */
   export type OptionContractType = 'S' | 'NS' | 'ALL';
+  /** Represents the configuration for the API client. */
+  export type APIClientConfig = {
+    /** The client ID for authentication (optional). */
+    clientId?: string | undefined;
+    /** The callback URL for authentication (optional). */
+    callbackUrl?: string | undefined;
+    /** A custom request handler function (optional). */
+    handleRequest?: Function | undefined;
+  };
+  /** Represents the configuration for making an API request. */
+  export type APIRequestConfig = {
+    /** The URL of the API endpoint. */
+    url: string;
+    /** The HTTP method for the request (default is 'GET'). */
+    method?: string;
+    /** Optional query parameters for the request. */
+    params?: Record<string, any>;
+    /** Optional HTTP headers for the request. */
+    headers?: any;
+    /** Optional request payload data. */
+    data?:
+      | Record<string, any>
+      | Record<string, any>[]
+      | string
+      | string[]
+      | number
+      | number[];
+  };
+  /** Represents an API response. */
+  export type APIResponse<T> = {
+    /** An error message (nullable and optional). */
+    error: string | null | undefined;
+    /** The response data (nullable and optional). */
+    data: T | null | undefined;
+  };
   /**
    * TD Ameritrade API Authentication Response
    */
@@ -961,6 +996,8 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
    */
   import { z } from 'zod';
   import type {
+    APIClientConfig,
+    APIResponse,
     AuthenticationResponse,
     RefreshTokenResponse,
     TickerSymbol,
@@ -1001,11 +1038,6 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
     }
   >;
   type OrderRequest = z.infer<typeof OrderRequestSchema>;
-  type APIClientConfig = {
-    clientId?: string | undefined;
-    callbackUrl?: string | undefined;
-    handleRequest?: Function | undefined;
-  };
   /**
    * Represents the TDAmeritradeAPI class for handling requests.
    * @module TDAmeritradeAPI
@@ -1037,82 +1069,86 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
     /**
      * Authenticate with the TD Ameritrade OAuth2 Authorization endpoint
      * @param {string} code - Authorization Resonse Code from TD Ameritrade Authentication API
-     * @returns {AuthenticationResponse | null}
+     * @returns {Promise<AuthenticationResponse | null>}
      */
     authenticate: (code: string) => Promise<AuthenticationResponse | null>;
     /**
      * Refresh Access Token with Refresh Token
      * @param {string} refresh_token - Refresh Token
-     * @returns {RefreshTokenResponse | null}
+     * @returns {Promise<RefreshTokenResponse | null>}
      */
     refreshAccessToken: (
       refresh_token: string,
     ) => Promise<RefreshTokenResponse | null>;
     /**
      * Get Accounts
-     * @returns {Promise<TDAmeritradeAccounts>}
+     * @returns {Promise<APIResponse<TDAmeritradeAccounts>>}
      */
-    getAccounts: () => Promise<TDAmeritradeAccounts>;
+    getAccounts: () => Promise<APIResponse<TDAmeritradeAccounts>>;
     /**
      * Get Account
      * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
-     * @returns {Promise<TDAmeritradeAccount>}
+     * @returns {Promise<APIResponse<TDAmeritradeAccount>>}
      */
     getAccount: (
       accountId: TDAmeritradeAccountID,
-    ) => Promise<TDAmeritradeAccount>;
+    ) => Promise<APIResponse<TDAmeritradeAccount>>;
     /**
      * Get User Principals Data - for use with `schwab-td-ameritrade-streamer`
-     * @returns {Promise<UserPrincipalsData>}
+     * @returns {Promise<APIResponse<UserPrincipalsData>>}
      */
-    getUserPrincipals: () => Promise<UserPrincipalsData>;
+    getUserPrincipals: () => Promise<APIResponse<UserPrincipalsData>>;
     /**
      * Get Transactions
      * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
      * @param {GetTransactionsType} transactionsType - Transactions Type - Default 'TRADE'
      * @param {DateLikeNullable} startDate - Start Date
      * @param {DateLikeNullable} endDate - End Date
-     * @returns {Promise<TransactionData[]>}
+     * @returns {Promise<APIResponse<TransactionData[]>>}
      */
     getTransactions: (
       accountId: TDAmeritradeAccountID,
       transactionsType?: GetTransactionsType,
       startDate?: DateLikeNullable,
       endDate?: DateLikeNullable,
-    ) => Promise<TransactionData[]>;
-    getOrders: (accountId: TDAmeritradeAccountID) => Promise<any>;
+    ) => Promise<APIResponse<TransactionData[]>>;
+    getOrders: (
+      accountId: TDAmeritradeAccountID,
+    ) => Promise<APIResponse<unknown>>;
     /**
      * Get Quote Data for Ticker Symbol(s)
      * @param {TickerSymbol} symbol - Ticker Symbol
-     * @returns {Promise<Record<string, QuoteData>>}
+     * @returns {Promise<APIResponse<Record<string, QuoteData>>>}
      */
-    getQuotes: (symbol: TickerSymbol) => Promise<Record<string, QuoteData>>;
+    getQuotes: (
+      symbol: TickerSymbol,
+    ) => Promise<APIResponse<Record<string, QuoteData>>>;
     /**
      * Get Instrument Data for CUSIP
      * @param {CUSIP} cusip - CUSIP
-     * @returns {Promise<InstrumentData[]>}
+     * @returns {Promise<APIResponse<InstrumentData[]>>}
      */
-    getInstrument: (cusip: CUSIP) => Promise<InstrumentData[]>;
+    getInstrument: (cusip: CUSIP) => Promise<APIResponse<InstrumentData[]>>;
     /**
      * Get Fundamental Data for Ticker Symbol
      * @param {TickerSymbol} symbol - Ticker Symbol
-     * @returns {Promise<Record<string, FundamentalData>>}
+     * @returns {Promise<APIResponse<Record<string, FundamentalData>>>}
      */
     getFundamentals: (
       symbol: TickerSymbol,
-    ) => Promise<Record<string, FundamentalData>>;
+    ) => Promise<APIResponse<Record<string, FundamentalData>>>;
     /**
      * Get Market Directional Mover (e.g. '$SPX.X', 'up', 'percent')
      * @param {'$SPX.X' | '$DJI' | '$COMPX'} market - Market
      * @param {'up' | 'down'} direction - Direction
      * @param {'percent' | 'value'} change - Change Type
-     * @returns {Promise<TrendingEquity[]>}
+     * @returns {Promise<APIResponse<TrendingEquity[]>>}
      */
     getMarketDirectionalMover: (
       market: string,
       direction: string,
       change?: string,
-    ) => Promise<TrendingEquity[]>;
+    ) => Promise<APIResponse<TrendingEquity[]>>;
     /**
      * Get Intraday Price History for Ticker Symbol
      * @param {TickerSymbol} symbol - Ticker Symbol
@@ -1120,7 +1156,7 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
      * @param {number} minutes - Minutes
      * @param {boolean} extHours - Extended Hours Data
      * @param {Date|number} endDate - End Date
-     * @returns {Promise<PriceHistory>}
+     * @returns {Promise<APIResponse<PriceHistory>>}
      */
     getPriceHistory: (
       symbol: TickerSymbol,
@@ -1128,97 +1164,99 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
       minutes?: number,
       extHours?: boolean,
       endDate?: Date | number,
-    ) => Promise<PriceHistory>;
+    ) => Promise<APIResponse<PriceHistory>>;
     /**
      * Get Daily Price History for Ticker Symbol
      * @param {TickerSymbol} symbol - Ticker Symbol
      * @param {number} years - Number of Years
      * @param {number} days - Number of Days
-     * @returns {Promise<PriceHistory>}
+     * @returns {Promise<APIResponse<PriceHistory>>}
      */
     getDailyPriceHistory: (
       symbol: TickerSymbol,
       years?: number,
       days?: number,
-    ) => Promise<PriceHistory>;
+    ) => Promise<APIResponse<PriceHistory>>;
     /**
      * Get Weekly Price History for Ticker Symbol
      * @param {TickerSymbol} symbol - Ticker Symbol
      * @param {number} years - Number of Years
-     * @returns {Promise<PriceHistory>}
+     * @returns {Promise<APIResponse<PriceHistory>>}
      */
     getWeeklyPriceHistory: (
       symbol: TickerSymbol,
       years?: number,
-    ) => Promise<PriceHistory>;
+    ) => Promise<APIResponse<PriceHistory>>;
     /**
      * Get Periodic Price History for Ticker Symbol
      * @param {TickerSymbol} symbol - Ticker Symbol
      * @param {DateLikeNullable} startDate - Start Date
      * @param {DateLikeNullable} endDate - End Date
      * @param {boolean} extHours - Extended Hours Data
-     * @returns {Promise<PriceHistory>}
+     * @returns {Promise<APIResponse<PriceHistory>>}
      */
     getPeriodicPriceHistory: (
       symbol: TickerSymbol,
       startDate: DateLikeNullable,
       endDate?: DateLikeNullable,
       extHours?: boolean,
-    ) => Promise<PriceHistory>;
+    ) => Promise<APIResponse<PriceHistory>>;
     /**
      * Get Market Movers - Current Trending Equities of $SPX.X, $COMPX, $DJI
-     * @returns {Promise<MarketMovers>}
+     * @returns {Promise<APIResponse<MarketMovers>>}
      */
-    getMarketMovers: () => Promise<MarketMovers | null>;
+    getMarketMovers: () => Promise<APIResponse<MarketMovers>>;
     /**
      * Get Option Chain
      * @param {TickerSymbol} symbol - Ticker Symbol
      * @param {OptionContractRange} range - Option Contract Range - (ITM, OTM, NTM, etc..)
      * @param {OptionContractType} optionType - Option Contract Type - (Standard, Non Standard, All)
-     * @returns {Promise<OptionChainData>}
+     * @returns {Promise<APIResponse<OptionChainData>>}
      */
     getOptionChain: (
       symbol: TickerSymbol,
       range?: OptionContractRange,
       optionType?: OptionContractType,
-    ) => Promise<OptionChainData>;
+    ) => Promise<APIResponse<OptionChainData>>;
     /**
      * Get Watchlists
      * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
-     * @returns {Promise<Watchlists>}
+     * @returns {Promise<APIResponse<Watchlists>>}
      */
-    getWatchlists: (accountId: TDAmeritradeAccountID) => Promise<Watchlists>;
+    getWatchlists: (
+      accountId: TDAmeritradeAccountID,
+    ) => Promise<APIResponse<Watchlists>>;
     /**
      * Get Watchlist by ID
      * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
-     * @returns {Promise<Watchlist>}
+     * @returns {Promise<APIResponse<Watchlist>>}
      */
     getWatchlist: (
       accountId: TDAmeritradeAccountID,
       watchlistId: string,
-    ) => Promise<Watchlist>;
+    ) => Promise<APIResponse<Watchlist>>;
     /**
      * Place an Order
      * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
      * @param {number} price - Price
      * @param {TDAmeritradeOrderLeg[]} orderLegCollection - Order Leg Collection
-     * @returns {Promise<any>}
+     * @returns {Promise<APIResponse<any>>}
      */
     placeOrder: (
       accountId: TDAmeritradeAccountID,
       price: number,
       orderLegCollection: TDAmeritradeOrderLeg[],
-    ) => Promise<any>;
+    ) => Promise<APIResponse<any>>;
     /**
      * Cancel an Order
      * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
      * @param {string} orderId - Order ID
-     * @returns {Promise<any>}
+     * @returns {Promise<APIResponse<any>>}
      */
     cancelOrder: (
       accountId: TDAmeritradeAccountID,
       orderId: string,
-    ) => Promise<any>;
+    ) => Promise<APIResponse<any>>;
     /**
      * Opening Order
      * @param {OrderRequest} orderRequest - Order Request
@@ -1228,13 +1266,13 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
      * @param {number} orderRequest.price - Price
      * @param {boolean} isOption - Is Option Order
      * @param {boolean} isShort - Is Short Position
-     * @returns {Promise<any>}
+     * @returns {Promise<APIResponse<any>>}
      */
     openOrder: (
       orderRequest: OrderRequest,
       isOption?: boolean,
       isShort?: boolean,
-    ) => Promise<any>;
+    ) => Promise<APIResponse<any>>;
     /**
      * Closing Order
      * @param {OrderRequest} orderRequest - Order Request
@@ -1244,13 +1282,13 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
      * @param {number} orderRequest.price - Price
      * @param {boolean} isOption - Is Option Order
      * @param {boolean} isShort - Is Short Position
-     * @returns {Promise<any>}
+     * @returns {Promise<APIResponse<any>>}
      */
     closeOrder: (
       orderRequest: OrderRequest,
       isOption?: boolean,
       isShort?: boolean,
-    ) => Promise<void>;
+    ) => Promise<APIResponse<any>>;
     /**
      * Buy Equtity / Stock Convenience Method
      * @param {OrderRequest} orderRequest - Order Request
@@ -1258,9 +1296,9 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
      * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
      * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
      * @param {number} orderRequest.price - Price
-     * @returns {Promise<any>}
+     * @returns {Promise<APIResponse<any>>}
      */
-    buyStock: (orderRequest: OrderRequest) => Promise<any>;
+    buyStock: (orderRequest: OrderRequest) => Promise<APIResponse<any>>;
     /**
      * Sell Equtity / Stock Convenience Method
      * @param {OrderRequest} orderRequest - Order Request
@@ -1268,9 +1306,9 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
      * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
      * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
      * @param {number} orderRequest.price - Price
-     * @returns {Promise<any>}
+     * @returns {Promise<APIResponse<any>>}
      */
-    sellStock: (orderRequest: OrderRequest) => Promise<void>;
+    sellStock: (orderRequest: OrderRequest) => Promise<APIResponse<any>>;
     /**
      * Short Equtity / Stock Convenience Method
      * @param {OrderRequest} orderRequest - Order Request
@@ -1278,9 +1316,9 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
      * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
      * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
      * @param {number} orderRequest.price - Price
-     * @returns {Promise<any>}
+     * @returns {Promise<APIResponse<any>>}
      */
-    shortStock: (orderRequest: OrderRequest) => Promise<any>;
+    shortStock: (orderRequest: OrderRequest) => Promise<APIResponse<any>>;
     /**
      * Cover Short Equtity / Stock Convenience Method
      * @param {OrderRequest} orderRequest - Order Request
@@ -1288,9 +1326,9 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
      * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
      * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
      * @param {number} orderRequest.price - Price
-     * @returns {Promise<any>}
+     * @returns {Promise<APIResponse<any>>}
      */
-    coverStock: (orderRequest: OrderRequest) => Promise<void>;
+    coverStock: (orderRequest: OrderRequest) => Promise<APIResponse<any>>;
     /**
      * Buy Option Convenience Method
      * @param {OrderRequest} orderRequest - Order Request
@@ -1298,9 +1336,9 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
      * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
      * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
      * @param {number} orderRequest.price - Price
-     * @returns {Promise<any>}
+     * @returns {Promise<APIResponse<any>>}
      */
-    buyOption: (orderRequest: OrderRequest) => Promise<any>;
+    buyOption: (orderRequest: OrderRequest) => Promise<APIResponse<any>>;
     /**
      * Sell Option Convenience Method
      * @param {OrderRequest} orderRequest - Order Request
@@ -1308,9 +1346,9 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
      * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
      * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
      * @param {number} orderRequest.price - Price
-     * @returns {Promise<any>}
+     * @returns {Promise<APIResponse<any>>}
      */
-    sellOption: (orderRequest: OrderRequest) => Promise<void>;
+    sellOption: (orderRequest: OrderRequest) => Promise<APIResponse<any>>;
     /**
      * Write Option Convenience Method
      * @param {OrderRequest} orderRequest - Order Request
@@ -1318,9 +1356,9 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
      * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
      * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
      * @param {number} orderRequest.price - Price
-     * @returns {Promise<any>}
+     * @returns {Promise<APIResponse<any>>}
      */
-    writeOption: (orderRequest: OrderRequest) => Promise<any>;
+    writeOption: (orderRequest: OrderRequest) => Promise<APIResponse<any>>;
     /**
      * Close Option Convenience Method
      * @param {OrderRequest} orderRequest - Order Request
@@ -1328,9 +1366,9 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
      * @param {TickerSymbol} orderRequest.symbol - Ticker Symbol
      * @param {number} orderRequest.quantity - Quantity of Shares / Option Contracts
      * @param {number} orderRequest.price - Price
-     * @returns {Promise<any>}
+     * @returns {Promise<APIResponse<any>>}
      */
-    closeOption: (orderRequest: OrderRequest) => Promise<void>;
+    closeOption: (orderRequest: OrderRequest) => Promise<APIResponse<any>>;
   }
   /**
    * Creates a new instance of the TD Ameritrade API

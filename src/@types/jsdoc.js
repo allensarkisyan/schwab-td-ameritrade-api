@@ -12,6 +12,32 @@
 /** @typedef {TDAmeritradeAccount[]} TDAmeritradeAccounts */
 
 /**
+ * Represents the configuration for the API client.
+ * @typedef {Object} APIClientConfig
+ * @property {string} [clientId] - The client ID for authentication (optional).
+ * @property {string} [callbackUrl] - The callback URL for authentication (optional).
+ * @property {Function} [handleRequest] - A custom request handler function (optional).
+ */
+
+/**
+ * Represents the configuration for making an API request.
+ * @typedef {Object} APIRequestConfig
+ * @property {string} url - The URL of the API endpoint.
+ * @property {string} [method] - The HTTP method for the request (default is 'GET').
+ * @property {Record<string, any>} [params] - Optional query parameters for the request.
+ * @property {any} [headers] - Optional HTTP headers for the request.
+ * @property {Record<string, any> | Record<string, any>[] | string | string[] | number | number[]} [data] - Optional request payload data.
+ */
+
+/**
+ * Represents an API response.
+ * @typedef {Object} APIResponse
+ * @template T - The type of data in the response.
+ * @property {string | null | undefined} error - An error message (nullable and optional).
+ * @property {T | null | undefined} data - The response data (nullable and optional).
+ */
+
+/**
  * TD Ameritrade API Authentication Response
  * @typedef {Object} AuthenticationResponse
  * @property {string} access_token - Access Token

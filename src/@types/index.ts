@@ -73,6 +73,38 @@ export type OptionContractRange =
  */
 export type OptionContractType = 'S' | 'NS' | 'ALL';
 
+/** Represents the configuration for the API client. */
+export type APIClientConfig = {
+  /** The client ID for authentication (optional). */
+  clientId?: string | undefined;
+  /** The callback URL for authentication (optional). */
+  callbackUrl?: string | undefined;
+  /** A custom request handler function (optional). */
+  handleRequest?: Function | undefined;
+};
+
+/** Represents the configuration for making an API request. */
+export type APIRequestConfig = {
+  /** The URL of the API endpoint. */
+  url: string;
+  /** The HTTP method for the request (default is 'GET'). */
+  method?: string;
+  /** Optional query parameters for the request. */
+  params?: Record<string, any>;
+  /** Optional HTTP headers for the request. */
+  headers?: any;
+  /** Optional request payload data. */
+  data?: Record<string, any> | Record<string, any>[] | string | string[] | number | number[];
+};
+
+/** Represents an API response. */
+export type APIResponse<T> = {
+  /** An error message (nullable and optional). */
+  error: string | null | undefined;
+  /** The response data (nullable and optional). */
+  data: T | null | undefined; 
+};
+
 /**
  * TD Ameritrade API Authentication Response
  */
