@@ -29,12 +29,23 @@
         "default": "./dist/esm/td-utils.js"
       },
       "default": "./dist/esm/td-utils.js"
+    },
+    "./td-agent": {
+      "require": {
+        "types": "./dist/types/index.d.ts",
+        "default": "./dist/cjs/td-agent.js"
+      },
+      "import": {
+        "types": "./dist/types/index.d.ts",
+        "default": "./dist/esm/td-agent.js"
+      },
+      "default": "./dist/esm/td-agent.js"
     }
   },
   "scripts": {
     "build:types": "tsc --declaration --project tsconfig.types.json",
-    "build:esm": "tsc --project tsconfig.esm.json",
-    "build:cjs": "tsc --project tsconfig.cjs.json",
+    "build:esm": "tsc --project tsconfig.json --module esnext --outDir ./dist/esm",
+    "build:cjs": "tsc --project tsconfig.json --module commonjs --outDir ./dist/cjs",
     "build": "npm run build:types && npm run build:esm && npm run build:cjs && cd dist && prettier . --write"
   },
   "dependencies": {
