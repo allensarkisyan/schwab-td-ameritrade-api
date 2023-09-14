@@ -137,11 +137,11 @@ export class TDAmeritradeAPI {
     let data = null;
     let error = null;
 
-    try {
-      if (this.#externalRequestHandler) {
-        return await this.#externalRequestHandler(config);
-      }
+    if (this.#externalRequestHandler) {
+      return await this.#externalRequestHandler(config);
+    }
 
+    try {
       const query = config?.params ? `?${new URLSearchParams(config?.params)}` : '';
 
       const url = new URL(`${config.url}${query}`, 'https://api.tdameritrade.com');

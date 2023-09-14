@@ -87,10 +87,10 @@ export class TDAmeritradeAPI {
   #handleRequest = async (config, isAuthorizationRequired = true) => {
     let data = null;
     let error = null;
+    if (this.#externalRequestHandler) {
+      return await this.#externalRequestHandler(config);
+    }
     try {
-      if (this.#externalRequestHandler) {
-        return await this.#externalRequestHandler(config);
-      }
       const query = config?.params
         ? `?${new URLSearchParams(config?.params)}`
         : '';
