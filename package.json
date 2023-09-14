@@ -29,17 +29,6 @@
         "default": "./dist/esm/td-utils.js"
       },
       "default": "./dist/esm/td-utils.js"
-    },
-    "./td-agent": {
-      "require": {
-        "types": "./dist/types/index.d.ts",
-        "default": "./dist/cjs/td-agent.js"
-      },
-      "import": {
-        "types": "./dist/types/index.d.ts",
-        "default": "./dist/esm/td-agent.js"
-      },
-      "default": "./dist/esm/td-agent.js"
     }
   },
   "scripts": {
