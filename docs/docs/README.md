@@ -17,7 +17,7 @@ This is an unofficial JavaScript/TypeScript client implementation for the Charle
 - MIT Licensed: This project is fully open source and available under the MIT License.
 - Cross-Platform: It is designed to work in both Node.js and Browser environments.
 - Strongly Typed: The codebase is strongly typed using JSDoc annotations for enhanced code quality and autocompletion support in TypeScript.
-- Single Dependency: [Zod](https://github.com/colinhacks/zod) (for type safety / schema validation)
+- Uses Zod: [Zod](https://github.com/colinhacks/zod) (for type safety / schema validation)
 - Implementation of Official API Endpoints: [Official TD Ameritrade API Documentation](https://developer.tdameritrade.com/apis)
 - Derived from proprietary & internally developed quantitative trading and research software.
 

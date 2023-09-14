@@ -213,8 +213,8 @@
     * [.TDAmeritradeAPI](#TDAmeritradeAPI+TDAmeritradeAPI)
         * [new exports.TDAmeritradeAPI([config])](#new_TDAmeritradeAPI+TDAmeritradeAPI_new)
     * [.setUserAccessToken](#TDAmeritradeAPI+setUserAccessToken)
-    * [.authenticate](#TDAmeritradeAPI+authenticate) ⇒ <code>Promise.&lt;(AuthenticationResponse\|null)&gt;</code>
-    * [.refreshAccessToken](#TDAmeritradeAPI+refreshAccessToken) ⇒ <code>Promise.&lt;(RefreshTokenResponse\|null)&gt;</code>
+    * [.authenticate](#TDAmeritradeAPI+authenticate) ⇒ <code>Promise.&lt;APIResponse.&lt;(AuthenticationResponse\|null)&gt;&gt;</code>
+    * [.refreshAccessToken](#TDAmeritradeAPI+refreshAccessToken) ⇒ <code>Promise.&lt;APIResponse.&lt;(RefreshTokenResponse\|null)&gt;&gt;</code>
     * [.getAccounts](#TDAmeritradeAPI+getAccounts) ⇒ <code>Promise.&lt;APIResponse.&lt;TDAmeritradeAccounts&gt;&gt;</code>
     * [.getAccount](#TDAmeritradeAPI+getAccount) ⇒ <code>Promise.&lt;APIResponse.&lt;TDAmeritradeAccount&gt;&gt;</code>
     * [.getUserPrincipals](#TDAmeritradeAPI+getUserPrincipals) ⇒ <code>Promise.&lt;APIResponse.&lt;UserPrincipalsData&gt;&gt;</code>
@@ -283,7 +283,7 @@ Set User Access Token / Refresh Token
 
 <a name="TDAmeritradeAPI+authenticate"></a>
 
-### tdAmeritradeAPI.authenticate ⇒ <code>Promise.&lt;(AuthenticationResponse\|null)&gt;</code>
+### tdAmeritradeAPI.authenticate ⇒ <code>Promise.&lt;APIResponse.&lt;(AuthenticationResponse\|null)&gt;&gt;</code>
 Authenticate with the TD Ameritrade OAuth2 Authorization endpoint
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
@@ -294,7 +294,7 @@ Authenticate with the TD Ameritrade OAuth2 Authorization endpoint
 
 <a name="TDAmeritradeAPI+refreshAccessToken"></a>
 
-### tdAmeritradeAPI.refreshAccessToken ⇒ <code>Promise.&lt;(RefreshTokenResponse\|null)&gt;</code>
+### tdAmeritradeAPI.refreshAccessToken ⇒ <code>Promise.&lt;APIResponse.&lt;(RefreshTokenResponse\|null)&gt;&gt;</code>
 Refresh Access Token with Refresh Token
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
