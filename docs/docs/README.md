@@ -81,7 +81,7 @@ const searchParams = new URLSearchParams(window.location.search);
 const authorizationResponseCode = searchParams.get('code');
 
 // Step 3: Authorize the API Client and retrieve an Access Token
-const authResponse = await tdApi.authenticate(authorizationResponseCode);
+const { data: authResponse } = await tdApi.authenticate(authorizationResponseCode);
 ```
 
 ## Setting Access Token Externally
