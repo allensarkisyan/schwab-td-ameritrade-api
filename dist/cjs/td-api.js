@@ -84,9 +84,10 @@ class TDAmeritradeAPI {
    * @private
    * @template T - The type of the data in the API Response
    * @param {APIRequestConfig} config - API Request Configuration
+   * @param {boolean} isAuthorizationRequired - Use Authorization Header / Access Token
    * @returns {Promise<APIResponse<T>>}
    */
-  #handleRequest = async (config) => {
+  #handleRequest = async (config, isAuthorizationRequired = true) => {
     let data = null;
     let error = null;
     try {
@@ -113,7 +114,7 @@ class TDAmeritradeAPI {
             ? config.data
             : JSON.stringify(config.data);
       }
-      if (this.#userAccessToken) {
+      if (isAuthorizationRequired && this.#userAccessToken) {
         requestConfig.headers['Authorization'] = `Bearer ${
           this.#userAccessToken
         }`;
@@ -181,18 +182,21 @@ class TDAmeritradeAPI {
           'Missing TD Ameritrade API Client ID / Client Callback URL',
         );
       }
-      const { error, data } = await this.#handleRequest({
-        method: 'POST',
-        url: '/v1/oauth2/token',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        data: jsonToQueryString({
-          code,
-          client_id: this.#clientId,
-          redirect_uri: this.#callbackUrl,
-          grant_type: 'authorization_code',
-          access_type: 'offline',
-        }),
-      });
+      const { error, data } = await this.#handleRequest(
+        {
+          method: 'POST',
+          url: '/v1/oauth2/token',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          data: jsonToQueryString({
+            code,
+            client_id: this.#clientId,
+            redirect_uri: this.#callbackUrl,
+            grant_type: 'authorization_code',
+            access_type: 'offline',
+          }),
+        },
+        false,
+      );
       if (error) {
         throw new Error(error);
       }
@@ -223,16 +227,19 @@ class TDAmeritradeAPI {
           'Missing TD Ameritrade API Client ID / Client Callback URL',
         );
       }
-      const { error, data } = await this.#handleRequest({
-        method: 'POST',
-        url: '/v1/oauth2/token',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        data: jsonToQueryString({
-          refresh_token,
-          grant_type: 'refresh_token',
-          client_id: this.#clientId,
-        }),
-      });
+      const { error, data } = await this.#handleRequest(
+        {
+          method: 'POST',
+          url: '/v1/oauth2/token',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          data: jsonToQueryString({
+            refresh_token,
+            grant_type: 'refresh_token',
+            client_id: this.#clientId,
+          }),
+        },
+        false,
+      );
       if (error) {
         throw new Error(error);
       }

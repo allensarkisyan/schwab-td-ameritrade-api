@@ -130,9 +130,10 @@ export class TDAmeritradeAPI {
    * @private
    * @template T - The type of the data in the API Response
    * @param {APIRequestConfig} config - API Request Configuration
+   * @param {boolean} isAuthorizationRequired - Use Authorization Header / Access Token
    * @returns {Promise<APIResponse<T>>}
    */
-  #handleRequest = async <T>(config: APIRequestConfig): Promise<APIResponse<T>> => {
+  #handleRequest = async <T>(config: APIRequestConfig, isAuthorizationRequired: boolean = true): Promise<APIResponse<T>> => {
     let data = null;
     let error = null;
 
@@ -161,7 +162,7 @@ export class TDAmeritradeAPI {
         );
       }
 
-      if (this.#userAccessToken) {
+      if (isAuthorizationRequired && this.#userAccessToken) {
         requestConfig.headers['Authorization'] = `Bearer ${this.#userAccessToken}`;
       }
 
@@ -243,7 +244,7 @@ export class TDAmeritradeAPI {
           grant_type: 'authorization_code',
           access_type: 'offline',
         })
-      });
+      }, false);
 
       if (error) {
         throw new Error(error);
@@ -287,7 +288,7 @@ export class TDAmeritradeAPI {
           grant_type: 'refresh_token',
           client_id: this.#clientId,
         })
-      });
+      }, false);
 
       if (error) {
         throw new Error(error);
