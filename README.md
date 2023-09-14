@@ -66,20 +66,47 @@ const tdApi = createTDAmeritradeAPIClient({
 });
 ```
 
-#### Default Export
+## Authentication & Authorization
 ```javascript
-/** OR import the default instantiated class, provided as the default export */
-import tdAPI from '@allensarkisyan/schwab-td-ameritrade-api';
+// Step 1: Initiate Authentication request with TD Ameritrade's servers
+// Follow the instructions provided by Charles Schwab / TD Ameritrade.
+
+// Step 2: Get Authorization Response code from the query string to your redirect callback URL.
+const searchParams = new URLSearchParams(window.location.search);
+const authorizationResponseCode = searchParams.get('code');
+
+// Step 3: Authorize the API Client and retrieve an Access Token
+const authResponse = await tdApi.authenticate(authorizationResponseCode);
 ```
 
-## Authentication & Authorization / Setting Access Token
+## Setting Access Token Externally
 ```javascript
-const authResponse = await tdApi.authenticate(code);
-
 const USER_ACCESS_TOKEN = authResponse?.access_token;
 
+// Set User Access Token externally 
 tdApi.setUserAccessToken(USER_ACCESS_TOKEN);
 ```
+
+## Available APIs
+NONE: &#9744;
+
+PARTIAL: &#9746;
+
+FULL: &#9745;
+
+| APIs | AVAILABLE | IMPLEMENTATION |
+| ---------| ----------  | ------ |
+| Accounts & Trading | &#9745; | &#9746; |
+| Authentication | &#9745; | &#9745; |
+| Instruments | &#9745; | &#9746; |
+| Market Hours | &#9744; | &#9744; |
+| Movers | &#9745; | &#9745; |
+| Option Chains | &#9745; | &#9745; |
+| Price History | &#9745; | &#9745; |
+| Quotes | &#9745; | &#9746; |
+| Transaction History | &#9745; | &#9746; |
+| User Info & Preferences | &#9744; | &#9746; |
+| Watchlist | &#9745; | &#9746; |
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

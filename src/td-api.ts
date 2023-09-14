@@ -206,7 +206,7 @@ export class TDAmeritradeAPI {
   
         if (refreshToken && refreshTokenExpiresIn) {
           dataStore.refreshToken = refreshToken;
-          dataStore.refreshTokenExpires =  new Date(now + (refreshTokenExpiresIn * 1000)).toJSON();
+          dataStore.refreshTokenExpires = new Date(now + (refreshTokenExpiresIn * 1000)).toJSON();
         }
       } else {
         this.#userAccessToken = null;

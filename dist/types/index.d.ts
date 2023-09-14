@@ -1462,6 +1462,19 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
   ): TDAmeritradeAPI;
   export default TDAmeritradeAPI;
 }
+declare module '@allensarkisyan/schwab-td-ameritrade-api/td-agent' {
+  export function initializeTDAmeritradeAPIAgent({
+    userAccessToken,
+    accessTokenExpires,
+    refreshToken,
+    refreshTokenExpires,
+  }: {
+    userAccessToken: any;
+    accessTokenExpires: any;
+    refreshToken: any;
+    refreshTokenExpires: any;
+  }): Promise<void>;
+}
 declare module '@allensarkisyan/schwab-td-ameritrade-api/td-utils' {
   /**
    * @author Allen Sarkisyan
