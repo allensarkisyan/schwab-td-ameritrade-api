@@ -173,16 +173,18 @@ class TDAmeritradeAPI {
   /**
    * Authenticate with the TD Ameritrade OAuth2 Authorization endpoint
    * @param {string} code - Authorization Resonse Code from TD Ameritrade Authentication API
-   * @returns {Promise<AuthenticationResponse | null>}
+   * @returns {Promise<APIResponse<AuthenticationResponse | null>>}
    */
   authenticate = async (code) => {
+    let data = null;
+    let error = null;
     try {
       if (!this.#clientId || !this.#callbackUrl) {
         throw new Error(
           'Missing TD Ameritrade API Client ID / Client Callback URL',
         );
       }
-      const { error, data } = await this.#handleRequest(
+      const { error, data: authResponseData } = await this.#handleRequest(
         {
           method: 'POST',
           url: '/v1/oauth2/token',
@@ -200,34 +202,38 @@ class TDAmeritradeAPI {
       if (error) {
         throw new Error(error);
       }
-      if (!data || !data.access_token) {
+      if (!authResponseData || !authResponseData.access_token) {
         throw new Error('ACCESS TOKEN NOT AVAILABLE');
       }
       this.setUserAccessToken(
-        data.access_token,
+        authResponseData.access_token,
         true,
-        data.refresh_token,
-        data.refresh_token_expires_in,
+        authResponseData.refresh_token,
+        authResponseData.refresh_token_expires_in,
       );
-      return data;
+      data = authResponseData;
     } catch (e) {
       console.log('TDAmeritradeAPI authenticate Error', e);
-      return null;
+      error = e?.message || 'AN UNKNOWN ERROR HAS OCCURRED.';
+    } finally {
+      return { error, data };
     }
   };
   /**
    * Refresh Access Token with Refresh Token
    * @param {string} refresh_token - Refresh Token
-   * @returns {Promise<RefreshTokenResponse | null>}
+   * @returns {Promise<APIResponse<RefreshTokenResponse | null>>}
    */
   refreshAccessToken = async (refresh_token) => {
+    let data = null;
+    let error = null;
     try {
       if (!this.#clientId) {
         throw new Error(
           'Missing TD Ameritrade API Client ID / Client Callback URL',
         );
       }
-      const { error, data } = await this.#handleRequest(
+      const { error, data: refreshTokenData } = await this.#handleRequest(
         {
           method: 'POST',
           url: '/v1/oauth2/token',
@@ -243,14 +249,16 @@ class TDAmeritradeAPI {
       if (error) {
         throw new Error(error);
       }
-      if (!data || !data.access_token) {
+      if (!refreshTokenData || !refreshTokenData.access_token) {
         throw new Error('ACCESS TOKEN NOT AVAILABLE');
       }
-      this.setUserAccessToken(data?.access_token);
-      return data;
+      this.setUserAccessToken(refreshTokenData?.access_token);
+      data = refreshTokenData;
     } catch (e) {
       console.log('TDAmeritradeAPI refreshAccessToken Error', e);
-      return null;
+      error = e?.message || 'AN UNKNOWN ERROR HAS OCCURRED.';
+    } finally {
+      return { error, data };
     }
   };
   /**
@@ -470,7 +478,10 @@ class TDAmeritradeAPI {
         .sort((a, b) => (a.change > b.change ? 1 : -1));
       const up = getDistinctArray(upFlat, 'symbol');
       const down = getDistinctArray(downFlat, 'symbol');
-      return { error: null, data: { up, down } };
+      return {
+        error: null,
+        data: { up, down },
+      };
     } catch (e) {
       return {
         error: e.message,

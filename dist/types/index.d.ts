@@ -1142,17 +1142,19 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
     /**
      * Authenticate with the TD Ameritrade OAuth2 Authorization endpoint
      * @param {string} code - Authorization Resonse Code from TD Ameritrade Authentication API
-     * @returns {Promise<AuthenticationResponse | null>}
+     * @returns {Promise<APIResponse<AuthenticationResponse | null>>}
      */
-    authenticate: (code: string) => Promise<AuthenticationResponse | null>;
+    authenticate: (
+      code: string,
+    ) => Promise<APIResponse<AuthenticationResponse | null>>;
     /**
      * Refresh Access Token with Refresh Token
      * @param {string} refresh_token - Refresh Token
-     * @returns {Promise<RefreshTokenResponse | null>}
+     * @returns {Promise<APIResponse<RefreshTokenResponse | null>>}
      */
     refreshAccessToken: (
       refresh_token: string,
-    ) => Promise<RefreshTokenResponse | null>;
+    ) => Promise<APIResponse<RefreshTokenResponse | null>>;
     /**
      * Get Accounts
      * @returns {Promise<APIResponse<TDAmeritradeAccounts>>}
