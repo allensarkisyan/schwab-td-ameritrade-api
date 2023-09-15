@@ -6,36 +6,12 @@
   "author": "Allen Sarkisyan",
   "main": "./dist/cjs/td-api.js",
   "module": "./dist/esm/td-api.js",
-  "types": "./dist/types/index.d.ts",
+  "types": "./index.d.ts",
   "license": "MIT",
   "homepage": "https://github.com/allensarkisyan/schwab-td-ameritrade-api",
   "repository": {
     "type": "git",
     "url": "https://github.com/allensarkisyan/schwab-td-ameritrade-api.git"
-  },
-  "exports": {
-    ".": {
-      "require": {
-        "types": "./dist/types/index.d.ts",
-        "default": "./dist/cjs/td-api.js"
-      },
-      "import": {
-        "types": "./dist/types/index.d.ts",
-        "default": "./dist/esm/td-api.js"
-      },
-      "default": "./dist/esm/td-api.js"
-    },
-    "./td-utils": {
-      "require": {
-        "types": "./dist/types/index.d.ts",
-        "default": "./dist/cjs/td-utils.js"
-      },
-      "import": {
-        "types": "./dist/types/index.d.ts",
-        "default": "./dist/esm/td-utils.js"
-      },
-      "default": "./dist/esm/td-utils.js"
-    }
   },
   "scripts": {
     "build:types": "tsc --declaration --project tsconfig.types.json",
@@ -64,5 +40,29 @@
   },
   "engines": {
     "node": ">=16.0.0"
+  },
+  "exports": {
+    ".": {
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/cjs/td-api.js"
+      },
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/esm/td-api.js"
+      },
+      "default": "./dist/esm/td-api.js"
+    },
+    "./td-utils": {
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/cjs/td-utils.js"
+      },
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/esm/td-utils.js"
+      },
+      "default": "./dist/esm/td-utils.js"
+    }
   }
 }
