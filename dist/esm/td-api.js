@@ -4,15 +4,12 @@
  * @license MIT Open Source License
  */
 import { OrderRequestSchema, PlaceOrderSchema } from './schemas/index.js';
-const jsonToQueryString = (json) => {
-  const queryParams = [];
-  for (const [k, v] of Object.entries(json)) {
-    queryParams.push(`${encodeURIComponent(k)}=${encodeURIComponent(v)}`);
-  }
-  return queryParams.join('&');
-};
-const getDistinctArray = (arr, key) =>
-  arr.filter((i, idx) => arr.findIndex((x) => x[key] === i[key]) === idx);
+import {
+  jsonToQueryString,
+  getDistinctArray,
+  getRequestUrl,
+  getFetchOptions,
+} from './utils.js';
 const dataStore = {
   userAccessToken: '',
   accessTokenExpires: null,
@@ -96,32 +93,14 @@ export class TDAmeritradeAPI {
       return await this.#externalRequestHandler(config);
     }
     try {
-      const query = config?.params
-        ? `?${new URLSearchParams(config?.params)}`
-        : '';
-      const url = new URL(
-        `${config.url}${query}`,
-        'https://api.tdameritrade.com',
-      );
-      const requestConfig = {
-        method: config?.method || 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          ...config?.headers,
-        },
-      };
-      if (config?.data) {
-        requestConfig.body =
-          typeof config.data === 'string'
-            ? config.data
-            : JSON.stringify(config.data);
-      }
+      const url = getRequestUrl(config);
+      const fetchOptions = getFetchOptions(config);
       if (isAuthorizationRequired && this.#userAccessToken) {
-        requestConfig.headers['Authorization'] = `Bearer ${
+        fetchOptions.headers['Authorization'] = `Bearer ${
           this.#userAccessToken
         }`;
       }
-      const response = await fetch(url, requestConfig);
+      const response = await fetch(url, fetchOptions);
       if (!response.ok) {
         throw new Error(
           `TDAmeritradeAPI#handleRequest Failed with Status Code: ${response.status}`,
@@ -147,29 +126,25 @@ export class TDAmeritradeAPI {
     refreshToken = null,
     refreshTokenExpiresIn = null,
   ) => {
-    try {
-      if (accessToken) {
-        const now = Date.now();
-        this.#userAccessToken = accessToken;
-        dataStore.userAccessToken = accessToken;
-        if (isNewToken) {
-          dataStore.accessTokenExpires = new Date(now + 1800 * 1000).toJSON();
-        }
-        if (refreshToken && refreshTokenExpiresIn) {
-          dataStore.refreshToken = refreshToken;
-          dataStore.refreshTokenExpires = new Date(
-            now + refreshTokenExpiresIn * 1000,
-          ).toJSON();
-        }
-      } else {
-        this.#userAccessToken = null;
-        delete dataStore.userAccessToken;
-        delete dataStore.refreshToken;
-        delete dataStore.accessTokenExpires;
-        delete dataStore.refreshTokenExpires;
+    if (accessToken) {
+      const now = Date.now();
+      this.#userAccessToken = accessToken;
+      dataStore.userAccessToken = accessToken;
+      if (isNewToken) {
+        dataStore.accessTokenExpires = new Date(now + 1800 * 1000).toJSON();
       }
-    } catch (e) {
-      return;
+      if (refreshToken && refreshTokenExpiresIn) {
+        dataStore.refreshToken = refreshToken;
+        dataStore.refreshTokenExpires = new Date(
+          now + refreshTokenExpiresIn * 1000,
+        ).toJSON();
+      }
+    } else {
+      this.#userAccessToken = null;
+      delete dataStore.userAccessToken;
+      delete dataStore.refreshToken;
+      delete dataStore.accessTokenExpires;
+      delete dataStore.refreshTokenExpires;
     }
   };
   /**
@@ -476,7 +451,7 @@ export class TDAmeritradeAPI {
       };
     } catch (e) {
       return {
-        error: e.message,
+        error: e?.message || ERRORS.UNKNOWN_ERROR,
         data: null,
       };
     }

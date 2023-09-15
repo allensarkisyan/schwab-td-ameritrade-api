@@ -4,7 +4,15 @@
  * @license MIT Open Source License
  */
 
-const { TDAmeritradeAPI, createTDAmeritradeAPIClient } = require('../dist/cjs/td-api.js');
+const {
+  TDAmeritradeAPI,
+  createTDAmeritradeAPIClient,
+} = require('../dist/cjs/td-api.js');
+
+const {
+  getRequestUrl,
+  getFetchOptions,
+} = require('../dist/cjs/utils.js');
 
 const ACCESS_TOKEN_MOCK = {
   error: null,
@@ -69,6 +77,7 @@ describe('TDAmeritradeAPI', () => {
   const mockResponses = {
     'TDAmeritradeAPI authenticate should return new access token': ACCESS_TOKEN_MOCK,
     'TDAmeritradeAPI refreshAccessToken should return new access token': ACCESS_TOKEN_MOCK,
+    'TDAmeritradeAPI authenticate / refreshAccessToken error handling should return an Error if missing access token': ERROR_RESPONSE,
     'TDAmeritradeAPI getAccounts should return accounts': GET_ACCOUNTS_MOCK,
     'TDAmeritradeAPI getAccount should return account': GET_ACCOUNT_MOCK,
     'TDAmeritradeAPI getUserPrincipals should return user principals': GET_USER_PRINCIPALS_MOCK,
@@ -136,6 +145,85 @@ describe('TDAmeritradeAPI', () => {
     });
   });
 
+  describe('private utility functions', () => {
+    it('getRequestUrl should craft new URL Object', async () => {
+      const result = getRequestUrl({
+        url: '/v1/marketdata/quotes',
+        method: 'GET'
+      });
+
+      expect(true).toEqual(result instanceof URL);
+      expect(result.toString()).toEqual(`https://api.tdameritrade.com/v1/marketdata/quotes`);
+    });
+
+    it('getRequestUrl should return a base URL if nothing is passed', async () => {
+      const result = getRequestUrl();
+
+      expect(result.toString()).toEqual(`https://api.tdameritrade.com/`);
+    });
+
+    it('getRequestUrl should handle query params', async () => {
+      const result = getRequestUrl({
+        url: '/v1/marketdata/quotes',
+        method: 'GET',
+        params: {
+          symbol: 'ZXZZT'
+        }
+      });
+
+      expect(result.toString()).toEqual(`https://api.tdameritrade.com/v1/marketdata/quotes?symbol=ZXZZT`);
+    });
+
+    it('getFetchOptions should handle setting default options', async () => {
+      const result = getFetchOptions({
+        url: '/v1/marketdata/quotes'
+      });
+
+      expect(result).toEqual({
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+    });
+
+    it('getFetchOptions should handle POST requests with data as an Object', async () => {
+      const result = getFetchOptions({
+        url: '/v1/marketdata/quotes',
+        method: 'POST',
+        data: {
+          symbol: 'ZXZZT'
+        }
+      });
+
+      expect(result).toEqual({
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ symbol: 'ZXZZT' })
+      });
+
+      expect(typeof result.body).toEqual('string');
+    });
+
+    it('getFetchOptions should handle POST requests with data as an String', async () => {
+      const result = getFetchOptions({
+        url: '/v1/marketdata/quotes',
+        method: 'POST',
+        data: 'symbol=ZXZZT'
+      });
+
+      expect(result).toEqual({
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: 'symbol=ZXZZT'
+      });
+    });
+  });
+
   describe('getAccounts', () => {
     it('should return accounts', async () => {
       const result = await tdApi.getAccounts();
@@ -160,15 +248,32 @@ describe('TDAmeritradeAPI', () => {
     });
   });
 
-  // describe('setUserAccessToken', () => {
-  //   it('should return generic response', async () => {
-  //     const result = await tdApi.setUserAccessToken('TEST');
+  describe('setUserAccessToken', () => {
+    it('should remove access token if nothing is passed', async () => {
+      const result = tdApi.setUserAccessToken();
 
-  //     // expect(result).toEqual(GENERIC_DATA_RESPONSE_MOCK);
-  //   });
-  // });
+      expect(result).toBe(undefined);
+    });
+
+    it('should error if invalid type is passed', async () => {
+      const result = tdApi.setUserAccessToken(new Date());
+
+      expect(result).toBe(undefined);
+    });
+
+    it('should return generic response', async () => {
+      const result = tdApi.setUserAccessToken('TEST');
+
+      expect(result).toBe(undefined);
+    });
+  });
 
   describe('authenticate', () => {
+    it('should return an Error if missing access token', async () => {
+      const result = await tdApi.authenticate('TEST');
+      expect(result).toEqual({ error: 'ACCESS TOKEN NOT AVAILABLE', data: null });
+    });
+
     it('should return new access token', async () => {
       const result = await tdApi.authenticate('TEST');
 
@@ -177,10 +282,27 @@ describe('TDAmeritradeAPI', () => {
   });
 
   describe('refreshAccessToken', () => {
+    it('should return an Error if missing access token', async () => {
+      const result = await tdApi.refreshAccessToken('TEST');
+      expect(result).toEqual({ error: 'ACCESS TOKEN NOT AVAILABLE', data: null });
+    });
+
     it('should return new access token', async () => {
       const result = await tdApi.refreshAccessToken('TEST');
 
       expect(result).toEqual(ACCESS_TOKEN_MOCK);
+    });
+  });
+
+  describe('authenticate / refreshAccessToken error handling', () => {
+    it('should return an Error if missing access token', async () => {
+      const result = await tdApi.authenticate();
+      expect(result).toEqual(ERROR_RESPONSE);
+    });
+
+    it('should return an Error if missing access token', async () => {
+      const result = await tdApi.refreshAccessToken();
+      expect(result).toEqual(ERROR_RESPONSE);
     });
   });
 
@@ -323,13 +445,18 @@ describe('TDAmeritradeAPI', () => {
     });
   });
 
-  // describe('cancelOrder', () => {
-  //   it('should return generic response', async () => {
-  //     const result = await tdApi.cancelOrder();
+  describe('cancelOrder', () => {
+    it('should return an Error if no accountId or orderId is passed', async () => {
+      const result = await tdApi.openOrder();
+      expect(result).toEqual({ error: 'INVALID ORDER REQUEST', data: null });
+    });
 
-  //     expect(result).toEqual(GENERIC_DATA_RESPONSE_MOCK);
-  //   });
-  // });
+    it('should return generic response', async () => {
+      const result = await tdApi.cancelOrder('TEST', 'TEST');
+
+      expect(result).toEqual(GENERIC_DATA_RESPONSE_MOCK);
+    });
+  });
 
   describe('openOrder', () => {
     it('should return an Error if orderRequest is invalid', async () => {

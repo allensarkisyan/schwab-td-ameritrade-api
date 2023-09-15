@@ -7,15 +7,7 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 exports.createTDAmeritradeAPIClient = exports.TDAmeritradeAPI = void 0;
 const index_js_1 = require('./schemas/index.js');
-const jsonToQueryString = (json) => {
-  const queryParams = [];
-  for (const [k, v] of Object.entries(json)) {
-    queryParams.push(`${encodeURIComponent(k)}=${encodeURIComponent(v)}`);
-  }
-  return queryParams.join('&');
-};
-const getDistinctArray = (arr, key) =>
-  arr.filter((i, idx) => arr.findIndex((x) => x[key] === i[key]) === idx);
+const utils_js_1 = require('./utils.js');
 const dataStore = {
   userAccessToken: '',
   accessTokenExpires: null,
@@ -99,32 +91,14 @@ class TDAmeritradeAPI {
       return await this.#externalRequestHandler(config);
     }
     try {
-      const query = config?.params
-        ? `?${new URLSearchParams(config?.params)}`
-        : '';
-      const url = new URL(
-        `${config.url}${query}`,
-        'https://api.tdameritrade.com',
-      );
-      const requestConfig = {
-        method: config?.method || 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          ...config?.headers,
-        },
-      };
-      if (config?.data) {
-        requestConfig.body =
-          typeof config.data === 'string'
-            ? config.data
-            : JSON.stringify(config.data);
-      }
+      const url = (0, utils_js_1.getRequestUrl)(config);
+      const fetchOptions = (0, utils_js_1.getFetchOptions)(config);
       if (isAuthorizationRequired && this.#userAccessToken) {
-        requestConfig.headers['Authorization'] = `Bearer ${
+        fetchOptions.headers['Authorization'] = `Bearer ${
           this.#userAccessToken
         }`;
       }
-      const response = await fetch(url, requestConfig);
+      const response = await fetch(url, fetchOptions);
       if (!response.ok) {
         throw new Error(
           `TDAmeritradeAPI#handleRequest Failed with Status Code: ${response.status}`,
@@ -150,29 +124,25 @@ class TDAmeritradeAPI {
     refreshToken = null,
     refreshTokenExpiresIn = null,
   ) => {
-    try {
-      if (accessToken) {
-        const now = Date.now();
-        this.#userAccessToken = accessToken;
-        dataStore.userAccessToken = accessToken;
-        if (isNewToken) {
-          dataStore.accessTokenExpires = new Date(now + 1800 * 1000).toJSON();
-        }
-        if (refreshToken && refreshTokenExpiresIn) {
-          dataStore.refreshToken = refreshToken;
-          dataStore.refreshTokenExpires = new Date(
-            now + refreshTokenExpiresIn * 1000,
-          ).toJSON();
-        }
-      } else {
-        this.#userAccessToken = null;
-        delete dataStore.userAccessToken;
-        delete dataStore.refreshToken;
-        delete dataStore.accessTokenExpires;
-        delete dataStore.refreshTokenExpires;
+    if (accessToken) {
+      const now = Date.now();
+      this.#userAccessToken = accessToken;
+      dataStore.userAccessToken = accessToken;
+      if (isNewToken) {
+        dataStore.accessTokenExpires = new Date(now + 1800 * 1000).toJSON();
       }
-    } catch (e) {
-      return;
+      if (refreshToken && refreshTokenExpiresIn) {
+        dataStore.refreshToken = refreshToken;
+        dataStore.refreshTokenExpires = new Date(
+          now + refreshTokenExpiresIn * 1000,
+        ).toJSON();
+      }
+    } else {
+      this.#userAccessToken = null;
+      delete dataStore.userAccessToken;
+      delete dataStore.refreshToken;
+      delete dataStore.accessTokenExpires;
+      delete dataStore.refreshTokenExpires;
     }
   };
   /**
@@ -189,7 +159,7 @@ class TDAmeritradeAPI {
           method: 'POST',
           url: '/v1/oauth2/token',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          data: jsonToQueryString({
+          data: (0, utils_js_1.jsonToQueryString)({
             code,
             client_id: this.#clientId,
             redirect_uri: this.#callbackUrl,
@@ -233,7 +203,7 @@ class TDAmeritradeAPI {
           method: 'POST',
           url: '/v1/oauth2/token',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          data: jsonToQueryString({
+          data: (0, utils_js_1.jsonToQueryString)({
             refresh_token,
             grant_type: 'refresh_token',
             client_id: this.#clientId,
@@ -471,15 +441,15 @@ class TDAmeritradeAPI {
       const downFlat = [...Object.keys(flat).map((k) => flat[k].down || [])]
         .flat()
         .sort((a, b) => (a.change > b.change ? 1 : -1));
-      const up = getDistinctArray(upFlat, 'symbol');
-      const down = getDistinctArray(downFlat, 'symbol');
+      const up = (0, utils_js_1.getDistinctArray)(upFlat, 'symbol');
+      const down = (0, utils_js_1.getDistinctArray)(downFlat, 'symbol');
       return {
         error: null,
         data: { up, down },
       };
     } catch (e) {
       return {
-        error: e.message,
+        error: e?.message || ERRORS.UNKNOWN_ERROR,
         data: null,
       };
     }

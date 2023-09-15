@@ -1093,6 +1093,20 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api/@types' {
     quantity: number;
   };
 }
+declare module '@allensarkisyan/schwab-td-ameritrade-api/utils' {
+  /**
+   * @author Allen Sarkisyan
+   * @copyright 2019 - 2023 XT-TX
+   * @license MIT Open Source License
+   */
+  import type { APIRequestConfig } from '@allensarkisyan/schwab-td-ameritrade-api/@types';
+  export const jsonToQueryString: <TObj extends object>(json: TObj) => string;
+  export const getDistinctArray: <TArr>(arr: TArr[], key: string) => TArr[];
+  export const getRequestUrl: (config: APIRequestConfig) => URL;
+  export const getFetchOptions: (
+    config: APIRequestConfig,
+  ) => Record<string, any>;
+}
 declare module '@allensarkisyan/schwab-td-ameritrade-api' {
   /**
    * @author Allen Sarkisyan
