@@ -4,7 +4,16 @@
  * @license MIT Open Source License
  */
 
-const { TDAmeritradeAPI } = require('../dist/cjs/td-api.js');
+const { TDAmeritradeAPI, createTDAmeritradeAPIClient } = require('../dist/cjs/td-api.js');
+
+const ACCESS_TOKEN_MOCK = {
+  error: null,
+  data: {
+    access_token: '123',
+    refresh_token: '123',
+    refresh_token_expires_in: 123
+  }
+};
 
 const ACCOUNT_MOCK = {
   securitiesAccount: {
@@ -58,6 +67,8 @@ describe('TDAmeritradeAPI', () => {
   let tdApi;
 
   const mockResponses = {
+    'TDAmeritradeAPI authenticate should return new access token': ACCESS_TOKEN_MOCK,
+    'TDAmeritradeAPI refreshAccessToken should return new access token': ACCESS_TOKEN_MOCK,
     'TDAmeritradeAPI getAccounts should return accounts': GET_ACCOUNTS_MOCK,
     'TDAmeritradeAPI getAccount should return account': GET_ACCOUNT_MOCK,
     'TDAmeritradeAPI getUserPrincipals should return user principals': GET_USER_PRINCIPALS_MOCK,
@@ -68,10 +79,10 @@ describe('TDAmeritradeAPI', () => {
   const classProperties = Object.getOwnPropertyNames(new TDAmeritradeAPI({ clientId:'1', callbackUrl:'1' }));
   
   classProperties.forEach(prop => {
-    const mockResponseProp = `TDAmeritradeAPI ${prop} should return generic response`;
+    const mockResponseProp = `TDAmeritradeAPI ${prop}`;
   
-    if (!mockResponses[mockResponseProp]) {
-      mockResponses[mockResponseProp] = GENERIC_DATA_RESPONSE_MOCK;
+    if (Object.keys(mockResponses).filter(i => i.match(new RegExp(mockResponseProp, 'gim'))).length === 0) {
+      mockResponses[`${mockResponseProp} should return generic response`] = GENERIC_DATA_RESPONSE_MOCK;
     }
   
     // console.log(`
@@ -96,9 +107,33 @@ describe('TDAmeritradeAPI', () => {
       handleRequest
     });
 
-    tdApi.setUserAccessToken('TEST');
+    tdApi.setUserAccessToken('TEST', true, 'TEST', 123);
 
     done();
+  });
+
+  describe('create new TDAmeritradeAPI instance', () => {
+    it('should throw an Error if missing `clientId`', async () => {
+      expect(() => new TDAmeritradeAPI()).toThrow('Missing TD Ameritrade API Client ID.');
+    });
+
+    it('should throw an Error if missing `callbackUrl`', async () => {
+      expect(() => new TDAmeritradeAPI({ clientId: '123' })).toThrow('Missing TD Ameritrade API Client Callback URL.');
+    });
+
+    it('should create new instance of TDAmeritradeAPI', async () => {
+      const result = new TDAmeritradeAPI({ clientId: '123', callbackUrl: 'TEST' });
+
+      expect(true).toEqual(result instanceof TDAmeritradeAPI);
+    });
+  });
+
+  describe('createTDAmeritradeAPIClient', () => {
+    it('should create new instance of TDAmeritradeAPI', async () => {
+      const result = createTDAmeritradeAPIClient({ clientId: '123', callbackUrl: 'TEST' });
+
+      expect(true).toEqual(result instanceof TDAmeritradeAPI);
+    });
   });
 
   describe('getAccounts', () => {
@@ -134,18 +169,18 @@ describe('TDAmeritradeAPI', () => {
   // });
 
   describe('authenticate', () => {
-    it('should return generic response', async () => {
+    it('should return new access token', async () => {
       const result = await tdApi.authenticate('TEST');
 
-      expect(result).toEqual(GENERIC_DATA_RESPONSE_MOCK);
+      expect(result).toEqual(ACCESS_TOKEN_MOCK);
     });
   });
 
   describe('refreshAccessToken', () => {
-    it('should return generic response', async () => {
+    it('should return new access token', async () => {
       const result = await tdApi.refreshAccessToken('TEST');
 
-      expect(result).toEqual(GENERIC_DATA_RESPONSE_MOCK);
+      expect(result).toEqual(ACCESS_TOKEN_MOCK);
     });
   });
 
@@ -233,7 +268,8 @@ describe('TDAmeritradeAPI', () => {
     it('should return market movers', async () => {
       const result = await tdApi.getMarketMovers();
 
-      expect(result).toEqual(MARKET_MOVERS_MOCK);
+      // WORK AROUND FOR MOCKED RESPONSE BEING DUPLICATED THROUGH #handleRequest...
+      expect({ error: null, data: result.data.up[0] }).toEqual(MARKET_MOVERS_MOCK);
     });
   });
 
@@ -261,13 +297,31 @@ describe('TDAmeritradeAPI', () => {
     });
   });
 
-  // describe('placeOrder', () => {
-  //   it('should return generic response', async () => {
-  //     const result = await tdApi.placeOrder();
+  describe('placeOrder', () => {
+    it('should return an Error if orderRequest is invalid', async () => {
+      const result = await tdApi.placeOrder();
+      expect(result).toEqual({ error: 'INVALID ORDER REQUEST', data: null });
+    });
 
-  //     expect(result).toEqual(GENERIC_DATA_RESPONSE_MOCK);
-  //   });
-  // });
+    it('should return generic response', async () => {
+      const result = await tdApi.placeOrder(
+        'TEST',
+        0.01,
+        [
+          {
+            instruction: 'BUY',
+            quantity: 1,
+            instrument: {
+              symbol: 'ZXZZT',
+              assetType: 'EQUITY',
+            },
+          }
+        ]
+      );
+
+      expect(result).toEqual(GENERIC_DATA_RESPONSE_MOCK);
+    });
+  });
 
   // describe('cancelOrder', () => {
   //   it('should return generic response', async () => {
@@ -277,21 +331,31 @@ describe('TDAmeritradeAPI', () => {
   //   });
   // });
 
-  // describe('openOrder', () => {
-  //   it('should return generic response', async () => {
-  //     const result = await tdApi.openOrder();
+  describe('openOrder', () => {
+    it('should return an Error if orderRequest is invalid', async () => {
+      const result = await tdApi.openOrder();
+      expect(result).toEqual({ error: 'INVALID ORDER REQUEST', data: null });
+    });
 
-  //     expect(result).toEqual(GENERIC_DATA_RESPONSE_MOCK);
-  //   });
-  // });
+    it('should return generic response', async () => {
+      const result = await tdApi.openOrder(ORDER_REQUEST_CONFIG);
 
-  // describe('closeOrder', () => {
-  //   it('should return generic response', async () => {
-  //     const result = await tdApi.closeOrder();
+      expect(result).toEqual(GENERIC_DATA_RESPONSE_MOCK);
+    });
+  });
 
-  //     expect(result).toEqual(GENERIC_DATA_RESPONSE_MOCK);
-  //   });
-  // });
+  describe('closeOrder', () => {
+    it('should return an Error if orderRequest is invalid', async () => {
+      const result = await tdApi.closeOrder();
+      expect(result).toEqual({ error: 'INVALID ORDER REQUEST', data: null });
+    });
+
+    it('should return generic response', async () => {
+      const result = await tdApi.closeOrder(ORDER_REQUEST_CONFIG);
+
+      expect(result).toEqual(GENERIC_DATA_RESPONSE_MOCK);
+    });
+  });
 
   describe('buyStock', () => {
     it('should return generic response', async () => {

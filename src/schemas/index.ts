@@ -9,6 +9,7 @@ import { z } from 'zod';
 import type {
   TickerSymbol,
   TDAmeritradeAccountID,
+  TDAmeritradeOrderLeg,
 } from '../@types/index.js';
 
 export const OrderRequestSchema = <z.ZodSchema<{
@@ -21,4 +22,21 @@ export const OrderRequestSchema = <z.ZodSchema<{
   symbol: z.string().toUpperCase(),
   quantity: z.number().min(1).default(1),
   price: z.number().min(0.01)
+});
+
+export const PlaceOrderSchema = <z.ZodSchema<{
+  accountId: TDAmeritradeAccountID,
+  price: number,
+  orderLegCollection: TDAmeritradeOrderLeg[]
+}>>z.object({
+  accountId: z.string(),
+  price: z.number().min(0.01),
+  orderLegCollection: z.array(z.object({
+    instruction: z.string(),
+    quantity: z.number().min(1).default(1),
+    instrument: z.object({
+      symbol: z.string().toUpperCase(),
+      assetType: z.string(),
+    })
+  }))
 });

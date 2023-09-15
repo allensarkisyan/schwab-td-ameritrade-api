@@ -28,6 +28,11 @@ const LIMIT_ORDER_TEMPLATE = {
   duration: 'GOOD_TILL_CANCEL',
   orderStrategyType: 'SINGLE',
 };
+const ERRORS = {
+  UNKNOWN_ERROR: 'AN UNKNOWN ERROR HAS OCCURRED.',
+  ACCESS_TOKEN: 'ACCESS TOKEN NOT AVAILABLE',
+  INVALID_ORDER_REQUEST: 'INVALID ORDER REQUEST',
+};
 /**
  * Represents the TDAmeritradeAPI class for handling requests.
  * @module TDAmeritradeAPI
@@ -127,7 +132,7 @@ class TDAmeritradeAPI {
       }
       data = await response.json();
     } catch (e) {
-      error = e?.message || 'AN UNKNOWN ERROR HAS OCCURRED.';
+      error = e?.message || ERRORS.UNKNOWN_ERROR;
     } finally {
       return { error, data };
     }
@@ -179,11 +184,6 @@ class TDAmeritradeAPI {
     let data = null;
     let error = null;
     try {
-      if (!this.#clientId || !this.#callbackUrl) {
-        throw new Error(
-          'Missing TD Ameritrade API Client ID / Client Callback URL',
-        );
-      }
       const { error, data: authResponseData } = await this.#handleRequest(
         {
           method: 'POST',
@@ -203,7 +203,7 @@ class TDAmeritradeAPI {
         throw new Error(error);
       }
       if (!authResponseData || !authResponseData.access_token) {
-        throw new Error('ACCESS TOKEN NOT AVAILABLE');
+        throw new Error(ERRORS.ACCESS_TOKEN);
       }
       this.setUserAccessToken(
         authResponseData.access_token,
@@ -214,7 +214,7 @@ class TDAmeritradeAPI {
       data = authResponseData;
     } catch (e) {
       console.log('TDAmeritradeAPI authenticate Error', e);
-      error = e?.message || 'AN UNKNOWN ERROR HAS OCCURRED.';
+      error = e?.message || ERRORS.UNKNOWN_ERROR;
     } finally {
       return { error, data };
     }
@@ -228,11 +228,6 @@ class TDAmeritradeAPI {
     let data = null;
     let error = null;
     try {
-      if (!this.#clientId) {
-        throw new Error(
-          'Missing TD Ameritrade API Client ID / Client Callback URL',
-        );
-      }
       const { error, data: refreshTokenData } = await this.#handleRequest(
         {
           method: 'POST',
@@ -250,13 +245,13 @@ class TDAmeritradeAPI {
         throw new Error(error);
       }
       if (!refreshTokenData || !refreshTokenData.access_token) {
-        throw new Error('ACCESS TOKEN NOT AVAILABLE');
+        throw new Error(ERRORS.ACCESS_TOKEN);
       }
       this.setUserAccessToken(refreshTokenData?.access_token);
       data = refreshTokenData;
     } catch (e) {
       console.log('TDAmeritradeAPI refreshAccessToken Error', e);
-      error = e?.message || 'AN UNKNOWN ERROR HAS OCCURRED.';
+      error = e?.message || ERRORS.UNKNOWN_ERROR;
     } finally {
       return { error, data };
     }
@@ -534,16 +529,32 @@ class TDAmeritradeAPI {
    * @param {TDAmeritradeOrderLeg[]} orderLegCollection - Order Leg Collection
    * @returns {Promise<APIResponse<any>>}
    */
-  placeOrder = async (accountId, price, orderLegCollection) =>
-    await this.#handleRequest({
-      method: 'POST',
-      url: `/v1/accounts/${accountId}/orders`,
-      data: {
-        ...LIMIT_ORDER_TEMPLATE,
+  placeOrder = async (accountId, price, orderLegCollection) => {
+    try {
+      const { success } = index_js_1.PlaceOrderSchema.safeParse({
+        accountId,
         price,
         orderLegCollection,
-      },
-    });
+      });
+      if (!success) {
+        throw new Error(ERRORS.INVALID_ORDER_REQUEST);
+      }
+      return await this.#handleRequest({
+        method: 'POST',
+        url: `/v1/accounts/${accountId}/orders`,
+        data: {
+          ...LIMIT_ORDER_TEMPLATE,
+          price,
+          orderLegCollection,
+        },
+      });
+    } catch (e) {
+      return {
+        error: e?.message || ERRORS.UNKNOWN_ERROR,
+        data: null,
+      };
+    }
+  };
   /**
    * Cancel an Order
    * @param {TDAmeritradeAccountID} accountId - TD Ameritrade Account ID
@@ -569,7 +580,10 @@ class TDAmeritradeAPI {
   openOrder = async (orderRequest, isOption = false, isShort = false) => {
     const { success } = index_js_1.OrderRequestSchema.safeParse(orderRequest);
     if (!success) {
-      throw new Error('Invalid Order Request');
+      return {
+        error: ERRORS.INVALID_ORDER_REQUEST,
+        data: null,
+      };
     }
     return await this.placeOrder(orderRequest.accountId, orderRequest.price, [
       {
@@ -602,7 +616,10 @@ class TDAmeritradeAPI {
   closeOrder = async (orderRequest, isOption = false, isShort = false) => {
     const { success } = index_js_1.OrderRequestSchema.safeParse(orderRequest);
     if (!success) {
-      throw new Error('Invalid Order Request');
+      return {
+        error: ERRORS.INVALID_ORDER_REQUEST,
+        data: null,
+      };
     }
     return await this.placeOrder(orderRequest.accountId, orderRequest.price, [
       {

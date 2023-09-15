@@ -5,7 +5,11 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api/schemas' {
    * @license MIT Open Source License
    */
   import { z } from 'zod';
-  import type { TickerSymbol, TDAmeritradeAccountID } from '@allensarkisyan/schwab-td-ameritrade-api/@types';
+  import type {
+    TickerSymbol,
+    TDAmeritradeAccountID,
+    TDAmeritradeOrderLeg,
+  } from '@allensarkisyan/schwab-td-ameritrade-api/@types';
   export const OrderRequestSchema: z.ZodType<
     {
       accountId: TDAmeritradeAccountID;
@@ -19,6 +23,19 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api/schemas' {
       symbol: TickerSymbol;
       quantity: number;
       price: number;
+    }
+  >;
+  export const PlaceOrderSchema: z.ZodType<
+    {
+      accountId: TDAmeritradeAccountID;
+      price: number;
+      orderLegCollection: TDAmeritradeOrderLeg[];
+    },
+    z.ZodTypeDef,
+    {
+      accountId: TDAmeritradeAccountID;
+      price: number;
+      orderLegCollection: TDAmeritradeOrderLeg[];
     }
   >;
 }

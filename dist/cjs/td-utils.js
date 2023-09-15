@@ -125,7 +125,7 @@ function groupByInstrument(trades) {
   return trades?.reduce((a, b) => {
     if (b?.transactionItem?.instrument?.assetType === 'OPTION') {
       if (!b?.transactionItem?.instrument?.underlyingSymbol) {
-        return a;
+        return b;
       }
       a[b?.transactionItem?.instrument?.underlyingSymbol] = [
         ...(a[b?.transactionItem?.instrument?.underlyingSymbol] || []),
