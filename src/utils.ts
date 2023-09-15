@@ -6,6 +6,7 @@
 
 import type {
   APIRequestConfig,
+  LocalMemoryAuthDataStore,
 } from './@types/index.js';
 
 export const jsonToQueryString = <TObj extends object>(json: TObj): string => {
@@ -45,4 +46,29 @@ export const getFetchOptions = (config: APIRequestConfig) => {
   }
 
   return requestConfig;
+}
+
+export const getAccessTokenExpirationDetails = (dataStore: LocalMemoryAuthDataStore): {
+  now: number,
+  isAccessTokenExpired: boolean,
+  isRefreshTokenExpired: boolean
+} => {
+  const now: number = Date.now();
+  let isAccessTokenExpired: boolean = false;
+  let isRefreshTokenExpired: boolean = false;
+
+  if (dataStore?.accessTokenExpires && dataStore?.refreshTokenExpires) {
+    const fiveMinsFromNow = (now + ((60_000) * 5));
+    const accessTokenExpiresDt = new Date(dataStore.accessTokenExpires).getTime();
+    const refreshTokenExpiresDt = new Date(dataStore.refreshTokenExpires).getTime();
+  
+    isAccessTokenExpired = fiveMinsFromNow > accessTokenExpiresDt;
+    isRefreshTokenExpired = fiveMinsFromNow > refreshTokenExpiresDt;
+  }
+
+  return {
+    now,
+    isAccessTokenExpired,
+    isRefreshTokenExpired,
+  };
 }

@@ -1099,13 +1099,23 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api/utils' {
    * @copyright 2019 - 2023 XT-TX
    * @license MIT Open Source License
    */
-  import type { APIRequestConfig } from '@allensarkisyan/schwab-td-ameritrade-api/@types';
+  import type {
+    APIRequestConfig,
+    LocalMemoryAuthDataStore,
+  } from '@allensarkisyan/schwab-td-ameritrade-api/@types';
   export const jsonToQueryString: <TObj extends object>(json: TObj) => string;
   export const getDistinctArray: <TArr>(arr: TArr[], key: string) => TArr[];
   export const getRequestUrl: (config: APIRequestConfig) => URL;
   export const getFetchOptions: (
     config: APIRequestConfig,
   ) => Record<string, any>;
+  export const getAccessTokenExpirationDetails: (
+    dataStore: LocalMemoryAuthDataStore,
+  ) => {
+    now: number;
+    isAccessTokenExpired: boolean;
+    isRefreshTokenExpired: boolean;
+  };
 }
 declare module '@allensarkisyan/schwab-td-ameritrade-api' {
   /**
@@ -1157,6 +1167,8 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
      * @param {function | null} [config.handleRequest=null] - An optional request handler function.
      */
     constructor(config?: APIClientConfig);
+    accessTokenExpirationMonitor: () => Promise<void>;
+    startAccessTokenExpirationMonitor: () => void;
     /**
      * Set User Access Token / Refresh Token
      * @param {string} accessToken - Access Token

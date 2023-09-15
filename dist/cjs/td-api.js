@@ -25,6 +25,7 @@ const ERRORS = {
   ACCESS_TOKEN: 'ACCESS TOKEN NOT AVAILABLE',
   INVALID_ORDER_REQUEST: 'INVALID ORDER REQUEST',
 };
+let refreshTokenInterval = null;
 /**
  * Represents the TDAmeritradeAPI class for handling requests.
  * @module TDAmeritradeAPI
@@ -49,6 +50,12 @@ class TDAmeritradeAPI {
    * @type {string | null}
    */
   #userAccessToken;
+  /**
+   * is Refreshing Access Token
+   * @private
+   * @type {boolean | null}
+   */
+  #isRefreshingAccessToken;
   /**
    * External request handler function.
    * @private
@@ -94,6 +101,7 @@ class TDAmeritradeAPI {
       const url = (0, utils_js_1.getRequestUrl)(config);
       const fetchOptions = (0, utils_js_1.getFetchOptions)(config);
       if (isAuthorizationRequired && this.#userAccessToken) {
+        await this.accessTokenExpirationMonitor();
         fetchOptions.headers['Authorization'] = `Bearer ${
           this.#userAccessToken
         }`;
@@ -110,6 +118,66 @@ class TDAmeritradeAPI {
     } finally {
       return { error, data };
     }
+  };
+  accessTokenExpirationMonitor = async () => {
+    if (this.#isRefreshingAccessToken) {
+      return;
+    }
+    try {
+      if (
+        !dataStore.userAccessToken ||
+        !dataStore.accessTokenExpires ||
+        !dataStore.refreshToken ||
+        !dataStore.refreshTokenExpires
+      ) {
+        return;
+      }
+      const { now, isAccessTokenExpired, isRefreshTokenExpired } = (0,
+      utils_js_1.getAccessTokenExpirationDetails)(dataStore);
+      if (isRefreshTokenExpired) {
+        // TODO: FORCE LOG OUT
+        console.log('REFRESH TOKEN EXPIRED FORCE LOG OUT');
+        return;
+      }
+      console.log(
+        'ACCESS TOKEN EXPIRES',
+        dataStore.accessTokenExpires,
+        isAccessTokenExpired,
+      );
+      if (isAccessTokenExpired && !this.#isRefreshingAccessToken) {
+        console.log('ACCESS TOKEN REFRESH');
+        const { data: authResponse } = await this.refreshAccessToken(
+          dataStore.refreshToken,
+        );
+        if (!authResponse?.access_token) {
+          return;
+        }
+        console.log(
+          'ACCESS TOKEN REFRESH authResponse.scope',
+          authResponse?.scope,
+        );
+        dataStore.accessTokenExpires = new Date(
+          now + authResponse?.expires_in * 1000,
+        ).toJSON();
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  startAccessTokenExpirationMonitor = () => {
+    if (
+      refreshTokenInterval ||
+      !dataStore.userAccessToken ||
+      !dataStore.accessTokenExpires ||
+      !dataStore.refreshToken ||
+      !dataStore.refreshTokenExpires
+    ) {
+      return;
+    }
+    refreshTokenInterval = setInterval(
+      () => this.accessTokenExpirationMonitor(),
+      60_000,
+    );
   };
   /**
    * Set User Access Token / Refresh Token
@@ -198,6 +266,7 @@ class TDAmeritradeAPI {
     let data = null;
     let error = null;
     try {
+      this.#isRefreshingAccessToken = true;
       const { error, data: refreshTokenData } = await this.#handleRequest(
         {
           method: 'POST',
@@ -223,6 +292,7 @@ class TDAmeritradeAPI {
       console.log('TDAmeritradeAPI refreshAccessToken Error', e);
       error = e?.message || ERRORS.UNKNOWN_ERROR;
     } finally {
+      this.#isRefreshingAccessToken = false;
       return { error, data };
     }
   };

@@ -5,7 +5,8 @@
  * @license MIT Open Source License
  */
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.getFetchOptions =
+exports.getAccessTokenExpirationDetails =
+  exports.getFetchOptions =
   exports.getRequestUrl =
   exports.getDistinctArray =
   exports.jsonToQueryString =
@@ -47,3 +48,25 @@ const getFetchOptions = (config) => {
   return requestConfig;
 };
 exports.getFetchOptions = getFetchOptions;
+const getAccessTokenExpirationDetails = (dataStore) => {
+  const now = Date.now();
+  let isAccessTokenExpired = false;
+  let isRefreshTokenExpired = false;
+  if (dataStore?.accessTokenExpires && dataStore?.refreshTokenExpires) {
+    const fiveMinsFromNow = now + 60_000 * 5;
+    const accessTokenExpiresDt = new Date(
+      dataStore.accessTokenExpires,
+    ).getTime();
+    const refreshTokenExpiresDt = new Date(
+      dataStore.refreshTokenExpires,
+    ).getTime();
+    isAccessTokenExpired = fiveMinsFromNow > accessTokenExpiresDt;
+    isRefreshTokenExpired = fiveMinsFromNow > refreshTokenExpiresDt;
+  }
+  return {
+    now,
+    isAccessTokenExpired,
+    isRefreshTokenExpired,
+  };
+};
+exports.getAccessTokenExpirationDetails = getAccessTokenExpirationDetails;

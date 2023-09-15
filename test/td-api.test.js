@@ -12,6 +12,7 @@ const {
 const {
   getRequestUrl,
   getFetchOptions,
+  getAccessTokenExpirationDetails,
 } = require('../dist/cjs/utils.js');
 
 const ACCESS_TOKEN_MOCK = {
@@ -220,6 +221,33 @@ describe('TDAmeritradeAPI', () => {
           'Content-Type': 'application/json'
         },
         body: 'symbol=ZXZZT'
+      });
+    });
+
+    it('getAccessTokenExpirationDetails should handle expired access tokens', async () => {
+      const dataStore = {
+        userAccessToken: 'TEST',
+        accessTokenExpires: new Date().toJSON(),
+        refreshToken: 'TEST',
+        refreshTokenExpires: new Date().toJSON(),
+      };
+
+      const result = getAccessTokenExpirationDetails(dataStore);
+
+      expect(result).toEqual({
+        now: result.now,
+        isAccessTokenExpired: true,
+        isRefreshTokenExpired: true,
+      });
+    });
+
+    it('getAccessTokenExpirationDetails should return default response', async () => {
+      const result = getAccessTokenExpirationDetails();
+
+      expect(result).toEqual({
+        now: result.now,
+        isAccessTokenExpired: false,
+        isRefreshTokenExpired: false,
       });
     });
   });

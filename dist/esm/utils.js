@@ -36,3 +36,24 @@ export const getFetchOptions = (config) => {
   }
   return requestConfig;
 };
+export const getAccessTokenExpirationDetails = (dataStore) => {
+  const now = Date.now();
+  let isAccessTokenExpired = false;
+  let isRefreshTokenExpired = false;
+  if (dataStore?.accessTokenExpires && dataStore?.refreshTokenExpires) {
+    const fiveMinsFromNow = now + 60_000 * 5;
+    const accessTokenExpiresDt = new Date(
+      dataStore.accessTokenExpires,
+    ).getTime();
+    const refreshTokenExpiresDt = new Date(
+      dataStore.refreshTokenExpires,
+    ).getTime();
+    isAccessTokenExpired = fiveMinsFromNow > accessTokenExpiresDt;
+    isRefreshTokenExpired = fiveMinsFromNow > refreshTokenExpiresDt;
+  }
+  return {
+    now,
+    isAccessTokenExpired,
+    isRefreshTokenExpired,
+  };
+};
