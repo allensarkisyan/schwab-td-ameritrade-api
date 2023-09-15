@@ -233,7 +233,7 @@ describe('TDAmeritradeAPI', () => {
     it('should return market movers', async () => {
       const result = await tdApi.getMarketMovers();
 
-      expect(result).toEqual(GENERIC_DATA_RESPONSE_MOCK);
+      expect(result).toEqual(MARKET_MOVERS_MOCK);
     });
   });
 
