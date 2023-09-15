@@ -1132,6 +1132,7 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
     CUSIP,
     TDAmeritradeAccountID,
     TDAmeritradeOrderLeg,
+    LocalMemoryAuthDataStore,
     QuoteData,
     FundamentalData,
     PriceHistory,
@@ -1171,17 +1172,14 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
     startAccessTokenExpirationMonitor: () => void;
     /**
      * Set User Access Token / Refresh Token
-     * @param {string} accessToken - Access Token
-     * @param {boolean} isNewToken - Is New Access Token
-     * @param {string} [refreshToken] - Refresh Token
-     * @param {number | null} [refreshTokenExpiresIn] - Refresh Token Expires in
+     * @param {LocalMemoryAuthDataStore} credentials - Credentials Data Store
+     * @param {string} [credentials.userAccessToken] - Access Token
+     * @param {DateLikeNullable} [credentials.accessTokenExpires] - Is New Access Token
+     * @param {string} [credentials.refreshToken] - Refresh Token
+     * @param {DateLikeNullable} [credentials.refreshTokenExpiresIn] - Refresh Token Expires in
+     * @returns {void}
      */
-    setUserAccessToken: (
-      accessToken: string,
-      isNewToken?: boolean,
-      refreshToken?: string | null,
-      refreshTokenExpiresIn?: number | null,
-    ) => void;
+    setUserAccessToken: (credentials: LocalMemoryAuthDataStore) => void;
     /**
      * Authenticate with the TD Ameritrade OAuth2 Authorization endpoint
      * @param {string} code - Authorization Resonse Code from TD Ameritrade Authentication API

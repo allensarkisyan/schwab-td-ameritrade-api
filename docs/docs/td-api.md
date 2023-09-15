@@ -212,7 +212,7 @@
     * [new TDAmeritradeAPI()](#new_TDAmeritradeAPI_new)
     * [.TDAmeritradeAPI](#TDAmeritradeAPI+TDAmeritradeAPI)
         * [new exports.TDAmeritradeAPI([config])](#new_TDAmeritradeAPI+TDAmeritradeAPI_new)
-    * [.setUserAccessToken](#TDAmeritradeAPI+setUserAccessToken)
+    * [.setUserAccessToken](#TDAmeritradeAPI+setUserAccessToken) ⇒ <code>void</code>
     * [.authenticate](#TDAmeritradeAPI+authenticate) ⇒ <code>Promise.&lt;APIResponse.&lt;(AuthenticationResponse\|null)&gt;&gt;</code>
     * [.refreshAccessToken](#TDAmeritradeAPI+refreshAccessToken) ⇒ <code>Promise.&lt;APIResponse.&lt;(RefreshTokenResponse\|null)&gt;&gt;</code>
     * [.getAccounts](#TDAmeritradeAPI+getAccounts) ⇒ <code>Promise.&lt;APIResponse.&lt;TDAmeritradeAccounts&gt;&gt;</code>
@@ -269,17 +269,18 @@ Creates an instance of TDAmeritradeAPI.
 
 <a name="TDAmeritradeAPI+setUserAccessToken"></a>
 
-### tdAmeritradeAPI.setUserAccessToken
+### tdAmeritradeAPI.setUserAccessToken ⇒ <code>void</code>
 Set User Access Token / Refresh Token
 
 **Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| accessToken | <code>string</code> | Access Token |
-| isNewToken | <code>boolean</code> | Is New Access Token |
-| [refreshToken] | <code>string</code> | Refresh Token |
-| [refreshTokenExpiresIn] | <code>number</code> \| <code>null</code> | Refresh Token Expires in |
+| credentials | <code>LocalMemoryAuthDataStore</code> | Credentials Data Store |
+| [credentials.userAccessToken] | <code>string</code> | Access Token |
+| [credentials.accessTokenExpires] | [<code>DateLikeNullable</code>](#DateLikeNullable) | Is New Access Token |
+| [credentials.refreshToken] | <code>string</code> | Refresh Token |
+| [credentials.refreshTokenExpiresIn] | [<code>DateLikeNullable</code>](#DateLikeNullable) | Refresh Token Expires in |
 
 <a name="TDAmeritradeAPI+authenticate"></a>
 

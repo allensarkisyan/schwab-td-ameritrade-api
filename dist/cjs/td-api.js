@@ -181,36 +181,39 @@ class TDAmeritradeAPI {
   };
   /**
    * Set User Access Token / Refresh Token
-   * @param {string} accessToken - Access Token
-   * @param {boolean} isNewToken - Is New Access Token
-   * @param {string} [refreshToken] - Refresh Token
-   * @param {number | null} [refreshTokenExpiresIn] - Refresh Token Expires in
+   * @param {LocalMemoryAuthDataStore} credentials - Credentials Data Store
+   * @param {string} [credentials.userAccessToken] - Access Token
+   * @param {DateLikeNullable} [credentials.accessTokenExpires] - Is New Access Token
+   * @param {string} [credentials.refreshToken] - Refresh Token
+   * @param {DateLikeNullable} [credentials.refreshTokenExpiresIn] - Refresh Token Expires in
+   * @returns {void}
    */
-  setUserAccessToken = (
-    accessToken,
-    isNewToken = false,
-    refreshToken = null,
-    refreshTokenExpiresIn = null,
-  ) => {
-    if (accessToken) {
+  setUserAccessToken = (credentials) => {
+    if (credentials?.userAccessToken) {
       const now = Date.now();
-      this.#userAccessToken = accessToken;
-      dataStore.userAccessToken = accessToken;
-      if (isNewToken) {
+      this.#userAccessToken = credentials.userAccessToken;
+      dataStore.userAccessToken = credentials.userAccessToken;
+      if (credentials?.accessTokenExpires) {
+        dataStore.accessTokenExpires =
+          typeof credentials.accessTokenExpires === 'number'
+            ? new Date(now + credentials.accessTokenExpires * 1000).toJSON()
+            : credentials.accessTokenExpires;
+      } else {
         dataStore.accessTokenExpires = new Date(now + 1800 * 1000).toJSON();
       }
-      if (refreshToken && refreshTokenExpiresIn) {
-        dataStore.refreshToken = refreshToken;
-        dataStore.refreshTokenExpires = new Date(
-          now + refreshTokenExpiresIn * 1000,
-        ).toJSON();
+      if (credentials.refreshToken && credentials.refreshTokenExpires) {
+        dataStore.refreshToken = credentials.refreshToken;
+        dataStore.refreshTokenExpires =
+          typeof credentials.refreshTokenExpires === 'number'
+            ? new Date(now + credentials.refreshTokenExpires * 1000).toJSON()
+            : new Date(credentials.refreshTokenExpires).toJSON();
       }
     } else {
       this.#userAccessToken = null;
-      delete dataStore.userAccessToken;
-      delete dataStore.refreshToken;
-      delete dataStore.accessTokenExpires;
-      delete dataStore.refreshTokenExpires;
+      dataStore.userAccessToken = undefined;
+      dataStore.refreshToken = undefined;
+      dataStore.accessTokenExpires = undefined;
+      dataStore.refreshTokenExpires = undefined;
     }
   };
   /**
@@ -243,12 +246,12 @@ class TDAmeritradeAPI {
       if (!authResponseData || !authResponseData.access_token) {
         throw new Error(ERRORS.ACCESS_TOKEN);
       }
-      this.setUserAccessToken(
-        authResponseData.access_token,
-        true,
-        authResponseData.refresh_token,
-        authResponseData.refresh_token_expires_in,
-      );
+      this.setUserAccessToken({
+        userAccessToken: authResponseData.access_token,
+        accessTokenExpires: authResponseData.expires_in,
+        refreshToken: authResponseData.refresh_token,
+        refreshTokenExpires: authResponseData.refresh_token_expires_in,
+      });
       data = authResponseData;
     } catch (e) {
       console.log('TDAmeritradeAPI authenticate Error', e);
@@ -286,7 +289,10 @@ class TDAmeritradeAPI {
       if (!refreshTokenData || !refreshTokenData.access_token) {
         throw new Error(ERRORS.ACCESS_TOKEN);
       }
-      this.setUserAccessToken(refreshTokenData?.access_token);
+      this.setUserAccessToken({
+        userAccessToken: refreshTokenData?.access_token,
+        accessTokenExpires: refreshTokenData?.expires_in,
+      });
       data = refreshTokenData;
     } catch (e) {
       console.log('TDAmeritradeAPI refreshAccessToken Error', e);

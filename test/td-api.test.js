@@ -117,7 +117,12 @@ describe('TDAmeritradeAPI', () => {
       handleRequest
     });
 
-    tdApi.setUserAccessToken('TEST', true, 'TEST', 123);
+    tdApi.setUserAccessToken({
+      userAccessToken: 'TEST',
+      accessTokenExpires: 123,
+      refreshToken: 'TEST',
+      refreshTokenExpires: 123
+    });
 
     done();
   });
@@ -290,7 +295,7 @@ describe('TDAmeritradeAPI', () => {
     });
 
     it('should return generic response', async () => {
-      const result = tdApi.setUserAccessToken('TEST');
+      const result = tdApi.setUserAccessToken({ userAccessToken: 'TEST' });
 
       expect(result).toBe(undefined);
     });

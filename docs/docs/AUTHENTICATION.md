@@ -18,15 +18,19 @@ const { data: authResponse } = await tdApi.authenticate(authorizationResponseCod
 ## Setting Access Token Externally
 ```javascript
 const USER_ACCESS_TOKEN = authResponse?.access_token;
+const REFRESH_TOKEN = authResponse?.refresh_token;
 
 // Set User Access Token externally 
-tdApi.setUserAccessToken(USER_ACCESS_TOKEN);
+tdApi.setUserAccessToken({
+  userAccessToken: USER_ACCESS_TOKEN,
+  accessTokenExpires: authResponse?.expires_in,
+  refreshToken: REFRESH_TOKEN,
+  refreshTokenExpires: authResponse?.refresh_token_expires_in,
+});
 ```
 
 ## Periodically Refresh Access Token.
 ```javascript
-const REFRESH_TOKEN = authResponse?.refresh_token;
-
 // Set User Access Token externally 
 const { data: refreshTokenResponse } = tdApi.refreshAcccessToken(REFRESH_TOKEN);
 ```
