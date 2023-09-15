@@ -36,7 +36,7 @@
     "build:esm": "tsc --project tsconfig.json --module esnext --outDir ./dist/esm",
     "build:cjs": "tsc --project tsconfig.json --module commonjs --outDir ./dist/cjs",
     "build": "npm run build:types && npm run build:esm && npm run build:cjs && cd dist && prettier . --write",
-    "test": "jest --verbose"
+    "test": "jest --verbose --coverage"
   },
   "dependencies": {
     "zod": "3.22.2"
