@@ -512,9 +512,24 @@
  */
 
 /**
+ * Represents an account with its preferences and authorizations.
+ * @typedef {Object} UserPrincipalAccount
+ * @property {string} accountId - Account ID.
+ * @property {string} displayName - The display name of the account.
+ * @property {string} accountCdDomainId - The domain ID for the account.
+ * @property {string} company - The company associated with the account.
+ * @property {string} segment - The account segment.
+ * @property {Object.<string, string>} surrogateIds - Surrogate IDs for the account.
+ * @property {Object.<string, boolean>} preferences - Account preferences.
+ * @property {string} acl - Access control list for the account.
+ * @property {Object.<string, boolean>} authorizations - Account authorizations.
+ */
+
+/**
  * Represents principal data.
  * @typedef {Object} UserPrincipalsData
  * @property {string} accessLevel - The access level of the principal.
+ * @property {UserPrincipalAccount[]} accounts - Accounts
  * @property {Object} exchangeAgreements - Exchange agreements status.
  * @property {AcceptedOrRejected} exchangeAgreements.NASDAQ_EXCHANGE_AGREEMENT - NASDAQ exchange agreement status.
  * @property {AcceptedOrRejected} exchangeAgreements.NYSE_EXCHANGE_AGREEMENT - NYSE exchange agreement status.

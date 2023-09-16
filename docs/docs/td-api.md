@@ -172,6 +172,9 @@
 <dt><a href="#StreamerInfo">StreamerInfo</a> : <code>Object</code></dt>
 <dd><p>Represents streamer information.</p>
 </dd>
+<dt><a href="#UserPrincipalAccount">UserPrincipalAccount</a> : <code>Object</code></dt>
+<dd><p>Represents an account with its preferences and authorizations.</p>
+</dd>
 <dt><a href="#UserPrincipalsData">UserPrincipalsData</a> : <code>Object</code></dt>
 <dd><p>Represents principal data.</p>
 </dd>
@@ -212,6 +215,8 @@
     * [new TDAmeritradeAPI()](#new_TDAmeritradeAPI_new)
     * [.TDAmeritradeAPI](#TDAmeritradeAPI+TDAmeritradeAPI)
         * [new exports.TDAmeritradeAPI([config])](#new_TDAmeritradeAPI+TDAmeritradeAPI_new)
+    * [.accessTokenExpirationMonitor](#TDAmeritradeAPI+accessTokenExpirationMonitor) ⇒ <code>function</code>
+    * [.startAccessTokenExpirationMonitor](#TDAmeritradeAPI+startAccessTokenExpirationMonitor)
     * [.setUserAccessToken](#TDAmeritradeAPI+setUserAccessToken) ⇒ <code>void</code>
     * [.authenticate](#TDAmeritradeAPI+authenticate) ⇒ <code>Promise.&lt;APIResponse.&lt;(AuthenticationResponse\|null)&gt;&gt;</code>
     * [.refreshAccessToken](#TDAmeritradeAPI+refreshAccessToken) ⇒ <code>Promise.&lt;APIResponse.&lt;(RefreshTokenResponse\|null)&gt;&gt;</code>
@@ -266,6 +271,28 @@ Creates an instance of TDAmeritradeAPI.
 | [config.clientId] | <code>string</code> |  | TD Amertitrade Client ID - defaults to TD_AMERITRADE_CLIENT_ID environment variable. |
 | [config.callbackUrl] | <code>string</code> |  | Callback URL - defaults to TD_AMERITRADE_CALLBACK_URL environment variable. |
 | [config.handleRequest] | <code>function</code> \| <code>null</code> | <code></code> | An optional request handler function. |
+
+<a name="TDAmeritradeAPI+accessTokenExpirationMonitor"></a>
+
+### tdAmeritradeAPI.accessTokenExpirationMonitor ⇒ <code>function</code>
+Internal Access Token Expiration Monitor / refresh token timer
+
+**Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| cb | <code>function</code> | Callback function to call on every check |
+
+<a name="TDAmeritradeAPI+startAccessTokenExpirationMonitor"></a>
+
+### tdAmeritradeAPI.startAccessTokenExpirationMonitor
+Access Token Expiration Monitor / refresh token timer
+
+**Kind**: instance property of [<code>TDAmeritradeAPI</code>](#TDAmeritradeAPI)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| cb | <code>function</code> | Callback function to call on every check |
 
 <a name="TDAmeritradeAPI+setUserAccessToken"></a>
 
@@ -1554,6 +1581,26 @@ Represents streamer information.
 | tokenTimestamp | [<code>DateLikeNullable</code>](#DateLikeNullable) | The timestamp of the token. |
 | userGroup | <code>string</code> | The user group of the streamer. |
 
+<a name="UserPrincipalAccount"></a>
+
+## UserPrincipalAccount : <code>Object</code>
+Represents an account with its preferences and authorizations.
+
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| accountId | <code>string</code> | Account ID. |
+| displayName | <code>string</code> | The display name of the account. |
+| accountCdDomainId | <code>string</code> | The domain ID for the account. |
+| company | <code>string</code> | The company associated with the account. |
+| segment | <code>string</code> | The account segment. |
+| surrogateIds | <code>Object.&lt;string, string&gt;</code> | Surrogate IDs for the account. |
+| preferences | <code>Object.&lt;string, boolean&gt;</code> | Account preferences. |
+| acl | <code>string</code> | Access control list for the account. |
+| authorizations | <code>Object.&lt;string, boolean&gt;</code> | Account authorizations. |
+
 <a name="UserPrincipalsData"></a>
 
 ## UserPrincipalsData : <code>Object</code>
@@ -1565,6 +1612,7 @@ Represents principal data.
 | Name | Type | Description |
 | --- | --- | --- |
 | accessLevel | <code>string</code> | The access level of the principal. |
+| accounts | [<code>Array.&lt;UserPrincipalAccount&gt;</code>](#UserPrincipalAccount) | Accounts |
 | exchangeAgreements | <code>Object</code> | Exchange agreements status. |
 | exchangeAgreements.NASDAQ_EXCHANGE_AGREEMENT | [<code>AcceptedOrRejected</code>](#AcceptedOrRejected) | NASDAQ exchange agreement status. |
 | exchangeAgreements.NYSE_EXCHANGE_AGREEMENT | [<code>AcceptedOrRejected</code>](#AcceptedOrRejected) | NYSE exchange agreement status. |

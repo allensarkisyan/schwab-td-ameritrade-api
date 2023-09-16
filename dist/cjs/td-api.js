@@ -101,7 +101,7 @@ class TDAmeritradeAPI {
       const url = (0, utils_js_1.getRequestUrl)(config);
       const fetchOptions = (0, utils_js_1.getFetchOptions)(config);
       if (isAuthorizationRequired && this.#userAccessToken) {
-        await this.accessTokenExpirationMonitor();
+        await this.accessTokenExpirationMonitor()();
         fetchOptions.headers['Authorization'] = `Bearer ${
           this.#userAccessToken
         }`;
@@ -119,52 +119,66 @@ class TDAmeritradeAPI {
       return { error, data };
     }
   };
-  accessTokenExpirationMonitor = async () => {
-    if (this.#isRefreshingAccessToken) {
-      return;
-    }
-    try {
-      if (
-        !dataStore.userAccessToken ||
-        !dataStore.accessTokenExpires ||
-        !dataStore.refreshToken ||
-        !dataStore.refreshTokenExpires
-      ) {
+  /**
+   * Internal Access Token Expiration Monitor / refresh token timer
+   * @param {Function} cb - Callback function to call on every check
+   * @returns {Function}
+   */
+  accessTokenExpirationMonitor =
+    (cb = () => {}) =>
+    async () => {
+      if (this.#isRefreshingAccessToken) {
         return;
       }
-      const { now, isAccessTokenExpired, isRefreshTokenExpired } = (0,
-      utils_js_1.getAccessTokenExpirationDetails)(dataStore);
-      if (isRefreshTokenExpired) {
-        // TODO: FORCE LOG OUT
-        console.log('REFRESH TOKEN EXPIRED FORCE LOG OUT');
-        return;
-      }
-      console.log(
-        'ACCESS TOKEN EXPIRES',
-        dataStore.accessTokenExpires,
-        isAccessTokenExpired,
-      );
-      if (isAccessTokenExpired && !this.#isRefreshingAccessToken) {
-        console.log('ACCESS TOKEN REFRESH');
-        const { data: authResponse } = await this.refreshAccessToken(
-          dataStore.refreshToken,
-        );
-        if (!authResponse?.access_token) {
+      try {
+        if (
+          !dataStore.userAccessToken ||
+          !dataStore.accessTokenExpires ||
+          !dataStore.refreshToken ||
+          !dataStore.refreshTokenExpires
+        ) {
+          return;
+        }
+        const { now, isAccessTokenExpired, isRefreshTokenExpired } = (0,
+        utils_js_1.getAccessTokenExpirationDetails)(dataStore);
+        if (isRefreshTokenExpired) {
+          // TODO: FORCE LOG OUT
+          console.log('REFRESH TOKEN EXPIRED FORCE LOG OUT');
           return;
         }
         console.log(
-          'ACCESS TOKEN REFRESH authResponse.scope',
-          authResponse?.scope,
+          'ACCESS TOKEN EXPIRES',
+          dataStore.accessTokenExpires,
+          isAccessTokenExpired,
         );
-        dataStore.accessTokenExpires = new Date(
-          now + authResponse?.expires_in * 1000,
-        ).toJSON();
+        if (isAccessTokenExpired && !this.#isRefreshingAccessToken) {
+          console.log('ACCESS TOKEN REFRESH');
+          const { data: authResponse } = await this.refreshAccessToken(
+            dataStore.refreshToken,
+          );
+          if (!authResponse?.access_token) {
+            return;
+          }
+          console.log(
+            'ACCESS TOKEN REFRESH authResponse.scope',
+            authResponse?.scope,
+          );
+          dataStore.accessTokenExpires = new Date(
+            now + authResponse?.expires_in * 1000,
+          ).toJSON();
+        }
+        if (cb) {
+          cb(dataStore);
+        }
+      } catch (e) {
+        console.log(e);
       }
-    } catch (e) {
-      console.log(e);
-    }
-  };
-  startAccessTokenExpirationMonitor = () => {
+    };
+  /**
+   * Access Token Expiration Monitor / refresh token timer
+   * @param {Function} cb - Callback function to call on every check
+   */
+  startAccessTokenExpirationMonitor = (cb) => {
     if (
       refreshTokenInterval ||
       !dataStore.userAccessToken ||
@@ -175,7 +189,7 @@ class TDAmeritradeAPI {
       return;
     }
     refreshTokenInterval = setInterval(
-      () => this.accessTokenExpirationMonitor(),
+      () => this.accessTokenExpirationMonitor(cb)(),
       60_000,
     );
   };

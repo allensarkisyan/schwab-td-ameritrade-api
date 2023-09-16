@@ -912,10 +912,80 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api/@types' {
     /** The user group of the streamer. */
     userGroup: string;
   };
+  export type UserPrincipalAccount = {
+    /** Account ID. */
+    accountId: string;
+    /** The display name of the account. */
+    displayName: string;
+    /** The domain ID for the account. */
+    accountCdDomainId: string;
+    /** The company associated with the account. */
+    company: string;
+    /** The account segment. */
+    segment: string;
+    /** Surrogate IDs for the account. */
+    surrogateIds: Record<string, string>;
+    /** Account preferences. */
+    preferences: {
+      /** Indicates if express trading is enabled. */
+      expressTrading: boolean;
+      /** Indicates if direct options routing is enabled. */
+      directOptionsRouting: boolean;
+      /** Indicates if direct equity routing is enabled. */
+      directEquityRouting: boolean;
+      /** The default equity order leg instruction. */
+      defaultEquityOrderLegInstruction: string;
+      /** The default equity order type. */
+      defaultEquityOrderType: string;
+      /** The default equity order price link type. */
+      defaultEquityOrderPriceLinkType: string;
+      /** The default equity order duration. */
+      defaultEquityOrderDuration: string;
+      /** The default equity order market session. */
+      defaultEquityOrderMarketSession: string;
+      /** The default equity quantity. */
+      defaultEquityQuantity: number;
+      /** The mutual fund tax lot method. */
+      mutualFundTaxLotMethod: string;
+      /** The option tax lot method. */
+      optionTaxLotMethod: string;
+      /** The equity tax lot method. */
+      equityTaxLotMethod: string;
+      /** The default advanced tool launch setting. */
+      defaultAdvancedToolLaunch: string;
+      /** The authentication token timeout setting. */
+      authTokenTimeout: string;
+    };
+    /** Access control list for the account. */
+    acl: string;
+    /** Account authorizations. */
+    authorizations: {
+      /** Indicates if apex authorization is granted. */
+      apex: boolean;
+      /** Indicates if level two quotes authorization is granted. */
+      levelTwoQuotes: boolean;
+      /** Indicates if stock trading authorization is granted. */
+      stockTrading: boolean;
+      /** Indicates if margin trading authorization is granted. */
+      marginTrading: boolean;
+      /** Indicates if streaming news authorization is granted. */
+      streamingNews: boolean;
+      /** The option trading level. */
+      optionTradingLevel: string;
+      /** Indicates if streamer access is granted. */
+      streamerAccess: boolean;
+      /** Indicates if advanced margin authorization is granted. */
+      advancedMargin: boolean;
+      /** Indicates if Scottrade account authorization is granted. */
+      scottradeAccount: boolean;
+    };
+  };
   /** Represents principal data. */
   export type UserPrincipalsData = {
     /** The access level of the principal. */
     accessLevel: string;
+    /** Accounts */
+    accounts: UserPrincipalAccount[];
     /** Exchange agreements status. */
     exchangeAgreements: {
       /** NASDAQ exchange agreement status. */
@@ -1168,8 +1238,17 @@ declare module '@allensarkisyan/schwab-td-ameritrade-api' {
      * @param {function | null} [config.handleRequest=null] - An optional request handler function.
      */
     constructor(config?: APIClientConfig);
-    accessTokenExpirationMonitor: () => Promise<void>;
-    startAccessTokenExpirationMonitor: () => void;
+    /**
+     * Internal Access Token Expiration Monitor / refresh token timer
+     * @param {Function} cb - Callback function to call on every check
+     * @returns {Function}
+     */
+    accessTokenExpirationMonitor: (cb?: Function) => () => Promise<void>;
+    /**
+     * Access Token Expiration Monitor / refresh token timer
+     * @param {Function} cb - Callback function to call on every check
+     */
+    startAccessTokenExpirationMonitor: (cb?: Function) => void;
     /**
      * Set User Access Token / Refresh Token
      * @param {LocalMemoryAuthDataStore} credentials - Credentials Data Store

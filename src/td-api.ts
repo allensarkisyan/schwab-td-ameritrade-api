@@ -158,7 +158,7 @@ export class TDAmeritradeAPI {
       const fetchOptions = getFetchOptions(config);
 
       if (isAuthorizationRequired && this.#userAccessToken) {
-        await this.accessTokenExpirationMonitor();
+        await this.accessTokenExpirationMonitor()();
         fetchOptions.headers['Authorization'] = `Bearer ${this.#userAccessToken}`;
       }
 
@@ -176,7 +176,12 @@ export class TDAmeritradeAPI {
     }
   }
 
-  accessTokenExpirationMonitor = async (): Promise<void> => {
+  /**
+   * Internal Access Token Expiration Monitor / refresh token timer
+   * @param {Function} cb - Callback function to call on every check
+   * @returns {Function}
+   */
+  accessTokenExpirationMonitor = (cb: Function = () => {}) => async (): Promise<void> => {
     if (this.#isRefreshingAccessToken) { return; }
   
     try {
@@ -216,12 +221,20 @@ export class TDAmeritradeAPI {
 
         dataStore.accessTokenExpires = new Date(now + (authResponse?.expires_in * 1000)).toJSON();
       }
+
+      if (cb) {
+        cb(dataStore);
+      }
     } catch (e) {
       console.log(e);
     }
   }
 
-  startAccessTokenExpirationMonitor = () => {
+  /**
+   * Access Token Expiration Monitor / refresh token timer
+   * @param {Function} cb - Callback function to call on every check
+   */
+  startAccessTokenExpirationMonitor = (cb?: Function) => {
     if (
       refreshTokenInterval
       || !dataStore.userAccessToken
@@ -233,7 +246,7 @@ export class TDAmeritradeAPI {
     }
 
     refreshTokenInterval = setInterval(
-      () => this.accessTokenExpirationMonitor(),
+      () => this.accessTokenExpirationMonitor(cb)(),
       60_000
     );
   }
