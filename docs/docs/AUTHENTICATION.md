@@ -1,3 +1,4 @@
+# Authentication
 ## TD Ameritrade Developer Account / Client Application ID
 
 Follow the instructions provided by Charles Schwab / TD Ameritrade to create a developer account / create a application client ID.

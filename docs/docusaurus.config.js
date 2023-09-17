@@ -31,11 +31,10 @@ const config = {
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
         docs: {
+          routeBasePath: '/',
           sidebarPath: require.resolve('./sidebars.js'),
         },
-        blog: {
-          showReadingTime: true,
-        },
+        blog: false,
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
         },
@@ -75,11 +74,11 @@ const config = {
             items: [
               {
                 label: 'README',
-                to: '/docs',
+                to: '/',
               },
               {
                 label: 'TD Ameritrade API',
-                to: '/docs/td-api',
+                to: '/td-api',
               },
             ],
           },
@@ -114,7 +113,7 @@ const config = {
           //   ],
           // },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} Allen Sarkisyan. All Rights Reserved.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Allen Sarkisyan. XT-TX. All Rights Reserved.`,
       },
       prism: {
         theme: lightCodeTheme,

@@ -519,10 +519,10 @@ class TDAmeritradeAPI {
         }),
       );
       const flat = marketMovers.reduce((a, b) => ({ ...a, ...b }), {});
-      const upFlat = [...Object.keys(flat).map((k) => flat[k].up || [])]
+      const upFlat = [...Object.keys(flat).map((k) => flat[k].up ?? [])]
         .flat()
         .sort((a, b) => (a.change > b.change ? -1 : 1));
-      const downFlat = [...Object.keys(flat).map((k) => flat[k].down || [])]
+      const downFlat = [...Object.keys(flat).map((k) => flat[k].down ?? [])]
         .flat()
         .sort((a, b) => (a.change > b.change ? 1 : -1));
       const up = (0, utils_js_1.getDistinctArray)(upFlat, 'symbol');

@@ -1,3 +1,4 @@
+# Examples
 ## Get Accounts / Account / User Principals
 ```javascript
 const { data: accounts } = await tdApi.getAccounts();
