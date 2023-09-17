@@ -171,9 +171,9 @@ export class TDAmeritradeAPI {
       data = await response.json();
     } catch (e: any) {
       error = e?.message || ERRORS.UNKNOWN_ERROR;
-    } finally {
-      return { error, data };
     }
+
+    return { error, data };
   }
 
   /**
@@ -181,7 +181,7 @@ export class TDAmeritradeAPI {
    * @param {Function} cb - Callback function to call on every check
    * @returns {Function}
    */
-  accessTokenExpirationMonitor = (cb: Function = () => {}) => async (): Promise<void> => {
+  accessTokenExpirationMonitor = (cb: Function = () => {}) => async () => {
     if (this.#isRefreshingAccessToken) { return; }
   
     try {
@@ -206,18 +206,12 @@ export class TDAmeritradeAPI {
         return;
       }
 
-      console.log('ACCESS TOKEN EXPIRES', dataStore.accessTokenExpires, isAccessTokenExpired);
-  
-      if (isAccessTokenExpired && !this.#isRefreshingAccessToken) {
-        console.log('ACCESS TOKEN REFRESH');
-        
+      if (isAccessTokenExpired && !this.#isRefreshingAccessToken) {        
         const { data: authResponse } = await this.refreshAccessToken(dataStore.refreshToken);
   
         if (!authResponse?.access_token) {
           return;
         }
-
-        console.log('ACCESS TOKEN REFRESH authResponse.scope', authResponse?.scope);
 
         dataStore.accessTokenExpires = new Date(now + (authResponse?.expires_in * 1000)).toJSON();
       }
@@ -225,8 +219,8 @@ export class TDAmeritradeAPI {
       if (cb) {
         cb(dataStore);
       }
-    } catch (e) {
-      console.log(e);
+    } catch (e: any) {
+      console.log(e?.message || ERRORS.UNKNOWN_ERROR);
     }
   }
 
@@ -322,7 +316,7 @@ export class TDAmeritradeAPI {
         throw new Error(error);
       }
 
-      if (!authResponseData || !authResponseData.access_token) {
+      if (!authResponseData?.access_token) {
         throw new Error(ERRORS.ACCESS_TOKEN);
       }
 
@@ -335,11 +329,11 @@ export class TDAmeritradeAPI {
 
       data = authResponseData;
     } catch (e: any) {
-      console.log('TDAmeritradeAPI authenticate Error', e);
+      console.log('TDAmeritradeAPI authenticate Error', e?.message || ERRORS.UNKNOWN_ERROR);
       error = e?.message || ERRORS.UNKNOWN_ERROR;
-    } finally {
-      return { error, data };
     }
+
+    return { error, data };
   };
 
   /**
@@ -369,7 +363,7 @@ export class TDAmeritradeAPI {
         throw new Error(error);
       }
 
-      if (!refreshTokenData || !refreshTokenData.access_token) {
+      if (!refreshTokenData?.access_token) {
         throw new Error(ERRORS.ACCESS_TOKEN);
       }
 
@@ -380,13 +374,13 @@ export class TDAmeritradeAPI {
 
       data = refreshTokenData;
     } catch (e: any) {
-      console.log('TDAmeritradeAPI refreshAccessToken Error', e);
+      console.log('TDAmeritradeAPI refreshAccessToken Error', e?.message || ERRORS.UNKNOWN_ERROR);
       error = e?.message || ERRORS.UNKNOWN_ERROR;
     } finally {
       this.#isRefreshingAccessToken = false;
-
-      return { error, data };
     }
+
+    return { error, data };
   };
 
   /**
@@ -609,10 +603,10 @@ export class TDAmeritradeAPI {
       }));
 
       const flat = marketMovers.reduce((a, b) => ({ ...a, ...b }), {});
-      const upFlat = [...Object.keys(flat).map(k => (flat[k].up || []))]
+      const upFlat = [...Object.keys(flat).map(k => (flat[k].up ?? []))]
         .flat()
         .sort((a, b) => a.change > b.change ? -1 : 1);
-      const downFlat = [...Object.keys(flat).map(k => (flat[k].down || []))]
+      const downFlat = [...Object.keys(flat).map(k => (flat[k].down ?? []))]
         .flat()
         .sort((a, b) => a.change > b.change ? 1 : -1);
 
@@ -757,18 +751,23 @@ export class TDAmeritradeAPI {
       };
     }
 
-    return await this.placeOrder(orderRequest.accountId, orderRequest.price, [
+    const {
+      accountId,
+      symbol,
+      quantity,
+      price,
+    } = orderRequest;
+
+    const assetType = (isOption ? 'OPTION' : 'EQUITY');
+    const buy = (isOption ? 'BUY_TO_OPEN' : 'BUY');
+    const sell = (isOption ? 'SELL_TO_OPEN' : 'SELL_SHORT');
+    const instruction = (!isShort ? buy : sell);
+
+    return await this.placeOrder(accountId, price, [
       {
-        quantity: orderRequest.quantity,
-        instrument: {
-          symbol: orderRequest.symbol,
-          assetType: (isOption ? 'OPTION' : 'EQUITY')
-        },
-        instruction: (
-          !isShort
-            ? (isOption ? 'BUY_TO_OPEN' : 'BUY')
-            : (isOption ? 'SELL_TO_OPEN' : 'SELL_SHORT')
-        ),
+        instruction,
+        quantity,
+        instrument: { symbol, assetType },
       }
     ]);
   }
@@ -798,18 +797,23 @@ export class TDAmeritradeAPI {
       };
     }
 
-    return await this.placeOrder(orderRequest.accountId, orderRequest.price, [
+    const {
+      accountId,
+      symbol,
+      quantity,
+      price,
+    } = orderRequest;
+
+    const assetType = (isOption ? 'OPTION' : 'EQUITY');
+    const buy = (isOption ? 'BUY_TO_CLOSE' : 'BUY_TO_COVER');
+    const sell = (isOption ? 'SELL_TO_CLOSE' : 'SELL');
+    const instruction = (!isShort ? sell : buy);
+
+    return await this.placeOrder(accountId, price, [
       {
-        quantity: orderRequest.quantity,
-        instrument: {
-          symbol: orderRequest.symbol,
-          assetType: (isOption ? 'OPTION' : 'EQUITY')
-        },
-        instruction: (
-          !isShort
-            ? (isOption ? 'SELL_TO_CLOSE' : 'SELL')
-            : (isOption ? 'BUY_TO_CLOSE' : 'BUY_TO_COVER')
-        ),
+        instruction,
+        quantity,
+        instrument: { symbol, assetType },
       }
     ]);
   }

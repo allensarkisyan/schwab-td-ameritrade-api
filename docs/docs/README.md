@@ -12,6 +12,8 @@ slug: /
 
 This is an unofficial JavaScript/TypeScript client implementation for the Charles Schwab / TD Ameritrade API. It allows developers to interact with TD Ameritrade's services and access financial data programmatically. Please note that this implementation is not affiliated with or endorsed by Charles Schwab and/or TD Ameritrade.
 
+### WebSocket client / streaming functionality available with [@allensarkisyan/schwab-td-ameritrade-streamer](https://github.com/allensarkisyan/schwab-td-ameritrade-streamer)
+
 ## Features
 
 - MIT Licensed: This project is fully open source and available under the MIT License.
@@ -34,13 +36,13 @@ yarn add @allensarkisyan/schwab-td-ameritrade-api
 ```
 
 # Getting Started
-To get started with this library, follow the documentation provided [here](td-api.md) for detailed instructions on how to set up and use the client to access TD Ameritrade's API.
+To get started with this library, follow the documentation provided [here](https://github.com/allensarkisyan/schwab-td-ameritrade-api/blob/main/docs/docs/td-api.md) for detailed instructions on how to set up and use the client to access TD Ameritrade's API.
 
-## Required Environment Variables
-| Environment Variable | Value |
-| ----------- | ----------- |
-| TD_AMERITRADE_CLIENT_ID | YOUR_TD_AMERITRADE_APPLICATION_CLIENT_ID |
-| TD_AMERITRADE_CALLBACK_URL | http://localhost:3000/tdcallback |
+## Required Configuration Options / Environment Variables
+| Environment Variable | Option Name | Value |
+| ----------- | ----------- | ------------- |
+| TD_AMERITRADE_CLIENT_ID | clientId | YOUR_TD_AMERITRADE_APPLICATION_CLIENT_ID |
+| TD_AMERITRADE_CALLBACK_URL | callbackUrl | http://localhost:3000/tdcallback |
 
 
 ## Import Module
@@ -98,26 +100,45 @@ tdApi.setUserAccessToken({
 });
 ```
 
+```mermaid
+sequenceDiagram
+    User->> Client Application: Initiate Authentication Request
+    Client Application--xTD Ameritrade: Authenticate with Credentials
+    TD Ameritrade--xClient Application: Responds with Authorization Code
+    %% Client Application--xUser: Success
+    Client Application-->>TD Ameritrade: Initiate API Authorization and Get Access Token
+    TD Ameritrade->>Client Application: Responds with Access Token
+    loop Loop Every 30 Minutes
+        Client Application-->Client Application: Check Access Token Status with TD Ameritrade...
+        alt is Access Token Valid
+            Client Application->>TD Ameritrade: Use Access Token
+        else is Access Token Expired
+            Client Application->>TD Ameritrade: Refresh Access Token
+        end
+    end
+    User->>TD Ameritrade: Make API Requests
+```
+
 ## Available APIs
-NONE: &#9744;
+NONE: :x:
 
-PARTIAL: &#9746;
+PARTIAL: :white_square_button:
 
-FULL: &#9745;
+FULL: :heavy_check_mark:
 
 | APIs | AVAILABLE | IMPLEMENTATION |
 | ---------| ----------  | ------ |
-| Accounts & Trading | &#9745; | &#9746; |
-| Authentication | &#9745; | &#9745; |
-| Instruments | &#9745; | &#9746; |
-| Market Hours | &#9744; | &#9744; |
-| Movers | &#9745; | &#9745; |
-| Option Chains | &#9745; | &#9745; |
-| Price History | &#9745; | &#9745; |
-| Quotes | &#9745; | &#9746; |
-| Transaction History | &#9745; | &#9746; |
-| User Info & Preferences | &#9744; | &#9746; |
-| Watchlist | &#9745; | &#9746; |
+| Accounts & Trading | :heavy_check_mark: | :white_square_button: |
+| Authentication | :heavy_check_mark: | :heavy_check_mark: |
+| Instruments | :heavy_check_mark: | :white_square_button: |
+| Market Hours | :x: | :x: |
+| Movers | :heavy_check_mark: | :heavy_check_mark: |
+| Option Chains | :heavy_check_mark: | :heavy_check_mark: |
+| Price History | :heavy_check_mark: | :heavy_check_mark: |
+| Quotes | :heavy_check_mark: | :white_square_button: |
+| Transaction History | :heavy_check_mark: | :white_square_button: |
+| User Info & Preferences | :x: | :white_square_button: |
+| Watchlist | :heavy_check_mark: | :white_square_button: |
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
@@ -152,4 +173,4 @@ please open an issue or submit a pull request.
 
 [Allen Sarkisyan](https://github.com/allensarkisyan)
 
-Copyright (c) 2019 - 2023 XT-TX. All Rights Reserved.
+Copyright (c) 2019 - 2023 Allen Sarkisyan. XT-TX. All Rights Reserved.

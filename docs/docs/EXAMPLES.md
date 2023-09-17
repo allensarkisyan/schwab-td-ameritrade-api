@@ -86,3 +86,5 @@ await tdApi.closeOption(optionOrderRequestConfig);
 // Canceling Orders
 const { data: cancelOrderData } = await tdApi.cancelOrder(accountId, orderId);
 ```
+
+Copyright (c) 2019 - 2023 Allen Sarkisyan. XT-TX. All Rights Reserved.

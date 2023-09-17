@@ -23,6 +23,7 @@ html[data-theme='dark'] {
   --ifm-color-primary-lighter: #ffffff;
   --ifm-color-primary-lightest: #ffffff;
   --ifm-background-color: #111111;
+  --ifm-link-color: #00e676;
 }
 
 .footer--dark {

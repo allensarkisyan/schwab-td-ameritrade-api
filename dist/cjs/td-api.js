@@ -115,9 +115,8 @@ class TDAmeritradeAPI {
       data = await response.json();
     } catch (e) {
       error = e?.message || ERRORS.UNKNOWN_ERROR;
-    } finally {
-      return { error, data };
     }
+    return { error, data };
   };
   /**
    * Internal Access Token Expiration Monitor / refresh token timer
@@ -146,23 +145,13 @@ class TDAmeritradeAPI {
           console.log('REFRESH TOKEN EXPIRED FORCE LOG OUT');
           return;
         }
-        console.log(
-          'ACCESS TOKEN EXPIRES',
-          dataStore.accessTokenExpires,
-          isAccessTokenExpired,
-        );
         if (isAccessTokenExpired && !this.#isRefreshingAccessToken) {
-          console.log('ACCESS TOKEN REFRESH');
           const { data: authResponse } = await this.refreshAccessToken(
             dataStore.refreshToken,
           );
           if (!authResponse?.access_token) {
             return;
           }
-          console.log(
-            'ACCESS TOKEN REFRESH authResponse.scope',
-            authResponse?.scope,
-          );
           dataStore.accessTokenExpires = new Date(
             now + authResponse?.expires_in * 1000,
           ).toJSON();
@@ -171,7 +160,7 @@ class TDAmeritradeAPI {
           cb(dataStore);
         }
       } catch (e) {
-        console.log(e);
+        console.log(e?.message || ERRORS.UNKNOWN_ERROR);
       }
     };
   /**
@@ -257,7 +246,7 @@ class TDAmeritradeAPI {
       if (error) {
         throw new Error(error);
       }
-      if (!authResponseData || !authResponseData.access_token) {
+      if (!authResponseData?.access_token) {
         throw new Error(ERRORS.ACCESS_TOKEN);
       }
       this.setUserAccessToken({
@@ -268,11 +257,13 @@ class TDAmeritradeAPI {
       });
       data = authResponseData;
     } catch (e) {
-      console.log('TDAmeritradeAPI authenticate Error', e);
+      console.log(
+        'TDAmeritradeAPI authenticate Error',
+        e?.message || ERRORS.UNKNOWN_ERROR,
+      );
       error = e?.message || ERRORS.UNKNOWN_ERROR;
-    } finally {
-      return { error, data };
     }
+    return { error, data };
   };
   /**
    * Refresh Access Token with Refresh Token
@@ -300,7 +291,7 @@ class TDAmeritradeAPI {
       if (error) {
         throw new Error(error);
       }
-      if (!refreshTokenData || !refreshTokenData.access_token) {
+      if (!refreshTokenData?.access_token) {
         throw new Error(ERRORS.ACCESS_TOKEN);
       }
       this.setUserAccessToken({
@@ -309,12 +300,15 @@ class TDAmeritradeAPI {
       });
       data = refreshTokenData;
     } catch (e) {
-      console.log('TDAmeritradeAPI refreshAccessToken Error', e);
+      console.log(
+        'TDAmeritradeAPI refreshAccessToken Error',
+        e?.message || ERRORS.UNKNOWN_ERROR,
+      );
       error = e?.message || ERRORS.UNKNOWN_ERROR;
     } finally {
       this.#isRefreshingAccessToken = false;
-      return { error, data };
     }
+    return { error, data };
   };
   /**
    * Get Accounts
@@ -645,20 +639,16 @@ class TDAmeritradeAPI {
         data: null,
       };
     }
-    return await this.placeOrder(orderRequest.accountId, orderRequest.price, [
+    const { accountId, symbol, quantity, price } = orderRequest;
+    const assetType = isOption ? 'OPTION' : 'EQUITY';
+    const buy = isOption ? 'BUY_TO_OPEN' : 'BUY';
+    const sell = isOption ? 'SELL_TO_OPEN' : 'SELL_SHORT';
+    const instruction = !isShort ? buy : sell;
+    return await this.placeOrder(accountId, price, [
       {
-        quantity: orderRequest.quantity,
-        instrument: {
-          symbol: orderRequest.symbol,
-          assetType: isOption ? 'OPTION' : 'EQUITY',
-        },
-        instruction: !isShort
-          ? isOption
-            ? 'BUY_TO_OPEN'
-            : 'BUY'
-          : isOption
-          ? 'SELL_TO_OPEN'
-          : 'SELL_SHORT',
+        instruction,
+        quantity,
+        instrument: { symbol, assetType },
       },
     ]);
   };
@@ -681,20 +671,16 @@ class TDAmeritradeAPI {
         data: null,
       };
     }
-    return await this.placeOrder(orderRequest.accountId, orderRequest.price, [
+    const { accountId, symbol, quantity, price } = orderRequest;
+    const assetType = isOption ? 'OPTION' : 'EQUITY';
+    const buy = isOption ? 'BUY_TO_CLOSE' : 'BUY_TO_COVER';
+    const sell = isOption ? 'SELL_TO_CLOSE' : 'SELL';
+    const instruction = !isShort ? sell : buy;
+    return await this.placeOrder(accountId, price, [
       {
-        quantity: orderRequest.quantity,
-        instrument: {
-          symbol: orderRequest.symbol,
-          assetType: isOption ? 'OPTION' : 'EQUITY',
-        },
-        instruction: !isShort
-          ? isOption
-            ? 'SELL_TO_CLOSE'
-            : 'SELL'
-          : isOption
-          ? 'BUY_TO_CLOSE'
-          : 'BUY_TO_COVER',
+        instruction,
+        quantity,
+        instrument: { symbol, assetType },
       },
     ]);
   };

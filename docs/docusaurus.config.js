@@ -20,11 +20,10 @@ const config = {
     defaultLocale: 'en',
     locales: ['en'],
   },
-
-  scripts: [
-    "https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.8.4/mermaid.min.js",
-    "/init.js"
-  ],
+  markdown: {
+    mermaid: true,
+  },
+  themes: ['@docusaurus/theme-mermaid'],
 
   presets: [
     [

@@ -1,11 +1,11 @@
 {
   "include": ["src/**/*"],
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules", "dist"],
   "compilerOptions": {
     "target": "ESNext",
     "moduleResolution": "Node",
-    "allowJs": true,
-    "checkJs": true,
+    "allowJs": false,
+    "checkJs": false,
     "strict": true,
     "noImplicitAny": false,
     "baseUrl": ".",
