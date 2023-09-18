@@ -3,6 +3,8 @@
 [![npm (scoped)](https://img.shields.io/npm/v/@allensarkisyan/schwab-td-ameritrade-api)](https://npmjs.com/@allensarkisyan/schwab-td-ameritrade-api)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.md)
 ![Last Commit](https://img.shields.io/github/last-commit/allensarkisyan/schwab-td-ameritrade-api)
+![CodeQL](https://github.com/allensarkisyan/schwab-td-ameritrade-api/workflows/CodeQL/badge.svg?branch=main)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/allensarkisyan/schwab-td-ameritrade-api/badge)](https://securityscorecards.dev/viewer/?uri=github.com/allensarkisyan/schwab-td-ameritrade-api)
 
 ## Overview
 
