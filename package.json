@@ -16,6 +16,9 @@
   "bugs": "https://github.com/allensarkisyan/schwab-td-ameritrade-api/issues",
   "description": "Charles Schwab / TD Ameritrade - JavaScript / TypeScript API Client Implementation",
   "keywords": [
+    "TD Ameritrade",
+    "Charles Schwab",
+    "TypeScript",
     "Stocks",
     "Trading",
     "Options",
@@ -23,9 +26,7 @@
     "Market Data",
     "Financial Data",
     "API Client",
-    "Fintech",
-    "TD Ameritrade",
-    "Charles Schwab"
+    "Fintech"
   ],
   "scripts": {
     "build:types": "tsc --declaration --project tsconfig.types.json",
@@ -53,7 +54,7 @@
     "arrowParens": "always"
   },
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=18.0.0"
   },
   "exports": {
     ".": {
