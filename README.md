@@ -1,7 +1,8 @@
 # JavaScript / TypeScript TD Ameritrade API Client Implementation
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Last Commit](https://img.shields.io/github/last-commit/allensarkisyan/schwab-td-ameritrade-api)](LICENSE)
+[![npm (scoped)](https://img.shields.io/npm/v/@allensarkisyan/schwab-td-ameritrade-api)](https://npmjs.com/@allensarkisyan/schwab-td-ameritrade-api)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.md)
+![Last Commit](https://img.shields.io/github/last-commit/allensarkisyan/schwab-td-ameritrade-api)
 
 ## Overview
 
@@ -31,7 +32,9 @@ yarn add @allensarkisyan/schwab-td-ameritrade-api
 ```
 
 # Getting Started
-To get started with this library, follow the documentation provided [here](https://github.com/allensarkisyan/schwab-td-ameritrade-api/blob/main/docs/docs/td-api.md) for detailed instructions on how to set up and use the client to access TD Ameritrade's API.
+To get started with this library, follow the documentation provided [here](https://allensarkisyan.github.io/schwab-td-ameritrade-api/getting-started) for detailed instructions on how to set up and use the client to access TD Ameritrade's API.
+
+# See [Examples](https://allensarkisyan.github.io/schwab-td-ameritrade-api/EXAMPLES)
 
 ## Required Configuration Options / Environment Variables
 | Environment Variable | Option Name | Value |

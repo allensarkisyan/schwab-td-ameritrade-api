@@ -1,6 +1,6 @@
 {
   "name": "@allensarkisyan/schwab-td-ameritrade-api",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": false,
   "type": "module",
   "author": "Allen Sarkisyan",
@@ -8,7 +8,7 @@
   "module": "./dist/esm/td-api.js",
   "types": "./index.d.ts",
   "license": "MIT",
-  "homepage": "https://github.com/allensarkisyan/schwab-td-ameritrade-api",
+  "homepage": "https://allensarkisyan.github.io/schwab-td-ameritrade-api/",
   "repository": {
     "type": "git",
     "url": "https://github.com/allensarkisyan/schwab-td-ameritrade-api.git"
