@@ -1,7 +1,7 @@
 {
   "name": "@allensarkisyan/schwab-td-ameritrade-api",
   "version": "0.0.1",
-  "private": true,
+  "private": false,
   "type": "module",
   "author": "Allen Sarkisyan",
   "main": "./dist/cjs/td-api.js",
@@ -14,6 +14,7 @@
     "url": "https://github.com/allensarkisyan/schwab-td-ameritrade-api.git"
   },
   "bugs": "https://github.com/allensarkisyan/schwab-td-ameritrade-api/issues",
+  "description": "Charles Schwab / TD Ameritrade - JavaScript / TypeScript API Client Implementation",
   "keywords": [
     "Stocks",
     "Trading",
