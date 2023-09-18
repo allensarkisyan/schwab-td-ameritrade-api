@@ -17,9 +17,10 @@
     "docs": "npm run docs-readme && npm run docs-api && npm run build && npm run serve",
     "jsdoc": "npx jsdoc@latest -r ../dist/esm"
   },
-  "dependencies": {
+  "devDependencies": {
     "@docusaurus/core": "2.4.1",
     "@docusaurus/theme-mermaid": "2.4.1",
+    "@docusaurus/module-type-aliases": "2.4.1",
     "@docusaurus/preset-classic": "2.4.1",
     "@mdx-js/react": "^1.6.22",
     "clsx": "^1.2.1",
@@ -27,12 +28,8 @@
     "prism-react-renderer": "^1.3.5",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-
     "jsdoc-to-markdown": "8.0.0",
     "mermaid": "10.4.0"
-  },
-  "devDependencies": {
-    "@docusaurus/module-type-aliases": "2.4.1"
   },
   "browserslist": {
     "production": [

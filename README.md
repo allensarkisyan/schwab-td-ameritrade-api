@@ -136,7 +136,7 @@ FULL: :heavy_check_mark:
 | Watchlist | :heavy_check_mark: | :white_square_button: |
 
 ## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
 
 MIT License
 

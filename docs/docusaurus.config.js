@@ -60,6 +60,11 @@ const config = {
             label: 'Documentation',
           },
           {
+            to: 'getting-started',
+            position: 'left',
+            label: 'Getting Started',
+          },
+          {
             href: 'https://github.com/allensarkisyan/schwab-td-ameritrade-api',
             label: 'GitHub',
             position: 'right',

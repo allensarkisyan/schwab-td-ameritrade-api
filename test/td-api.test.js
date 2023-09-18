@@ -294,6 +294,28 @@ describe('TDAmeritradeAPI', () => {
       expect(result).toBe(undefined);
     });
 
+    it('should handle date as number', async () => {
+      const result = tdApi.setUserAccessToken({
+        userAccessToken: 'TEST',
+        accessTokenExpires: new Date().getTime(),
+        refreshToken: 'TEST',
+        refreshTokenExpires: new Date().getTime(),
+      });
+
+      expect(result).toBe(undefined);
+    });
+
+    it('should handle date as string', async () => {
+      const result = tdApi.setUserAccessToken({
+        userAccessToken: 'TEST',
+        accessTokenExpires: new Date().toJSON(),
+        refreshToken: 'TEST',
+        refreshTokenExpires: new Date().toJSON(),
+      });
+
+      expect(result).toBe(undefined);
+    });
+
     it('should return generic response', async () => {
       const result = tdApi.setUserAccessToken({ userAccessToken: 'TEST' });
 
