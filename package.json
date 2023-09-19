@@ -1,6 +1,6 @@
 {
   "name": "@allensarkisyan/schwab-td-ameritrade-api",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "private": false,
   "type": "module",
   "author": "Allen Sarkisyan",
@@ -34,7 +34,7 @@
     "build:cjs": "tsc --project tsconfig.json --module commonjs --outDir ./dist/cjs",
     "build": "npm run build:types && npm run build:esm && npm run build:cjs && prettier ./index.d.ts --write && cd dist && prettier . --write && npm run prepare-types",
     "prepare-types": "./scripts/prepare_types.sh",
-    "test": "jest --verbose --coverage"
+    "test": "jest --coverage"
   },
   "dependencies": {
     "zod": "3.22.2"
