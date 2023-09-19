@@ -1,9 +1,12 @@
-name: Publish Package to npmjs
+name: Run Unit/Integration tests
 on:
-  release:
-    types: [created]
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ "main"]
 jobs:
-  build:
+  tests:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -14,8 +17,5 @@ jobs:
         with:
           node-version: '18.x'
           registry-url: 'https://registry.npmjs.org'
-      - run: npm install -g npm
       - run: npm ci
-      - run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npm run test
