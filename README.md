@@ -5,6 +5,7 @@
 ![Last Commit](https://img.shields.io/github/last-commit/allensarkisyan/schwab-td-ameritrade-api)
 ![CodeQL](https://github.com/allensarkisyan/schwab-td-ameritrade-api/workflows/CodeQL/badge.svg?branch=main)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/allensarkisyan/schwab-td-ameritrade-api/badge)](https://securityscorecards.dev/viewer/?uri=github.com/allensarkisyan/schwab-td-ameritrade-api)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/7855/badge)](https://www.bestpractices.dev/projects/7855)
 ![GitHub issues](https://img.shields.io/github/issues/allensarkisyan/schwab-td-ameritrade-api)
 ![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/allensarkisyan/schwab-td-ameritrade-api/tests.yml?label=tests)
 [![codecov](https://codecov.io/gh/allensarkisyan/schwab-td-ameritrade-api/graph/badge.svg?token=CMZZBK817L)](https://codecov.io/gh/allensarkisyan/schwab-td-ameritrade-api)
